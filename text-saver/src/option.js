@@ -22,7 +22,7 @@ async function textStats() {
     return new TextEncoder().encode(
       Object.entries(await browser.storage.local.get())
         .map(([key, value]) => key + JSON.stringify(value))
-        .join('')
+        .join(''),
     ).length;
   }
 
@@ -42,7 +42,7 @@ function humanSize(size) {
 async function refresh() {
   let rows = [];
   for (const [id, { text, url, createdAt }] of Object.entries(
-    await getTexts()
+    await getTexts(),
   )) {
     rows.push([id, text, url, createdAt]);
   }
@@ -80,7 +80,7 @@ async function refresh() {
     const copyButton = document.getElementById(`btn-copy-${id}`);
     copyButton.onclick = function () {
       navigator.clipboard.writeText(
-        document.getElementById(`text-${id}`).innerHTML
+        document.getElementById(`text-${id}`).innerHTML,
       );
       copyButton.innerHTML = 'Copied';
       setTimeout(function () {
@@ -102,8 +102,8 @@ function applyColorScheme(scheme) {
 }
 
 window.onload = async function () {
-  const home = document.getElementById("home");
-  const footer = document.getElementById("footer");
+  const home = document.getElementById('home');
+  const footer = document.getElementById('footer');
   const manifest = chrome.runtime.getManifest();
   home.href = manifest.homepage_url;
   footer.textContent = `Current version: ${manifest.version}`;

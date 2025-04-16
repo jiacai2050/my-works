@@ -7,7 +7,9 @@ const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 // Firefox will complain about this function
 // chrome.storage.session.setAccessLevel is not a function
 if (!isFirefox) {
-  chrome.storage.session.setAccessLevel({ accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS' });
+  chrome.storage.session.setAccessLevel({
+    accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS',
+  });
 }
 
 chrome.action.onClicked.addListener(function () {
@@ -15,12 +17,12 @@ chrome.action.onClicked.addListener(function () {
 });
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === "fetchPage" && request.url) {
+  if (request.action === 'fetchPage' && request.url) {
     fetchPage(request.url)
-      .then(ret => {
+      .then((ret) => {
         sendResponse({ success: true, ...ret });
       })
-      .catch(error => {
+      .catch((error) => {
         sendResponse({ success: false, error: error.message });
       });
     return true;
@@ -29,8 +31,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 async function fetchPage(url) {
   const typeOnly = await maybeFetchType(url);
-  if(typeOnly) {
-    return {string: typeOnly};
+  if (typeOnly) {
+    return { string: typeOnly };
   }
 
   const response = await fetch(url);
@@ -42,19 +44,32 @@ async function fetchPage(url) {
   const string = await response.text();
   const mimeType = response.headers.get('content-type');
   if (!mimeType || mimeType.includes('html')) {
-    return {string:string, isHtml: true};
+    return { string: string, isHtml: true };
   }
 
   const ret = `${mimeType}\n${response.url}`;
-  return {string: ret};
+  return { string: ret };
 }
 
-const BINARY_SUFFIXES = ['jpg', 'png', 'webp', 'svg', 'gif', 'pdf', 'mp4', 'mobi', 'epub', 'xml', 'zip', 'tar.gz'];
+const BINARY_SUFFIXES = [
+  'jpg',
+  'png',
+  'webp',
+  'svg',
+  'gif',
+  'pdf',
+  'mp4',
+  'mobi',
+  'epub',
+  'xml',
+  'zip',
+  'tar.gz',
+];
 
 async function maybeFetchType(url) {
   let isBinary = false;
-  for(const suffix of BINARY_SUFFIXES) {
-    if(url.endsWith(suffix)) {
+  for (const suffix of BINARY_SUFFIXES) {
+    if (url.endsWith(suffix)) {
       isBinary = true;
       break;
     }
@@ -64,10 +79,10 @@ async function maybeFetchType(url) {
   }
 
   const response = await fetch(url, {
-    method: 'OPTIONS'
+    method: 'OPTIONS',
   });
   const contentType = response.headers.get('content-type');
-  if(contentType && !contentType.includes('html')) {
+  if (contentType && !contentType.includes('html')) {
     return `${contentType}\n${response.url}`;
   }
 

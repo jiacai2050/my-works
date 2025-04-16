@@ -3,21 +3,21 @@
 const linkSelector = 'a[href]:not([href=""]):not([href^="#"])';
 const links = document.querySelectorAll(linkSelector);
 
-links.forEach(link => {
+links.forEach((link) => {
   link.addEventListener('mouseover', handleLinkHover);
 });
 
-const observer = new MutationObserver(mutations => {
-  mutations.forEach(mutation => {
+const observer = new MutationObserver((mutations) => {
+  mutations.forEach((mutation) => {
     if (mutation.addedNodes) {
-      mutation.addedNodes.forEach(node => {
+      mutation.addedNodes.forEach((node) => {
         if (node.nodeType === Node.ELEMENT_NODE) {
           if (node.tagName === 'A' && node.href) {
             node.addEventListener('mouseover', handleLinkHover);
           }
 
           const childLinks = node.querySelectorAll(linkSelector);
-          childLinks.forEach(link => {
+          childLinks.forEach((link) => {
             link.addEventListener('mouseover', handleLinkHover);
           });
         }
@@ -28,7 +28,7 @@ const observer = new MutationObserver(mutations => {
 
 observer.observe(document.body, {
   childList: true,
-  subtree: true
+  subtree: true,
 });
 
 async function handleLinkHover(event) {
@@ -48,11 +48,11 @@ async function handleLink(link) {
   try {
     let value = await fetchLinkInfo(link);
     let maxLength = await getMaxLength();
-    if(value.length > maxLength) {
+    if (value.length > maxLength) {
       value = value.substring(0, maxLength) + '...';
     }
     link.setAttribute('aria-label', value);
-  } catch(e) {
+  } catch (e) {
     link.setAttribute('aria-label', e.toString());
     console.error(`Fetch link info failed, url:${link.href}, err:${e}`);
   }
@@ -69,27 +69,25 @@ async function fetchLinkInfo(link) {
     return cachedValue;
   }
 
-  const {
-    success,
-    string,
-    isHtml,
-    error
-  } = await chrome.runtime.sendMessage({ action: "fetchPage", url: url });
+  const { success, string, isHtml, error } = await chrome.runtime.sendMessage({
+    action: 'fetchPage',
+    url: url,
+  });
   if (!success) {
     throw new Error(error);
   }
 
-  if(!isHtml) {
+  if (!isHtml) {
     await cache.set(url, string);
     return string;
   }
 
-  const {title, description} = parseHtml(string);
+  const { title, description } = parseHtml(string);
   let value = 'NA';
-  if(title) {
+  if (title) {
     value = title;
   }
-  if(description) {
+  if (description) {
     if (value === 'NA') {
       value = description;
     } else {
@@ -107,7 +105,7 @@ function parseHtml(html) {
   const title = doc.title;
   let description = parseDescription(doc);
 
-  return {title: title, description: description};
+  return { title: title, description: description };
 }
 
 function parseDescription(doc) {

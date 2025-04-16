@@ -1,20 +1,25 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+    <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
-      />
+    />
     <title>Link Preview Setting</title>
   </head>
   <body>
     <header>
       <nav>
         <a id="home">Home</a>
-        <a href="https://chromewebstore.google.com/detail/ckmbklmhlmhglbokadhhljpmalopjocj" >Chrome</a>
-        <a href="https://addons.mozilla.org/en-US/firefox/addon/preview-link/" >Firefox</a>
+        <a
+          href="https://chromewebstore.google.com/detail/ckmbklmhlmhglbokadhhljpmalopjocj"
+          >Chrome</a
+        >
+        <a href="https://addons.mozilla.org/en-US/firefox/addon/preview-link/"
+          >Firefox</a
+        >
       </nav>
       <h1>Link Preview Setting</h1>
       <p>Preview link metadata (title and description) on hover!</p>
@@ -34,16 +39,21 @@
       </select>
 
       <label for="max-length">Tooltip max length:</label>
-      <input id="max-length" name="max-length" type="number" min="100" max="1000" step="10" />
-      </input>
+      <input
+        id="max-length"
+        name="max-length"
+        type="number"
+        min="100"
+        max="1000"
+        step="10"
+      />
 
-     <p class="notice"><strong>Link metadata cache size</strong><br />
-       <span id="cache-size"></span>
-     </p>
-     <button id="clear-cache">Clear Cache</button>
-
+      <p class="notice">
+        <strong>Link metadata cache size</strong><br />
+        <span id="cache-size"></span>
+      </p>
+      <button id="clear-cache">Clear Cache</button>
     </main>
-    <div id="all-settings"></div>
     <footer id="footer"></footer>
     <script src="common.js"></script>
     <script src="option.js"></script>

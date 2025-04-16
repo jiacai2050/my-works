@@ -9,7 +9,7 @@ class DB {
 
   async get(key) {
     const value = await this.storage.get(key);
-    if(value) {
+    if (value) {
       return value[key];
     }
   }
@@ -36,25 +36,24 @@ class DB {
       return new TextEncoder().encode(
         Object.entries(await this.storage.get())
           .map(([key, value]) => key + JSON.stringify(value))
-          .join('')
+          .join(''),
       ).length;
     }
 
     return await this.storage.getBytesInUse(null);
   }
-
 }
 
 let cache;
-if(isFirefox) {
-   cache = new DB(chrome.storage.local);
+if (isFirefox) {
+  cache = new DB(chrome.storage.local);
 } else {
-   cache = new DB(chrome.storage.session);
+  cache = new DB(chrome.storage.session);
 }
 const settingStorage = new DB(chrome.storage.sync);
 
 async function getPosition() {
-  return await settingStorage.get('position') || 'bottom-right';
+  return (await settingStorage.get('position')) || 'bottom-right';
 }
 
 async function setPosition(pos) {
@@ -62,7 +61,7 @@ async function setPosition(pos) {
 }
 
 async function getMaxLength() {
-  return await settingStorage.get('max-length') || 350;
+  return (await settingStorage.get('max-length')) || 350;
 }
 
 async function setMaxLength(len) {

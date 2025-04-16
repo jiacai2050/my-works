@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - '**.js'
+      - '**.html'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '**.js'
+      - '**.html'
+
+jobs:
+  CI:
+    name: CI
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Run Style Check
+        run: |
+          # If you found any errors, execute `make write` to automatically correct them.
+          make check
