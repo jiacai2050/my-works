@@ -1,0 +1,10 @@
+#+TITLE: MyWorks
+#+DATE: 2025-04-16T10:11:50+0800
+#+LASTMOD: 2025-04-16T10:16:02+0800
+#+AUTHOR: Jiacai Liu
+
+This monorepo contains all public software projects I've developed and released to the community.
+
+Each project is maintained within a structured architecture that enables efficient development, testing, and deployment while promoting code reuse and standardization across projects.
+
+- [[file:link-preview/][Link preview]] :: Browser extension to preview link metadata (title and description) on hover, saving you time to open many tabs just to preview the link!

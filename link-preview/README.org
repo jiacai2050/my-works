@@ -1,0 +1,20 @@
+#+TITLE: Link Preview
+#+DATE: 2025-04-12T17:57:44+0800
+#+LASTMOD: 2025-04-13T11:24:34+0800
+#+AUTHOR: Jiacai Liu
+
+#+begin_quote
+Preview link metadata (title and description) on hover, saving you time to open many tabs just to preview the link!
+#+end_quote
+
+Works for Chrome/Firefox!
+
+[[file:demo.png]]
+* Install
+- [[https://chromewebstore.google.com/detail/ckmbklmhlmhglbokadhhljpmalopjocj][Chrome]]
+- [[https://addons.mozilla.org/en-US/firefox/addon/preview-link/][Firefox]]
+
+* Thanks
+- [[https://github.com/ghosh/microtip][Microtip]] :: Multiple line support see [[https://github.com/ghosh/microtip/issues/57#issuecomment-1551245373][#57]], also see [[https://developer.mozilla.org/en-US/docs/Web/CSS/white-space][white-space]] on MDN.
+* License
+[[http://liujiacai.net/license/MIT.html?year=2025][MIT License]] © Jiacai Liu
