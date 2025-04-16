@@ -13,7 +13,13 @@ if (!isFirefox) {
 }
 
 chrome.action.onClicked.addListener(function () {
-  chrome.runtime.openOptionsPage();
+  if(isFirefox) {
+    // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/permissions/request
+    const perm = {'origins': ['*://*/*']};
+    chrome.permissions.request(perm);
+  } else {
+    chrome.runtime.openOptionsPage();
+  }
 });
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
