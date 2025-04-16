@@ -10,6 +10,10 @@ if (!isFirefox) {
   chrome.storage.session.setAccessLevel({ accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS' });
 }
 
+chrome.action.onClicked.addListener(function () {
+  chrome.runtime.openOptionsPage();
+});
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "fetchPage" && request.url) {
     fetchPage(request.url)
