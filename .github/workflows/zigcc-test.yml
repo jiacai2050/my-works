@@ -1,0 +1,129 @@
+name: zigcc test
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '10 20 * * *'
+  push:
+    branches:
+      - main
+      - master
+    paths-ignore:
+      - 'README**'
+
+env:
+  OUTPUT: /tmp/cc.md
+  ZIGCC_VERBOSE: 1
+
+defaults:
+  run:
+    working-directory: zigcc
+
+# Allow one concurrent deployment
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  go:
+    timeout-minutes: 600
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: tests
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: mlugg/setup-zig@v1
+        with:
+          zig-version: master
+      - name: Install ZigCC
+        run: |
+          mkdir ${HOME}/bin
+          cp "${HOME}/zigcc/__init__.py" "${HOME}/bin/zigcc"
+          ln -s "${HOME}/bin/zigcc" "${HOME}/bin/zigcxx"
+          ln -s "${HOME}/bin/zigcc" "${HOME}/bin/zigcargo"
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+          cache: false
+      - name: Prepare
+        run: |
+          echo "| GOOS | GOARCH | Status |" >> $OUTPUT
+          echo "|:-:|:-:|:-:|" >> $OUTPUT
+      - run: |
+           GOOS=linux GOARCH=386 ./run-go.sh
+      - run: |
+           GOOS=linux GOARCH=amd64 ./run-go.sh
+      - run: |
+           GOOS=linux GOARCH=arm ./run-go.sh
+      - run: |
+           GOOS=linux GOARCH=arm64 ./run-go.sh
+      - run: |
+           GOOS=windows GOARCH=386 ./run-go.sh
+      - run: |
+           GOOS=windows GOARCH=amd64 ./run-go.sh
+      - run: |
+           GOOS=windows GOARCH=arm ./run-go.sh
+      - run: |
+           GOOS=windows GOARCH=arm64 ./run-go.sh
+      - run: |
+           GOOS=darwin GOARCH=amd64 ./run-go.sh
+      - run: |
+           GOOS=darwin GOARCH=arm64 ./run-go.sh
+      - run: |
+          cat $OUTPUT >> $GITHUB_STEP_SUMMARY
+
+
+  rust:
+    timeout-minutes: 600
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: tests
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        # zig-targets: [x86_64-windows, x86_64-linux, x86_64-macos, aarch64-macos]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cache Rust Dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo
+          key: rust-${{ runner.os }}
+      - name: Install ZigCC
+        uses: jiacai2050/zigcc@main
+        with:
+          version: master
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+      - name: Prepare
+        run: |
+          cargo install cargo-zigbuild
+          echo "| Target | Project | Build | Status |" >> $OUTPUT
+          echo "|:-:|:-:|:-:|:-:|" >> $OUTPUT
+      - run: |
+          ./run-rust.sh aarch64-unknown-linux-gnu
+      - run: |
+          ./run-rust.sh i686-pc-windows-gnu
+      - run: |
+          ./run-rust.sh i686-pc-windows-msvc
+      - run: |
+          ./run-rust.sh i686-unknown-linux-gnu
+      - run: |
+          ./run-rust.sh x86_64-apple-darwin
+      - run: |
+          ./run-rust.sh x86_64-pc-windows-gnu
+      - run: |
+          ./run-rust.sh x86_64-pc-windows-msvc
+      - run: |
+          ./run-rust.sh x86_64-unknown-linux-gnu
+      - run: |
+          cat $OUTPUT >> $GITHUB_STEP_SUMMARY

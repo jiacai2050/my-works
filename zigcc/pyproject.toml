@@ -1,0 +1,61 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "zigcc"
+dynamic = ["version"]
+authors = [{name = "Jiacai Liu", email="dev@liujiacai.net"}]
+description = "Util scripts aimed at simplifying the use of `zig cc` for compiling C, C++, Rust, and Go programs."
+readme = "README.md"
+keywords = ["zig", "compile", "rust", "cross-compile", "go"]
+license = "GPL-3.0"
+requires-python = ">=3.0.0"
+dependencies = [
+]
+classifiers = [
+    "Operating System :: OS Independent",
+    "Topic :: Software Development",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: System Administrators",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+
+[project.urls]
+Repository = "https://github.com/jiacai2050/my-works/tree/main/zigcc"
+Issues = "https://github.com/jiacai2050/my-works/issues"
+
+[project.scripts]
+zigcc = "zigcc:main"
+zigcxx = "zigcc:main"
+zigcargo = "zigcc:main"
+
+[tool.hatch.version]
+path = "zigcc/__init__.py"
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "zigcc",
+  "pyproject.toml",
+]
+
+[tool.hatch.build.targets.wheel]
+include = [
+  "zigcc"
+]
+
+# https://github.com/astral-sh/ruff?tab=readme-ov-file#configuration
+[tool.ruff.lint]
+fixable = ["ALL"]
+
+[tool.ruff.format]
+quote-style = "single"

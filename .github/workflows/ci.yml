@@ -1,4 +1,4 @@
-name: CI
+name: JS-CI
 
 on:
   workflow_dispatch:

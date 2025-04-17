@@ -1,0 +1,51 @@
+* zigcc
+[[https://pypi.org/project/zigcc][https://img.shields.io/pypi/v/zigcc.svg]]
+
+Util scripts aimed at simplifying the use of =zig cc= for compiling C, C++, Rust, and Go programs.
+
+* Why
+In most cases, we can use following command to use Zig for compile
+#+begin_src bash
+CC='zig cc' CXX='zig c++' ...
+#+end_src
+However in real world, there are many issues this way, such as:
+- [[https://github.com/ziglang/zig/issues/4911][zig cc: parse -target and -mcpu/-march/-mtune flags according to clang #4911]]
+- [[https://gist.github.com/kassane/446889ea1dd5ff07048d921f2b755e78][Targets compare: Rust to Zig]]
+- [[https://github.com/search?q=repo%3Aziglang%2Fzig+unsupported+linker+arg%3A&type=issues][unsupported linker arg]]
+- [[https://www.reddit.com/r/rust/comments/q866qx/rust_zig_cc_crt_conflict/][Rust + `zig cc` CRT conflict. : rust]]
+So this project was born, it will
+- Convert target between Zig and Rust/Go
+- Ignore link args when =zig cc= throw errors, hopefully this will make compile successfully, WIP.
+* Install
+#+begin_src bash
+pip3 install -U zigcc
+#+end_src
+
+This will install three executables:
+- =zigcc=, used for =CC=
+- =zigcxx=, used for =CXX=
+- =zigcargo= can used to replace =cargo=, it will automatically set
+  - =CC= =CARGO_TARGET_<triple>_LINKER= to =zigcc=
+  - =CXX= to =zigcxx=
+
+* Use in GitHub Action
+Adding a step to your workflow like this:
+#+begin_src yaml
+      - name: Install zigcc
+        uses: jiacai2050/zigcc@v1
+        with:
+          zig-version: master
+#+end_src
+Then you can invoke =zigcc= =zigcxx= =zigcargo= in following steps.
+
+* Config
+There some are env variable to config zigcc:
+- =ZIGCC_FLAGS=, space separated flags, pass to zig cc.
+- =ZIGCC_ENABLE_SANITIZE= By default Zig will pass =-fsanitize=undefined -fsanitize-trap=undefined= to clang when compile without =-O2=, =-O3=, this causes Undefined Behavior to cause an Illegal Instruction, see [[https://nathancraddock.com/blog/zig-cc-undefined-behavior/][Catching undefined behavior with zig cc]].
+
+  So we disable it by default, set this variable to =1= to re-enable it.
+- =ZIGCC_BLACKLIST_FLAGS=, space separated flags, used to filter flags =zig cc= don't support, such as =-Wl,-dylib= otherwise you could see errors below
+  #+begin_src bash
+  note: error: unsupported linker arg: -dylib
+  #+end_src
+- =ZIGCC_VERBOSE= Set to =1= enable verbose logs.

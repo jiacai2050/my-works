@@ -1,0 +1,29 @@
+# https://docs.github.com/en/actions/creating-actions/creating-a-composite-action?platform=mac
+
+name: 'ZigCC'
+description: 'Use zig cc to compile C/C++/Rust/Go programs'
+inputs:
+  zig-version:
+    description: 'Zig version to use'
+    required: true
+    default: 'master'
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v4
+      with:
+        repository: jiacai2050/zigcc
+        path: .jiacai2050-zigcc
+    - uses: mlugg/setup-zig@v1
+      with:
+        version: ${{ inputs.zig-version }}
+    - name: Set GitHub Path
+      run: |
+        export ZIGCC_HOME="${GITHUB_WORKSPACE}/.jiacai2050-zigcc"
+        mkdir "${ZIGCC_HOME}/bin"
+        echo "${ZIGCC_HOME}/bin" >> $GITHUB_PATH
+        cp "${ZIGCC_HOME}/zigcc/__init__.py" "${ZIGCC_HOME}/bin/zigcc"
+        ln -s "${ZIGCC_HOME}/bin/zigcc" "${ZIGCC_HOME}/bin/zigcxx"
+        ln -s "${ZIGCC_HOME}/bin/zigcc" "${ZIGCC_HOME}/bin/zigcargo"
+      shell: bash

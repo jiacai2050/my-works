@@ -1,0 +1,6 @@
+target
+cgo-demo
+dist
+README.md
+*.o
+.ruff_cache
