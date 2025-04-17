@@ -1,0 +1,31 @@
+name: VC Release on Pypi
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'vc-v*'
+
+defaults:
+  run:
+    working-directory: video-compress
+
+jobs:
+  pypi-publish:
+    name: Upload release to PyPI
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+    - name: Install pypa
+      run: >-
+        pip install hatch
+    - name: Install
+      uses: pandoc/actions/setup@main
+    - name: Pulish
+      run: |
+        make build
+        hatch publish -u '__token__' -a '${{ secrets.HATCH_INDEX_AUTH }}'

@@ -1,0 +1,56 @@
+
+* Video-compress
+[[https://pypi.org/project/video-compress][https://img.shields.io/pypi/v/video-compress.svg]]
+[[https://github.com/jiacai2050/video-compress/actions/workflows/ci.yml][https://github.com/jiacai2050/my-works/actions/workflows/vc-ci.yml/badge.svg]]
+
+Compress video by 90% without losing much quality, similar to what [[https://en.wikipedia.org/wiki/Silicon_Valley_(TV_series)][Pied Piper]] achieves.
+
+[[file:pied-piper.jpg]]
+
+#+begin_quote
+Inspired by https://x.com/mortenjust/status/1818027566932136062
+#+end_quote
+
+* Install
+First install [[https://www.ffmpeg.org/download.html][ffmpeg]], then
+#+begin_src bash
+pip3 install -U video-compress
+#+end_src
+Or install latest nightly version
+#+begin_src bash
+pip3 install --force-reinstall -U git+https://github.com/jiacai2050/video-compress.git
+#+end_src
+
+This will install two commands: =vc=, =video-compress=, which are identical.
+
+* Usage
+#+begin_src bash :results verbatim :exports results
+make help
+#+end_src
+
+#+RESULTS:
+#+begin_example
+usage: vc [-h] [-v] [--verbose] [-t THREADS] [--crf CRF] [--delete]
+          [<video path> ...]
+
+Compress video by 90% without losing much quality, similar to what Pied Piper
+achieves.
+
+positional arguments:
+  <video path>
+
+options:
+  -h, --help            show this help message and exit
+  -v, --version         show program's version number and exit
+  --verbose             show verbose log
+  -t THREADS, --threads THREADS
+                        max threads to use for compression. (default: 6)
+  --crf CRF             constant rate factor, range from 0-51. Higher values
+                        mean more compression, smaller file size, but lower
+                        quality. (default: 30)
+  --delete              delete input video after compress successfully
+#+end_example
+
+Positional arguments can be either video files or directories.
+
+For each directory, =vc= will iteratively walk the dir to search for all videos to compress, the compressed video will be named after =${input}-compressed.mp4=.

@@ -1,0 +1,58 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "video-compress"
+dynamic = ["version"]
+authors = [{name = "Jiacai Liu", email="dev@liujiacai.net"}]
+description = "Compress video by 90% without losing much quality, similar to what Pied Piper achieves."
+readme = "README.md"
+keywords = ["videos", "compress", "ffmpeg"]
+license = "GPL-3.0"
+requires-python = ">=3.6.0"
+dependencies = [
+]
+classifiers = [
+    "Operating System :: OS Independent",
+    "Topic :: Software Development",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: System Administrators",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+
+[project.urls]
+Repository = "https://github.com/jiacai2050/my-works/tree/main/video-compress"
+Issues = "https://github.com/jiacai2050/my-works/issues"
+
+[project.scripts]
+vc = "vc:main"
+"video-compress" = "vc:main"
+
+[tool.hatch.version]
+path = "vc/main.py"
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "vc",
+  "pyproject.toml",
+]
+
+[tool.hatch.build.targets.wheel]
+include = [
+  "vc"
+]
+
+# https://github.com/astral-sh/ruff?tab=readme-ov-file#configuration
+[tool.ruff.lint]
+fixable = ["ALL"]
+
+[tool.ruff.format]
+quote-style = "single"

@@ -1,12 +1,15 @@
 #+TITLE: MyWorks
 #+DATE: 2025-04-16T10:11:50+0800
-#+LASTMOD: 2025-04-17T11:31:55+0800
+#+LASTMOD: 2025-04-17T19:56:07+0800
 #+AUTHOR: Jiacai Liu
 
 This monorepo contains all public software projects I've developed and released to the community.
 
 Each project is maintained within a structured architecture that enables efficient development, testing, and deployment while promoting code reuse and standardization across projects.
 
+* JS
 - [[file:link-preview/][Link preview]] :: Browser extension to preview link metadata (title and description) on hover, saving you time to open many tabs just to preview the link!
 - [[file:text-saver/][Text saver]] :: Browser extension to save texts anytime, anywhere.
+* Python
 - [[file:zigcc/][Zig CC]] :: Scripts aimed at simplifying the use of =zig cc= for compiling C, C++, Rust, and Go programs.
+- [[file:compress-video/][Video-compress]] :: Compress video by 90% without losing much quality, similar to what [[https://en.wikipedia.org/wiki/Silicon_Valley_(TV_series)][Pied Piper]] achieves.

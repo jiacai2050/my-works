@@ -1,0 +1,10 @@
+.DS_Store
+
+# Python
+.ruff_cache
+__pycache__/
+*.py[cod]
+*$py.class
+.venv
+
+compress-video/README.md

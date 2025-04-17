@@ -4,16 +4,12 @@ on:
   workflow_dispatch:
   pull_request:
     paths:
-      - '**.py'
-      - '**.yml'
-      - '**.toml'
+      - 'zigcc/**/*.py'
   push:
     branches:
       - main
     paths:
-      - '**.py'
-      - '**.yml'
-      - '**.toml'
+      - 'zigcc/**/*.py'
 
 defaults:
   run:

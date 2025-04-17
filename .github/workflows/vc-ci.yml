@@ -1,0 +1,29 @@
+name: VC CI
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'video-compress/**/*.py'
+  push:
+    branches:
+      - main
+    paths:
+      - 'video-compress/**/*.py'
+
+defaults:
+  run:
+    working-directory: video-compress
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install
+      run: |
+        pip install hatch
+        pip install ruff
+    - name: lint
+      run: |
+        make lint
