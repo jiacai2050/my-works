@@ -8,8 +8,8 @@ on:
     branches:
       - main
       - master
-    paths-ignore:
-      - 'README**'
+    paths:
+      - 'zigcc/**'
 
 env:
   OUTPUT: /tmp/cc.md

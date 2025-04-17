@@ -1,0 +1,25 @@
+* ZMS
+[[https://github.com/jiacai2050/zms/actions/workflows/CI.yml][https://github.com/jiacai2050/zms/actions/workflows/CI.yml/badge.svg]]
+
+ZMS provides a pure Zig solution to set up a mirror server for fetching Zig tarballs on demand and caching them on the local disk.
+
+See rationale [[https://github.com/mlugg/setup-zig/issues/15][here]].
+
+Suppose =X= is the base URL, =X/${filename}= will fetch requested file.
+* Usage
+#+begin_src bash :results verbatim :exports both :wrap example
+zig build && ./zig-out/bin/zms --help
+#+end_src
+
+#+RESULTS:
+#+begin_example
+ USAGE:
+     ./zig-out/bin/zms [OPTIONS]
+
+ OPTIONS:
+  -h, --host STRING                HTTP server bind host(default: 0.0.0.0)
+  -p, --port INTEGER               HTTP server bind port(default: 9090)
+  -t, --threads INTEGER            Number of threads to use for serving HTTP requests(default: 32)
+  -d, --tarball_dir STRING         Directory for storing zig tarballs(default: /tmp)
+  -h, --help                       Show help
+#+end_example

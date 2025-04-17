@@ -8,3 +8,7 @@ __pycache__/
 .venv
 
 compress-video/README.md
+
+# Zig
+zig-out
+.zig-cache
