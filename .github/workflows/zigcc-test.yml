@@ -17,7 +17,7 @@ env:
 
 defaults:
   run:
-    working-directory: zigcc
+    working-directory: zigcc/tests
 
 # Allow one concurrent deployment
 concurrency:
@@ -28,9 +28,6 @@ jobs:
   go:
     timeout-minutes: 600
     runs-on: ${{ matrix.os }}
-    defaults:
-      run:
-        working-directory: tests
     strategy:
       fail-fast: false
       matrix:
@@ -82,9 +79,6 @@ jobs:
   rust:
     timeout-minutes: 600
     runs-on: ${{ matrix.os }}
-    defaults:
-      run:
-        working-directory: tests
     strategy:
       fail-fast: false
       matrix:
