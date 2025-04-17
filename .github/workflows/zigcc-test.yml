@@ -40,7 +40,8 @@ jobs:
       - name: Install ZigCC
         run: |
           mkdir ${HOME}/bin
-          cp "${HOME}/zigcc/__init__.py" "${HOME}/bin/zigcc"
+          echo "${HOME}/bin" >> $GITHUB_PATH
+          cp "${GITHUB_WORKSPACE}/zigcc/zigcc/__init__.py" "${HOME}/bin/zigcc"
           ln -s "${HOME}/bin/zigcc" "${HOME}/bin/zigcxx"
           ln -s "${HOME}/bin/zigcc" "${HOME}/bin/zigcargo"
       - name: Install Go
