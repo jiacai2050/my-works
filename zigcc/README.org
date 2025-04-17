@@ -1,7 +1,7 @@
 * zigcc
 [[https://pypi.org/project/zigcc][https://img.shields.io/pypi/v/zigcc.svg]]
 
-Util scripts aimed at simplifying the use of =zig cc= for compiling C, C++, Rust, and Go programs.
+Scripts aimed at simplifying the use of =zig cc= for compiling C, C++, Rust, and Go programs.
 
 * Why
 In most cases, we can use following command to use Zig for compile
@@ -32,7 +32,7 @@ This will install three executables:
 Adding a step to your workflow like this:
 #+begin_src yaml
       - name: Install zigcc
-        uses: jiacai2050/zigcc@v1
+        uses: jiacai2050/my-works@main
         with:
           zig-version: master
 #+end_src
