@@ -36,7 +36,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: mlugg/setup-zig@v1
         with:
-          zig-version: master
+          version: master
       - name: Install ZigCC
         run: |
           mkdir ${HOME}/bin
@@ -93,9 +93,9 @@ jobs:
             ~/.cargo
           key: rust-${{ runner.os }}
       - name: Install ZigCC
-        uses: jiacai2050/zigcc@main
+        uses: jiacai2050/my-works@fix-ci
         with:
-          version: master
+          zig-version: master
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
       - name: Prepare

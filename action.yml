@@ -13,8 +13,9 @@ runs:
   steps:
     - uses: actions/checkout@v4
       with:
-        repository: jiacai2050/zigcc
+        repository: jiacai2050/my-works
         path: .jiacai2050-zigcc
+        sparse-checkout: 'zigcc'
     - uses: mlugg/setup-zig@v1
       with:
         version: ${{ inputs.zig-version }}
@@ -23,7 +24,7 @@ runs:
         export ZIGCC_HOME="${GITHUB_WORKSPACE}/.jiacai2050-zigcc"
         mkdir "${ZIGCC_HOME}/bin"
         echo "${ZIGCC_HOME}/bin" >> $GITHUB_PATH
-        cp "${ZIGCC_HOME}/zigcc/__init__.py" "${ZIGCC_HOME}/bin/zigcc"
+        cp "${ZIGCC_HOME}/zigcc/zigcc/__init__.py" "${ZIGCC_HOME}/bin/zigcc"
         ln -s "${ZIGCC_HOME}/bin/zigcc" "${ZIGCC_HOME}/bin/zigcxx"
         ln -s "${ZIGCC_HOME}/bin/zigcc" "${ZIGCC_HOME}/bin/zigcargo"
       shell: bash
