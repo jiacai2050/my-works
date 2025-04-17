@@ -21,7 +21,7 @@ defaults:
 
 # Allow one concurrent deployment
 concurrency:
-  group: "${{ github.workflow }}-${{ github.ref }}"
+  group: '${{ github.workflow }}-${{ github.ref }}'
   cancel-in-progress: true
 
 jobs:
@@ -53,28 +53,27 @@ jobs:
           echo "| GOOS | GOARCH | Status |" >> $OUTPUT
           echo "|:-:|:-:|:-:|" >> $OUTPUT
       - run: |
-           GOOS=linux GOARCH=386 ./run-go.sh
+          GOOS=linux GOARCH=386 ./run-go.sh
       - run: |
-           GOOS=linux GOARCH=amd64 ./run-go.sh
+          GOOS=linux GOARCH=amd64 ./run-go.sh
       - run: |
-           GOOS=linux GOARCH=arm ./run-go.sh
+          GOOS=linux GOARCH=arm ./run-go.sh
       - run: |
-           GOOS=linux GOARCH=arm64 ./run-go.sh
+          GOOS=linux GOARCH=arm64 ./run-go.sh
       - run: |
-           GOOS=windows GOARCH=386 ./run-go.sh
+          GOOS=windows GOARCH=386 ./run-go.sh
       - run: |
-           GOOS=windows GOARCH=amd64 ./run-go.sh
+          GOOS=windows GOARCH=amd64 ./run-go.sh
       - run: |
-           GOOS=windows GOARCH=arm ./run-go.sh
+          GOOS=windows GOARCH=arm ./run-go.sh
       - run: |
-           GOOS=windows GOARCH=arm64 ./run-go.sh
+          GOOS=windows GOARCH=arm64 ./run-go.sh
       - run: |
-           GOOS=darwin GOARCH=amd64 ./run-go.sh
+          GOOS=darwin GOARCH=amd64 ./run-go.sh
       - run: |
-           GOOS=darwin GOARCH=arm64 ./run-go.sh
+          GOOS=darwin GOARCH=arm64 ./run-go.sh
       - run: |
           cat $OUTPUT >> $GITHUB_STEP_SUMMARY
-
 
   rust:
     timeout-minutes: 600

@@ -9,7 +9,7 @@ inputs:
     default: 'master'
 
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
     - uses: actions/checkout@v4
       with:
