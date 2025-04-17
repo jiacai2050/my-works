@@ -1,2 +1,6 @@
 text-saver/src/libs/**
 link-preview/src/microtip.min.css
+target
+public
+zigos/resources
+zigos/layouts/shortcodes/include.html
