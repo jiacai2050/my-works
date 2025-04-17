@@ -1,0 +1,33 @@
+baseURL = 'https://zigos.liujiacai.net'
+defaultContentLanguage = 'zh-cn'
+title = 'Writing an OS in Zig'
+enableGitInfo = true
+copyright = """ © 2025
+  | <a href="https://github.com/jiacai2050/my-works/tree/main/zigos">Source Code</a>
+  | <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/">BY-NC-ND 4.0</a>
+  | <a href="/index.xml">RSS</a>
+"""
+
+[params]
+github_repo = 'https://github.com/jiacai2050/my-works/tree/main/zigos'
+# github_subdir = 'docs'
+offlineSearch = true
+
+[module]
+proxy = "https://goproxy.cn,direct"
+[[module.imports]]
+path = "github.com/google/docsy"
+
+[params.ui]
+navbar_logo = false
+showLightDarkModeMenu = true
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.parser.attribute]
+      block = true
+    [markup.goldmark.renderer]
+      unsafe = true
+  [markup.highlight]
+    style = "pygments"
+    linenos = true

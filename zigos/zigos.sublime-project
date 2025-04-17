@@ -1,0 +1,26 @@
+{
+    "folders":
+    [
+        {
+            "path": ".",
+            "file_include_patterns":
+            [
+                "*.*"
+            ],
+            "index_include_patterns":
+            [
+                "*.*"
+            ],
+        }
+    ],
+    "settings":
+    {
+        "LSP":
+        {
+			"zig":
+			{
+				"enabled": true
+			}
+		},
+    },
+}

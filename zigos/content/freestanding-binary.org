@@ -1,0 +1,82 @@
+#+TITLE: 独立运行的二进制文件
+#+DATE: 2025-01-02T23:20:23+0800
+#+LASTMOD: 2025-01-31T20:41:27+0800
+#+TYPE: docs
+#+WEIGHT: 1
+#+PROPERTY: header-args :dir ../src :results verbatim :exports result
+
+要编写操作系统内核，我们需要不依赖任何操作系统功能的代码。 这意味着我们不能使用线程、文件、堆内存、网络、随机数、标准输出或任何其他需要操作系统抽象或特定硬件的功能。 这也说得通，因为我们要编写自己的操作系统和驱动程序。
+
+比如，即使一个简单的 Hello World 程序来说，需要依赖操作系统提供的 API 才能完成打印工作。
+
+幸运的是，Zig 支持在编译时指定目标平台为 freestanding，比如有如下文件：
+
+{{< include 01-01.zig >}}
+
+编译命令：
+#+begin_src bash
+zig build-exe -target x86-freestanding 01-01.zig 2>&1
+#+end_src
+
+#+RESULTS:
+: warning(link): unexpected LLD stderr:
+: ld.lld: warning: cannot find entry symbol _start; not setting start address
+:
+
+
+这个错误表示我们的程序缺少 =_start= 这个符号，这又是什么意思呢？
+
+** 程序入口
+人们可能会认为，main 函数是运行程序时调用的第一个函数。然而，大多数语言都有一个运行时系统，负责诸如垃圾回收（如 Java）或软件线程（如 Go 中的 goroutines）等工作。
+运行时系统需要在 main 之前调用，因为它需要初始化自己。
+
+对于 Zig 来说， =_start= 定义在 [[https://github.com/ziglang/zig/blob/0.13.0/lib/std/start.zig#L250][start.zig]] 中，它会调用 [[https://github.com/ziglang/zig/blob/0.13.0/lib/std/start.zig#L378C4-L378C24][posixCallMainAndExit]]，这个函数里会设置 argv、envp 参数以及线程本地存储（TLS）。
+比如在 Linux x86_64 为平台上，可以通过 [[https://man7.org/linux/man-pages/man1/objdump.1.html][objdump]] 命令查看：
+
+#+begin_src bash
+zig build-exe -target x86-linux 01-01.zig
+objdump -d freestanding | grep -A 10 _start
+#+end_src
+
+#+RESULTS:
+#+begin_example
+00040d20 <_start>:
+   40d20: 31 ed                        	xorl	%ebp, %ebp
+   40d22: 89 25 00 10 0e 00            	movl	%esp, 921600
+   40d28: 83 e4 f0                     	andl	$-16, %esp
+   40d2b: e8 10 00 00 00               	calll	0x40d40 <start.posixCallMainAndExit>
+   40d30: 0f 0b                        	ud2
+   40d32: 66 2e 0f 1f 84 00 00 00 00 00	nopw	%cs:(%eax,%eax)
+   40d3c: 0f 1f 40 00                  	nopl	(%eax)
+
+00040d40 <start.posixCallMainAndExit>:
+   40d40: 55                           	pushl	%ebp
+#+end_example
+
+我们可以参考 Zig 源码中 =_start= 的定义来写我们自己的入口函数：
+
+{{< include 01-02.zig >}}
+
+=export= 表示导出当前这个函数，并且禁止[[https://en.wikipedia.org/wiki/Name_mangling][名字修饰]]（Name mangling）。 =noreturn= 是一个特殊的类型，表示一个函数永远不会返回到调用者。使用 =noreturn= 的好处是：
+
+1. 编译器可以进行更好的优化
+2. 代码更清晰地表达了函数的意图
+3. 可以在编译时捕获一些潜在的错误
+
+这个概念在其他语言中也存在，比如 Rust 中的 =!= 类型，C 中的 [[https://en.cppreference.com/w/c/language/attributes/noreturn][noreturn]] 关键字等。
+
+=callconv(.Naked)= 用于设置函数的[[https://en.wikipedia.org/wiki/Calling_convention][调用方式]]， =Naked= 表示不会有[[https://en.wikipedia.org/wiki/Function_prologue_and_epilogue][函数序言（prologue）和函数尾声（epilogue）]]。这意味着：
+1. 函数无法被常规调用：因为缺少了序言和尾声，函数可能无法正确处理调用栈或返回地址，导致在普通代码中调用它会出错。
+2. 用于与汇编代码集成：这种特性在与汇编代码结合时非常有用。汇编代码通常需要直接控制寄存器和栈，因此去掉序言和尾声可以让函数更接近“裸函数”（bare function），方便直接嵌入汇编逻辑。
+
+#+begin_quote
+函数序言（prologue）和函数尾声（epilogue）是编译器自动生成的代码片段，用于管理函数的调用栈、保存寄存器状态、分配局部变量空间等。这些代码通常在函数开始和结束时执行。
+#+end_quote
+
+#+begin_src bash
+zig build-exe -target x86-freestanding 01-02.zig 2>&1
+#+end_src
+
+#+RESULTS:
+
+这时编译就没有错误了，我们就得到了一个不依赖任何操作系统的二进制。

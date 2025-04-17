@@ -1,0 +1,13 @@
+#+TITLE: Writing an OS in Zig
+#+DATE: 2023-10-21T12:09:48+0800
+#+LASTMOD: 2025-02-01T23:55:10+0800
+#+TYPE: docs
+#+author: Jiacai Liu
+
+[[https://os.phil-opp.com/][Writing an OS in Rust]] 是一系列用 Rust 写操作系统的教程，这里用 Zig 来实现教程中的内容。
+
+* 资料
+- https://github.com/phil-opp/blog_os
+
+* License
+[[https://creativecommons.org/licenses/by-nc-nd/4.0/][CC BY-NC-ND 4.0 DEED]]

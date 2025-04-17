@@ -1,0 +1,151 @@
+#+TITLE: 用 Zig 写的最小 Kernel
+#+DATE: 2025-01-28T09:54:47+0800
+#+LASTMOD: 2025-02-01T14:46:01+0800
+#+TYPE: docs
+#+WEIGHT: 2
+#+PROPERTY: header-args :dir ../src :results verbatim :exports result
+
+* 启动过程
+开机时，计算机开始执行存储在主板 [[https://en.wikipedia.org/wiki/Read-only_memory][ROM]] 中的固件代码（firmware code）。 这些代码会执行[[https://en.wikipedia.org/wiki/Power-on_self-test][开机自检]]（Power on self test），检测可用 RAM，并对 CPU 和硬件进行预初始化。
+
+在 x86 系统上，有两种固件标准：
+1. 基本输入/输出系统，Basic Input/Output System，简称 [[https://en.wikipedia.org/wiki/BIOS][BIOS]]
+2. 较新的 "统一可扩展固件接口"，Unified Extensible Firmware Interface，简称 [[https://en.wikipedia.org/wiki/Unified_Extensible_Firmware_Interface][UEFI]]
+
+BIOS 标准已经过时，但自 20 世纪 80 年代以来，在任何 x86 机器上都很简单，而且支持良好。 相比之下，UEFI 更现代，功能更多，但设置起来更复杂（至少在我看来是这样）。目前，我们只提供 BIOS 支持，但也计划提供 UEFI 支持。 如果您想帮助我们，请查看 Github 问题。
+
+** BIOS Boot
+几乎所有 x86 系统都支持 BIOS 启动，包括使用模拟 BIOS 的基于 UEFI 的新机器。 这很好，因为你可以在上个世纪的所有机器上使用相同的启动逻辑。 但这种广泛的兼容性同时也是 BIOS 启动的最大弊端，因为这意味着 CPU 在启动前要进入一种名为[[https://en.wikipedia.org/wiki/Real_mode][实模式]]的 16 位兼容性模式，这样上世纪 80 年代的老式启动加载程序仍能正常工作。
+
+#+begin_quote
+实模式也称为实地址模式，是所有 x86 兼容 CPU 的一种运行模式。 该模式之所以得名，是因为实模式下的地址总是与内存中的实际位置相对应。 实模式的特点是：
+1. 20 位分段内存地址空间（提供 1 MB 的可寻址内存）
+2. 对所有可寻址内存、I/O 地址和外设硬件的无限制直接软件访问
+3. 不支持内存保护、多任务处理或代码权限级别。
+
+#+end_quote
+让我们从头开始：
+1. 当你打开电脑时，它会从主板上的特殊闪存中加载 BIOS。
+2. BIOS 运行硬件自检和初始化程序，然后寻找可启动磁盘。
+3. 如果找到了，控制权就会转移到引导程序，即存储在磁盘开头的 512 字节可执行代码。大多数引导加载程序都大于 512 字节，因此引导加载程序通常会被分割成 512 字节的第一阶段和第二阶段。
+
+引导加载程序必须确定内核映像在磁盘上的位置并将其加载到内存中。 它还需要先将 CPU 从 16 位[[https://en.wikipedia.org/wiki/Real_mode][实模式]]切换到 32 位[[https://en.wikipedia.org/wiki/Protected_mode][保护模式]]，然后再切换到 64 位[[https://en.wikipedia.org/wiki/Long_mode][长模式]]，此时 64 位寄存器和完整的主内存可用。 第三个任务是从 BIOS 中查询某些信息（如内存映射）并将其传递给操作系统内核。
+
+编写引导加载程序有点麻烦，因为它需要汇编语言，并且涉及到许多不那么直观的步骤，如 "将这个神奇的值写入这个处理器寄存器"。 因此，我们在这篇文章中并不涉及引导加载程序的创建，而且使用一个业界标准：[[https://en.wikipedia.org/wiki/Multiboot_specification][Multiboot]] 协议。
+
+** Multiboot 标准
+为了避免每个操作系统实现自己的引导加载器，而引导加载器只能与单一操作系统兼容， 自由软件基金会于 1995 年创建了一个名为 Multiboot 的开放引导加载器标准。 该标准定义了引导加载程序和操作系统之间的接口，因此任何兼容 Multiboot 的引导加载程序都可以加载任何兼容 Multiboot 的操作系统。 参考实现是 GNU GRUB，它是 Linux 系统最常用的引导加载器。
+
+#+begin_quote
+Multiboot 标准目前有两个主要版本：
+- Multiboot 1：最初的版本，广泛支持且使用较多。最新版是 0.9.6，发布于 2009 年。
+- Multiboot 2：改进版本，增加了更多功能和灵活性，但使用相对较少。最新版是 2.0，发布于 2016 年。
+#+end_quote
+
+* 最小的内核
+既然我们已经大致知道了电脑是如何启动的，那么现在就是创建我们自己的最小内核的时候了。我们的目标是创建一个磁盘镜像，启动时在屏幕上打印 "Hello World!"。 你可能还记得，我们通过 freestanding 指定我们的二进制不依赖任何操作系统，现在我们在此基础上，添加对 Multiboot 1 的支持支持
+
+{{< include 02-01.zig >}}
+
+上面的 =MultibootHeader= 定义来自 grub 中 [[https://git.savannah.gnu.org/cgit/grub.git/tree/include/multiboot.h?h=grub-2.12#n99][multiboot_header]]：
+- =magic= 为固定值 =0x1BADB002= ，Multiboot 2 的 magic 值为 =0XE85250D6=
+- =flags= 这里设置了两个：
+  - =ALIGN= ，引导加载器会将内核的所有模块（如内核代码、数据段等）对齐到 4KB 边界。这有助于提高内存访问效率，尤其是在分页机制启用时。
+  - =MEMINFO= ，引导加载器会向内核提供内存布局信息（如可用内存的起始和结束地址）。这对于内核初始化内存管理子系统非常重要。
+- =checksum= 在 Multiboot 1 中，要求 ~magic + flags + checksum = 0 mod 2^32~ 在计算机中，这实际上对应了 32 位无符号整数的溢出行为。当计算结果超过 32 位能表示的范围时，超出的部分会被自动截断。比如：
+  #+begin_example
+     0x1BADB002 +
+     0x00000003 +
+     0xE4524FFB
+= 0x100000000
+  #+end_example
+  在 32 位系统中， =0x100000000= 会被截断为 =0x00000000= 。这也是为什么 checksum 可以通过取负来计算，因为在模 2^32 的算术中：
+  #+begin_quote
+如果 magic + flags + checksum ≡ 0 (mod 2^32)
+
+那么 checksum ≡ -(magic + flags) (mod 2^32)
+  #+end_quote
+  这种设计的好处是检验非常简单：引导加载器只需要把这三个数加起来，看结果是不是 0 就可以了。
+
+我们在定义 =MultibootHeader= 时，通过 =extern= 关键字保证它满足 C ABI 要求，而且通过 =linksection= 来指定当前变量在链接时输出的段为 =.multiboot= ，这在后面会用到。
+
+** 链接器脚本
+在 Freestanding 环境中，没有操作系统来管理内存，因此需要手动指定代码和数据在内存中的位置，这时就需要用到[[http://wiki.osdev.org/Linker_Scripts][链接器脚本]]（linker script）。它可以控制各个段的起始地址、大小和属性，从而满足特定的硬件或软件要求。
+
+{{< include linker.ld asm >}}
+
+让我们一起来解读一下上面的脚本：
+- =. = 1M;= 这行设置当前位置计数器（Location Counter）为 1MB (1 Megabyte)。这意味着后续的段将被放置在 1MB 地址开始的内存区域。这通常是内核或引导加载器代码的常见起始地址。
+- =.text : ALIGN(4K) { ... }=  这定义了一个名为 =.text= 的段，通常用于存储程序的代码（可执行指令）
+  - =ALIGN(4K)= 这表示 .text 段的起始地址必须是 4KB 对齐。 这可以提高缓存性能，因为现代计算机通常以页为单位进行内存管理，而页大小通常是 4KB。
+  - =KEEP(*(.multiboot))= 这行指令告诉链接器保留所有标记为 =.multiboot= 的输入段。这通常用于保留 Multiboot 引导信息结构，确保它不会被优化掉。
+  - =*(.text)= 这行指令将所有输入文件中的 =.text= 段内容链接到输出文件的 =.text= 段中。 =*= 是通配符，表示所有输入文件。
+
+介绍完这两个文件，我们就可以用下面命令编译我们的内核：
+#+begin_src bash
+zig build-exe -target x86-freestanding 02-01.zig -T linker.ld --name mini-kernel
+file mini-kernel
+#+end_src
+
+#+RESULTS:
+: mini-kernel: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), statically linked, with debug_info, not stripped
+
+编译成功后，我们就可以在 qemu 中启动它了：
+
+#+begin_src bash
+qemu-system-x86_64 -kernel mini-kernel
+#+end_src
+
+#+RESULTS:
+
+{{< figure src="/zig-os/images/running-kernel.webp" caption="最小的内核" width=600 >}}
+
+呃... 它真的做了什么吗？ 有！ 是的，它做到了！ 它没有启动失败！ 好吧......但让它至少能像其他指南一样打印出 hello world。
+
+* 在屏幕上打印
+让我们的 "内核 "打印到屏幕上比使用 =std.debug.print= 要难得多，因为我们无法访问标准库。令人惊讶的是，这并不难，因为我们可以直接访问 [[https://en.wikipedia.org/wiki/VGA-compatible_text_mode][VGA 文本缓冲区]]。 它是映射到 VGA 硬件的一个特殊内存区域，包含屏幕上显示的内容。它通常由 25 行组成，每行包含 80 个字符单元。每个字符单元显示一个 ASCII 字符和一些前景色和背景色。
+
+我们将在下一篇文章中讨论 VGA 缓冲区的具体布局，并为其编写第一个小型驱动程序。 要打印 "Hello World!"，我们只需知道缓冲区位于地址 =0xb8000= ，每个字符单元（u16）由一个 ASCII 字节（低八位）和一个颜色字节（高八位）组成。 =_start= 函数修改为：
+
+{{< include "02-02.zig" Zig 23 >}}
+
+这里首先利用 =@ptrFromInt= 来将一个整数直接转成一个指针，使用 =volatile= 来修饰指针是告诉编译器对这个指针的修改是有副作用的，保证这些操作不会被优化掉，主要用于 [[https://en.wikipedia.org/wiki/Memory-mapped_I/O_and_port-mapped_I/O][Memory Mapped Input/Output]]。
+
+按照之前的步骤编译执行，会发现 qemu 中并不会打印出我们期待的 =hello world= 信息，这是为什么呢？
+** 内核中的函数调用
+通过 Godbolt 来[[https://godbolt.org/z/EPbWPc63f][输出汇编代码]]我们就可以发现端倪！问题出在 =i*2= 上，Zig 出于安全性考虑，数字在进行四则运算时会进行溢出检查，在溢出时直接 panic 退出，这就导致生成的汇编中会有一个 =call example.panic= 指令，而在上一节中，我们知道 =Naked= 修饰的函数不会生成[[https://en.wikipedia.org/wiki/Function_prologue_and_epilogue][函数序言]]（prologue），因此这里进行函数调用就会有问题。
+
+知道了问题的原因，解决也就简单了。第一，我们可以通过 ReleaseFast 模式来跳过溢出检查。
+#+begin_src bash
+zig build-exe -target x86-freestanding -O ReleaseFast 02-02.zig -T linker.ld &&
+qemu-system-x86_64 -kernel 02-02
+#+end_src
+
+#+RESULTS:
+
+{{< figure src="/zig-os/images/kernel-releasefast.webp" caption="ReleaseFast 模式下的内核" width=600 >}}
+
+其次，我们可以手动设置函数序言：
+{{< include "02-03.zig" Zig 23 >}}
+
+这里利用了 Zig 支持的[[https://ziglang.org/documentation/master/#Assembly][内敛汇编]]来对栈基指针 ebp 压栈，然后直接跳转到 =&main= 函数的地址处。
+
+#+begin_quote
+说明：在 [[https://ziglang.org/download/0.11.0/release-notes.html#Naked-Functions][0.11 之前的版本]]中，有些教程会用 =@call(.{ }, main, .{});= 来调用 main 函数，但最新版已经不再支持，详见：[[https://github.com/ziglang/zig/pull/13907][Remove `stack` option from `@call`]]
+#+end_quote
+
+#+begin_src bash
+zig build-exe -target x86-freestanding 02-03.zig -T linker.ld &&
+qemu-system-x86_64 -kernel 02-03
+#+end_src
+
+#+RESULTS:
+
+{{< figure src="/zig-os/images/kernel-funcall.webp" caption="设置函数序言后的内核" width=600 >}}
+* 参考
+- [[https://austinhanson.com/bare-metal-ziglang/][Bare Metal Zig]]
+- [[https://wiki.osdev.org/Zig_Bare_Bones][Zig Bare Bones - OSDev Wiki]]
+- [[https://wiki.osdev.org/Multiboot][Multiboot - OSDev Wiki]]
+- [[https://os.phil-opp.com/minimal-rust-kernel/][A Minimal Rust Kernel | Writing an OS in Rust]]
+- [[https://os.phil-opp.com/multiboot-kernel/][A minimal Multiboot Kernel | Writing an OS in Rust (First Edition)]]
+- [[https://mcyoung.xyz/2021/06/01/linker-script/][Everything You Never Wanted To Know About Linker Script · mcyoung]]

@@ -1,0 +1,31 @@
+{{ $source_label := .Get 0 }}
+{{ $source_value := printf "src/%s" $source_label }}
+{{ $language := .Get 1 | default "zig" }}
+{{ $start_line := .Get 2 | default 1 }}
+{{ $end_line := .Get 3 | default 0 }}
+
+{{ with $source_value | readFile }}
+  {{ $lines := split . "\n" }}
+  {{ $total_lines := len $lines }}
+
+  {{ if eq $end_line 0 }}
+    {{ $end_line = $total_lines }}
+  {{ end }}
+
+  {{ if and (ge $start_line 1) (le $end_line $total_lines) }}
+    {{ $selected_lines := slice }}  {{/* 创建空切片 */}}
+
+    {{/* 根据行号范围构建新切片 */}}
+    {{ range $index, $line := $lines }}
+      {{ $current_line := add $index 1 }}
+      {{ if and (ge $current_line $start_line) (le $current_line $end_line) }}
+        {{ $selected_lines = $selected_lines | append $line }}
+      {{ end }}
+    {{ end }}
+
+    {{ $content := delimit $selected_lines "\n" "\n"}}
+    {{ highlight (printf "// File: %s (lines %d-%d)\n%s" $source_label $start_line $end_line $content) $language }}
+  {{ else }}
+    {{ errorf "Line range %d-%d is invalid for file %s with %d lines" $start_line $end_line $source_label $total_lines }}
+  {{ end }}
+{{ end }}

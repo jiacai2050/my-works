@@ -1,0 +1,93 @@
+#+TITLE: VGA 文本模式
+#+DATE: 2025-02-01T21:05:23+0800
+#+LASTMOD: 2025-02-01T23:52:58+0800
+#+TYPE: docs
+#+WEIGHT: 3
+#+PROPERTY: header-args :dir ../src :results verbatim :exports result
+
+[[https://en.wikipedia.org/wiki/VGA-compatible_text_mode][VGA 文本模式]]是一种将文本打印到屏幕上的简单方法。 在本文章中，我们将封装一个对 VGA 操作的模块，使其使用变得安全而简单。
+
+* VGA 文本缓冲区
+要在 VGA 文本模式下将字符打印到屏幕上，必须将其写入 VGA 硬件的文本缓冲区。 VGA 文本缓冲区是一个二维数组，通常有 25 行 80 列，
+可直接渲染到屏幕上。 每个数组元素通过以下格式描述一个屏幕字符：
+| Bit(s) | Value            |
+|--------+------------------|
+|    0-7 | ASCII code point |
+|   8-11 | Foreground color |
+|  12-14 | Background color |
+|     15 | Blink            |
+
+- 第一个字节代表 ASCII 编码中应打印的字符。 更具体地说，它并不完全是 ASCII 编码，而是一个名为[[https://en.wikipedia.org/wiki/Code_page_437][代码页 437 的字符集]]，
+  其中包含一些额外的字符和细微的修改。 为简单起见，我们在本篇文章中将继续称其为 ASCII 字符。
+- 第二个字节定义了字符的显示方式。 前四位定义前景色，后三位定义背景色，最后一位定义字符是否闪烁。 可选颜色如下
+  | Number | Color      | Number + Bright Bit | Bright Color |
+  |--------+------------+---------------------+--------------|
+  |    0x0 | Black      |                 0x8 | Dark Gray    |
+  |    0x1 | Blue       |                 0x9 | Light Blue   |
+  |    0x2 | Green      |                 0xa | Light Green  |
+  |    0x3 | Cyan       |                 0xb | Light Cyan   |
+  |    0x4 | Red        |                 0xc | Light Red    |
+  |    0x5 | Magenta    |                 0xd | Pink         |
+  |    0x6 | Brown      |                 0xe | Yellow       |
+  |    0x7 | Light Gray |                 0xf | White        |
+
+  第 4 位是亮色位，可将蓝色变为浅蓝色。 对于背景色，该位被重新用作闪烁位。
+
+  VGA文本缓冲区通过映射到地址 =0xb8000= 的[[https://en.wikipedia.org/wiki/Memory-mapped_I/O][内存空间]]（Memory-Mapped I/O）访问。这意味着对这个地址进行读取和写入操作不会接触RAM，而是直接访问 VGA 硬件上的文本缓存。
+
+  请注意，内存映射硬件可能不支持所有正常的 RAM 操作。 例如，设备可能只支持字节式读取，并且在读取 u64 时返回垃圾。 幸运的是，VGA 文本缓冲区支持[[https://web.stanford.edu/class/cs140/projects/pintos/specs/freevga/vga/vgamem.htm#manip][正常读写]]，因此我们不必以特殊方式处理它。
+
+* 一个 Zig 模块
+
+{{< include "vga.zig" >}}
+
+在上述代码中，我们首先通过 =@ptrFromInt= 将 VGA 对应的内存地址转为一个 =80*25= 二维数组的指针，之后定义了打印字符的方法 =putChar= ，在遇到行尾时会自动切换到下一行。
+需要重点说的方法是 =clear= ，它会变量整个二维数组进行默认字符的赋值，由于一个个赋值可能比较低效，我们可以这么改进：
+#+begin_src zig
+var ptr: [*]volatile u16 = @ptrCast(vga_array);
+@memset(ptr[0..VGA_SIZE], vgaEntry(' ', color));
+#+end_src
+
+[[https://ziglang.org/documentation/master/#volatile][volatile]] 的作用是保证对 =ptr= 的读写不会被编译器优化掉，比如我们这里只对 ptr 进行赋值，但是从没读取过它，那么编译器就可以优化掉这个赋值。
+** 自定义 Writer
+为了方便调用，我们还定义了针对 VGA 的 Writer，这样我们就可以复用 =fmt.format= 来实现格式化打印。
+
+#+begin_src zig
+pub const writer = std.io.GenericWriter(void, error{}, callback){ .context = {} };
+#+end_src
+
+初看 Write 的定义，可能会觉得有些复杂，但这种模式在 Zig 中其实非常常见，我们先来看 GenericWriter 的函数签名：
+
+#+begin_src zig
+pub fn GenericWriter(
+    comptime Context: type,
+    comptime WriteError: type,
+    comptime writeFn: fn (context: Context, bytes: []const u8) WriteError!usize,
+) type {
+   ...
+}
+#+end_src
+
+它接受三个 comptime 参数，然后返回一个新类型：
+- =Context= 这里为 [[https://ziglang.org/documentation/master/#void][void]] ，表示空类型，大小为 0，这在基于 comptime 的编程中非常有用。比如 Zig 中没有提供 Set 数据类型，
+  但我们可以通过 =std.AutoHashMap(i32, void)= 来表示。
+- =WriteError= 这里为 =error{}= ，没有错误。这两个参数都是类型（type），因此首字母都是大写，普通的参数都是小写。
+- =writeFn= 里调用 =putString= 来进行字符串打印。
+
+下面是对这个文件的使用：
+{{< include "03-01.zig" zig 33 >}}
+
+#+begin_src bash
+zig build-exe -target x86-freestanding -O ReleaseFast 03-01.zig -T linker.ld &&
+qemu-system-x86_64 -kernel 03-01
+#+end_src
+
+#+RESULTS:
+
+{{< figure src="/zig-os/images/vga-print.webp" caption="采用 VGA 模块进行打印" width=600 >}}
+
+#+begin_quote
+注意：这里采用的是 ReleaseFast 模式编译，Debug 级别会有问题！具体原因还未知，如果读者知道原因，欢迎留言指出！
+
+这是 Debug 模型下的 [[https://godbolt.org/z/aonqrPr34][Godbolt]]。
+#+end_quote

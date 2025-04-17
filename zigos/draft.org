@@ -1,0 +1,29 @@
+
+* 可引导的内核
+在本小节我们需要做的最后一件事就是让这个内核可引导！我们可以使用 [[https://man.archlinux.org/man/grub-mkrescue.1.en][grub-mkrescue]] 创建一个 ISO，然后用它来启动 QEMU。
+
+#+begin_quote
+如果在 macOS 上，可以参考[[https://wiki.osdev.org/GRUB_2#Installing_GRUB_2_on_OS_X][这里]]安装 grub，推荐在 Linux 平台进行后面的实验。
+#+end_quote
+#+begin_src bash
+zig build-exe -target x86-freestanding 02-03.zig -T linker.ld
+grub-mkrescue -o kernel.iso iso
+#+end_src
+
+#+RESULTS:
+
+#+begin_quote
+grub-mkrescue: error: xorriso not found.
+
+grub-mkrescue: error: `mformat` invocation failed
+#+end_quote
+如果遇到这两个错误，安装对应软件包即可：
+#+begin_src bash
+# mformat is a part of GNU mtools
+apt install -y xorriso mtools
+#+end_src
+
+之后就可以加载这个 iso 镜像：
+#+begin_src bash
+qemu-system-i386 -cdrom kernel.iso
+#+end_src

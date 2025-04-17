@@ -1,0 +1,9 @@
+.zig-cache/
+zig-out/
+public/
+resources/
+*.sublime-workspace
+*lock
+src/*
+!src/*zig
+!src/*ld
