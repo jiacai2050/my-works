@@ -9,12 +9,12 @@ copyright = """ © 2025
 """
 
 [params]
-github_repo = 'https://github.com/jiacai2050/my-works/tree/main/zigos'
-# github_subdir = 'docs'
+github_repo = 'https://github.com/jiacai2050/my-works'
+github_subdir = 'zigos'
 offlineSearch = true
 
 [module]
-proxy = "https://goproxy.cn,direct"
+# proxy = "https://goproxy.cn,direct"
 [[module.imports]]
 path = "github.com/google/docsy"
 
