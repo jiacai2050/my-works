@@ -7,7 +7,6 @@ import os
 import subprocess
 import sys
 import pyperclip
-import json
 
 from shellgpt.utils.conf import DEFAULT_IMAGE_DIR, IS_TTY, SYSTEM_CONTENT, CONF_PATH
 
@@ -99,13 +98,24 @@ def prepare_prompt(raw):
     return after, imgs
 
 
+def load_contents_from_toml():
+    conf_file = os.path.join(CONF_PATH, 'prompts.toml')
+    if not os.path.exists(conf_file):
+        debug_print(f'Configuration file not found: {conf_file}')
+        return
+
+    # tomllib is available since Python 3.11+
+    import tomllib
+
+    with open(conf_file, 'rb') as f:
+        conf = tomllib.load(f)
+        global SYSTEM_CONTENT
+        SYSTEM_CONTENT.update(conf)
+
+
 def load_contents_from_config(throw_ex=False):
     try:
-        conf_file = os.path.join(CONF_PATH, 'contents.json')
-        with open(conf_file) as r:
-            contents = json.loads(r.read())
-            global SYSTEM_CONTENT
-            SYSTEM_CONTENT.update(contents)
+        load_contents_from_toml()
     except Exception as e:
         debug_print(f'Error when load contents: ${e}')
         if throw_ex:

@@ -26,7 +26,7 @@ from .utils.common import (
 )
 from .history import History
 
-__version__ = '0.5.5-dev'
+__version__ = '0.5.5'
 
 
 def init_app():

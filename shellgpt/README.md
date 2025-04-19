@@ -12,12 +12,6 @@ Chat with LLM in your terminal, be it shell generator, story teller, linux-termi
 pip install -U shgpt
 ```
 
-Or install latest version
-
-```bash
-pip install --force-reinstall -U git+https://github.com/jiacai2050/shellgpt.git
-```
-
 This will install two commands: `sg` and `shellgpt`, which are identical.
 
 After install, use `sg --init` to create required directories(mainly `~/.shellgpt`).
@@ -47,7 +41,7 @@ export SHELLGPT_API_KEY=<token>
 export SHELLGPT_MODEL='@cf/meta/llama-3-8b-instruct'
 ```
 
-See [conf.py](https://github.com/jiacai2050/shellgpt/blob/main/shellgpt/utils/conf.py) for more configs.
+See [conf.py](shellgpt/utils/conf.py) for more configs.
 
 ## TUI
 
@@ -70,12 +64,11 @@ There are some built-in [system contents](https://platform.openai.com/docs/guide
 - `shell`, used for infer shell command
 - `commit`, used for generate git commit message, like `git diff | sg -s commit`
 
-Users can define their own content in `~/.shellgpt/contents.json`, it a JSON map with
-
+Users can define their own content in `~/.shellgpt/prompts.toml`
 - key being content name and
 - value being content body
 
-Or you can just copy [contents.json](https://github.com/jiacai2050/shellgpt/blob/main/contents.json) to play with, it's generated from [Awesome ChatGPT Prompts](https://github.com/f/awesome-chatgpt-prompts/blob/main/prompts.csv).
+Or you can just copy [prompts.toml](https://github.com/jiacai2050/my-works/blob/main/shellgpt/prompts.toml) to play with, it's generated from [Awesome ChatGPT Prompts](https://github.com/f/awesome-chatgpt-prompts/blob/main/prompts.csv).
 
 ```bash
 $ sg -s linux-terminal pwd
@@ -86,7 +79,7 @@ $ sg -s javascript-console 0.1 + 0.2
 
 ```
 
-Users can share their customized contents in [discussions](https://github.com/jiacai2050/shellgpt/discussions).
+Users can share their customized contents in [discussions](https://github.com/jiacai2050/my-works/discussions/3).
 
 # License
 
