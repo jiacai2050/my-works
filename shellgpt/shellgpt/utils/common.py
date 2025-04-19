@@ -99,10 +99,14 @@ def prepare_prompt(raw):
 
 
 def load_contents_from_toml():
+    conf_file = os.path.join(CONF_PATH, 'prompts.toml')
+    if not os.path.exists(conf_file):
+        debug_print(f'Configuration file not found: {conf_file}')
+        return
+
     # tomllib is available since Python 3.11+
     import tomllib
 
-    conf_file = os.path.join(CONF_PATH, 'prompts.toml')
     with open(conf_file, 'rb') as f:
         conf = tomllib.load(f)
         global SYSTEM_CONTENT
