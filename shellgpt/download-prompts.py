@@ -3,7 +3,6 @@
 
 # pip install tomli-w
 
-import json
 import csv
 import subprocess
 import tomli_w

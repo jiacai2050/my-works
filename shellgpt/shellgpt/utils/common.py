@@ -7,7 +7,6 @@ import os
 import subprocess
 import sys
 import pyperclip
-import json
 
 from shellgpt.utils.conf import DEFAULT_IMAGE_DIR, IS_TTY, SYSTEM_CONTENT, CONF_PATH
 
@@ -102,11 +101,13 @@ def prepare_prompt(raw):
 def load_contents_from_toml():
     # tomllib is available since Python 3.11+
     import tomllib
+
     conf_file = os.path.join(CONF_PATH, 'prompts.toml')
     with open(conf_file, 'rb') as f:
         conf = tomllib.load(f)
         global SYSTEM_CONTENT
         SYSTEM_CONTENT.update(conf)
+
 
 def load_contents_from_config(throw_ex=False):
     try:
