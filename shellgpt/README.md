@@ -62,7 +62,7 @@ There are some built-in [system contents](https://platform.openai.com/docs/guide
 - `slug`, used for generate URL slug.
 - `code`, used for ask programming questions
 - `shell`, used for infer shell command
-- `commit`, used for generate git commit message, like `git diff | sg -s commit`
+- `commit`, used for generate git commit message, like `git diff --staged | sg -s commit`
 
 Users can define their own content in `~/.shellgpt/prompts.toml`
 - key being content name and
