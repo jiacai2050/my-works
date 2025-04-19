@@ -1,0 +1,32 @@
+name: shellgpt ci
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'shellgpt/**'
+  push:
+    branches:
+      - main
+    paths:
+      - 'shellgpt/**'
+
+defaults:
+  run:
+    working-directory: shellgpt
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install
+      run: |
+        pip install hatch
+        pip install ruff
+    - name: lint
+      run: |
+        make lint
+    - name: unit test
+      run:
+        make ut
