@@ -1,7 +1,11 @@
 'use strict';
 
+const titleCache = {};
+const MAX_LENGTH = 350;
+
 const linkSelector = 'a[href]:not([href=""]):not([href^="#"])';
 const links = document.querySelectorAll(linkSelector);
+// console.log(`Total links:${links.length}`);
 
 links.forEach((link) => {
   link.addEventListener('mouseover', handleLinkHover);
@@ -36,22 +40,24 @@ async function handleLinkHover(event) {
   await handleLink(link);
 }
 
+const innerStatusTag = 'preview_status';
 async function handleLink(link) {
   if (link.href === '' || link.href.startsWith('#')) {
     return;
   }
 
-  const pos = await getPosition();
+  const role = link.getAttribute(innerStatusTag);
+  if (role === 'ok') {
+    return;
+  }
+
   link.setAttribute('role', 'tooltip');
-  link.setAttribute('data-microtip-position', pos);
+  link.setAttribute('data-microtip-position', 'top-right');
   link.setAttribute('data-microtip-size', 'large');
   try {
-    let value = await fetchLinkInfo(link);
-    let maxLength = await getMaxLength();
-    if (value.length > maxLength) {
-      value = value.substring(0, maxLength) + '...';
-    }
+    const value = await fetchLinkInfo(link);
     link.setAttribute('aria-label', value);
+    link.setAttribute(innerStatusTag, 'ok');
   } catch (e) {
     link.setAttribute('aria-label', e.toString());
     console.error(`Fetch link info failed, url:${link.href}, err:${e}`);
@@ -60,25 +66,35 @@ async function handleLink(link) {
 
 async function fetchLinkInfo(link) {
   const url = link.href;
+  if (titleCache[url]) {
+    return titleCache[url];
+  }
+
   if (!url.startsWith('http')) {
     return url;
   }
 
-  const cachedValue = await cache.get(url);
-  if (cachedValue) {
-    return cachedValue;
+  console.log(link.hostname);
+  const customEncodings = await getDomainEncoding();
+  let encoding;
+  for (const [domain, expected] of customEncodings) {
+    if (domain === link.hostname) {
+      encoding = expected;
+      break;
+    }
   }
 
   const { success, string, isHtml, error } = await chrome.runtime.sendMessage({
     action: 'fetchPage',
     url: url,
+    encoding: encoding,
   });
   if (!success) {
     throw new Error(error);
   }
 
   if (!isHtml) {
-    await cache.set(url, string);
+    titleCache[url] = string;
     return string;
   }
 
@@ -94,8 +110,11 @@ async function fetchLinkInfo(link) {
       value += '\n️\n' + description;
     }
   }
+  if (value.length > MAX_LENGTH) {
+    value = value.substring(0, MAX_LENGTH) + '...';
+  }
 
-  await cache.set(url, value);
+  titleCache[url] = value;
   return value;
 }
 

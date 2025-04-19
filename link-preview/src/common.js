@@ -16,10 +16,17 @@ class DB {
 
   async set(key, value) {
     try {
+      // [key] is Computed Property Names in ES6, we can store dynamic key with it!
+      // https://stackoverflow.com/a/40287132/2163429
       return await this.storage.set({ [key]: value });
     } catch (e) {
       console.error(`DB set failed, key:${key}, value:${value}`);
     }
+  }
+
+  // A single key or a list of keys for items to remove
+  async remove(keys) {
+    return await this.storage.remove(keys);
   }
 
   // Mainly for testing
@@ -66,6 +73,14 @@ async function getMaxLength() {
 
 async function setMaxLength(len) {
   await settingStorage.set('max-length', len);
+}
+
+async function getDomainEncoding() {
+  return (await settingStorage.get('domain-encoding-arr')) || '';
+}
+
+async function setDomainEncoding(v) {
+  await settingStorage.set('domain-encoding-arr', v);
 }
 
 function humanSize(size) {

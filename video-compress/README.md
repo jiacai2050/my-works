@@ -4,7 +4,7 @@
 [![](https://github.com/jiacai2050/video-compress/actions/workflows/ci.yml/badge.svg)](https://github.com/jiacai2050/video-compress/actions/workflows/ci.yml)
 
 Compress video by 90% without losing much quality, similar to what [Pied
-Piper](https://en.wikipedia.org/wiki/Silicon_Valley_(TV_series))
+Piper](<https://en.wikipedia.org/wiki/Silicon_Valley_(TV_series)>)
 achieves.
 
 ![](pied-piper.jpg)
@@ -15,7 +15,7 @@ achieves.
 
 First install the [ffmpeg](https://www.ffmpeg.org/download.html), then
 
-``` bash
+```bash
 pip install video-compress
 ```
 
@@ -24,7 +24,7 @@ This will install two commands: `vc`{.verbatim},
 
 # Usage
 
-``` example
+```example
 usage: vc [-h] [-v] [--verbose] [-t THREADS] [--crf CRF] [--delete]
           [<video path> ...]
 

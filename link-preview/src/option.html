@@ -26,7 +26,7 @@
     </header>
 
     <main>
-      <label for="position">Tooltip position:</label>
+      <h4>Tooltip position</h4>
       <select id="position" name="position">
         <option value="top">top</option>
         <option value="bottom">bottom</option>
@@ -38,7 +38,7 @@
         <option value="bottom-left">bottom-left</option>
       </select>
 
-      <label for="max-length">Tooltip max length:</label>
+      <h4>Tooltip max length</h4>
       <input
         id="max-length"
         name="max-length"
@@ -48,8 +48,20 @@
         step="10"
       />
 
+      <h4>Domain Encoding</h4>
+      One domain per-line, format <code>domain,encoding</code>. Default encoding
+      is UTF-8.
+      <textarea
+        rows="5"
+        disabled="true"
+        name="domain-encoding"
+        id="domain-encoding"
+      ></textarea>
+      <button id="btn-encoding"></button>
+
+      <h4>Link metadata cache</h4>
       <p class="notice">
-        <strong>Link metadata cache size</strong><br />
+        <strong>Size: </strong>
         <span id="cache-size"></span>
       </p>
       <button id="clear-cache">Clear Cache</button>

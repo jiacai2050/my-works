@@ -24,7 +24,7 @@ chrome.action.onClicked.addListener(function () {
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'fetchPage' && request.url) {
-    fetchPage(request.url)
+    fetchPage(request.url, request.encoding)
       .then((ret) => {
         sendResponse({ success: true, ...ret });
       })
@@ -35,7 +35,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 });
 
-async function fetchPage(url) {
+async function fetchPage(url, encoding) {
   const typeOnly = await maybeFetchType(url);
   if (typeOnly) {
     return { string: typeOnly };
@@ -47,7 +47,14 @@ async function fetchPage(url) {
     throw new Error(`${response.status}\n${response.url}`);
   }
 
-  const string = await response.text();
+  let string;
+  if (encoding) {
+    const buffer = await response.arrayBuffer();
+    const decoder = new TextDecoder(encoding);
+    string = decoder.decode(buffer);
+  } else {
+    string = await response.text();
+  }
   const mimeType = response.headers.get('content-type');
   if (!mimeType || mimeType.includes('html')) {
     return { string: string, isHtml: true };
