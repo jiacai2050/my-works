@@ -99,13 +99,18 @@ def prepare_prompt(raw):
     return after, imgs
 
 
+def load_contents_from_toml():
+    # tomllib is available since Python 3.11+
+    import tomllib
+    conf_file = os.path.join(CONF_PATH, 'prompts.toml')
+    with open(conf_file, 'rb') as f:
+        conf = tomllib.load(f)
+        global SYSTEM_CONTENT
+        SYSTEM_CONTENT.update(conf)
+
 def load_contents_from_config(throw_ex=False):
     try:
-        conf_file = os.path.join(CONF_PATH, 'contents.json')
-        with open(conf_file) as r:
-            contents = json.loads(r.read())
-            global SYSTEM_CONTENT
-            SYSTEM_CONTENT.update(contents)
+        load_contents_from_toml()
     except Exception as e:
         debug_print(f'Error when load contents: ${e}')
         if throw_ex:
