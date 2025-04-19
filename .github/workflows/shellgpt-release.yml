@@ -15,15 +15,15 @@ jobs:
     name: Upload release to PyPI
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.x'
-    - name: Install pypa
-      run: >-
-        pip install hatch
-    - name: Pulish
-      run: |
-        hatch build
-        hatch publish -u '__token__' -a '${{ secrets.HATCH_INDEX_AUTH }}'
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      - name: Install pypa
+        run: >-
+          pip install hatch
+      - name: Pulish
+        run: |
+          hatch build
+          hatch publish -u '__token__' -a '${{ secrets.HATCH_INDEX_AUTH }}'

@@ -46,13 +46,8 @@ async function handleLink(link) {
     return;
   }
 
-  const role = link.getAttribute(innerStatusTag);
-  if (role === 'ok') {
-    return;
-  }
-
   link.setAttribute('role', 'tooltip');
-  link.setAttribute('data-microtip-position', 'top-right');
+  link.setAttribute('data-microtip-position', await getPosition());
   link.setAttribute('data-microtip-size', 'large');
   try {
     const value = await fetchLinkInfo(link);
@@ -74,7 +69,6 @@ async function fetchLinkInfo(link) {
     return url;
   }
 
-  console.log(link.hostname);
   const customEncodings = await getDomainEncoding();
   let encoding;
   for (const [domain, expected] of customEncodings) {
@@ -84,6 +78,7 @@ async function fetchLinkInfo(link) {
     }
   }
 
+  console.log(link.hostname, encoding);
   const { success, string, isHtml, error } = await chrome.runtime.sendMessage({
     action: 'fetchPage',
     url: url,
@@ -107,7 +102,7 @@ async function fetchLinkInfo(link) {
     if (value === 'NA') {
       value = description;
     } else {
-      value += '\n️\n' + description;
+      value += `\n️\n${description}`;
     }
   }
   if (value.length > MAX_LENGTH) {

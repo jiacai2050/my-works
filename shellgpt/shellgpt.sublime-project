@@ -1,22 +1,17 @@
 {
-	"folders":
-	[
-		{
-			"path": ".",
-		}
-	],
-	"settings":
-	{
-		"LSP":
-		{
-			"LSP-pyright":
-			{
-				"enabled": true,
-			},
-			"LSP-copilot":
-			{
-				"enabled": true
-			},
-		},
-	},
+  "folders": [
+    {
+      "path": ".",
+    },
+  ],
+  "settings": {
+    "LSP": {
+      "LSP-pyright": {
+        "enabled": true,
+      },
+      "LSP-copilot": {
+        "enabled": true,
+      },
+    },
+  },
 }

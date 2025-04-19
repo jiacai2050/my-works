@@ -94,10 +94,12 @@ async function maybeFetchType(url) {
   const response = await fetch(url, {
     method: 'OPTIONS',
   });
+  if (!response.ok) {
+    return null;
+  }
+
   const contentType = response.headers.get('content-type');
   if (contentType && !contentType.includes('html')) {
     return `${contentType}\n${response.url}`;
   }
-
-  return null;
 }

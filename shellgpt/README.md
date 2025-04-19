@@ -7,11 +7,13 @@
 Chat with LLM in your terminal, be it shell generator, story teller, linux-terminal, etc.
 
 # Install
+
 ```bash
 pip install -U shgpt
 ```
 
 Or install latest version
+
 ```bash
 pip install --force-reinstall -U git+https://github.com/jiacai2050/shellgpt.git
 ```
@@ -23,6 +25,7 @@ After install, use `sg --init` to create required directories(mainly `~/.shellgp
 # Usage
 
 ShellGPT has three modes to use:
+
 - Direct mode, `sg [question]` or pipeline like `echo question | sg`.
 - REPL mode, `sg -r`, chat with LLM.
 - TUI mode, `sg -t`, tailored for infer shell command.
@@ -49,6 +52,7 @@ See [conf.py](https://github.com/jiacai2050/shellgpt/blob/main/shellgpt/utils/co
 ## TUI
 
 There are 3 key bindings to use in TUI:
+
 - `ctrl+j`, Infer answer
 - `ctrl+r`, Run command
 - `ctrl+y`, Yank command
@@ -58,6 +62,7 @@ There are 3 key bindings to use in TUI:
 ## System contents
 
 There are some built-in [system contents](https://platform.openai.com/docs/guides/text-generation/chat-completions-api) in shellgpt:
+
 - `default`, used for ask general questions
 - `typo`, used for correct article typos.
 - `slug`, used for generate URL slug.
@@ -66,6 +71,7 @@ There are some built-in [system contents](https://platform.openai.com/docs/guide
 - `commit`, used for generate git commit message, like `git diff | sg -s commit`
 
 Users can define their own content in `~/.shellgpt/contents.json`, it a JSON map with
+
 - key being content name and
 - value being content body
 

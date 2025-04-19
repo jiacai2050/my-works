@@ -4,3 +4,6 @@ target
 public
 zigos/resources
 zigos/layouts/shortcodes/include.html
+env
+venv
+shellgpt/contents.json
