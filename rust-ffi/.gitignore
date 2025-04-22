@@ -1,0 +1,4 @@
+debug/
+target/
+*.dylib
+c-call-rust-by-cbindgen/bindings.h

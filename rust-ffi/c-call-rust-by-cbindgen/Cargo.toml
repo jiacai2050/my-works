@@ -1,0 +1,10 @@
+[package]
+name = "c-call-rust-by-cbindgen"
+version = "0.1.0"
+edition = "2021"
+
+[build-dependencies]
+cbindgen.workspace = true
+
+[lib]
+crate-type = ["cdylib"]

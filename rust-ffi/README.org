@@ -1,0 +1,20 @@
+#+TITLE: Rust FFI demos
+#+DATE: 2023-08-29T09:20:41+0800
+#+LASTMOD: 2023-08-29T16:19:12+0800
+#+AUTHOR: Jiacai Liu
+#+EMAIL: blog@liujiacai.net
+#+OPTIONS: toc:nil num:nil
+#+STARTUP: content
+
+This repo demonstrate how to interop C with Rust.
+
+* References
+- [[https://doc.rust-lang.org/nomicon/ffi.html][The book: FFI]]
+- [[https://rust-lang.github.io/unsafe-code-guidelines/layout/pointers.html][Layout of reference and pointer types]]
+- [[https://doc.rust-lang.org/cargo/reference/build-scripts.html][Build Scripts]]
+- [[https://github.com/rust-lang/cc-rs][rust-lang/cc-rs: Rust library for build scripts to compile C/C++ code into a Rust library]]
+- [[https://github.com/rust-lang/rust-bindgen][rust-lang/rust-bindgen: Automatically generates Rust FFI bindings to C (and some C++) libraries.]]
+- [[https://github.com/mozilla/cbindgen][mozilla/cbindgen: A project for generating C bindings from Rust code]]
+
+* UB in Rust
+- [[https://doc.rust-lang.org/nightly/reference/behavior-considered-undefined.html][Behavior considered undefined]]
