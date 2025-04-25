@@ -1,6 +1,6 @@
 #+TITLE: MyWorks
 #+DATE: 2025-04-16T10:11:50+0800
-#+LASTMOD: 2025-04-22T21:11:51+0800
+#+LASTMOD: 2025-04-25T08:33:50+0800
 #+AUTHOR: Jiacai Liu
 
 This monorepo contains all public software projects I've developed and released to the community.
@@ -11,7 +11,7 @@ Each project is maintained within a structured architecture that enables efficie
 - [[file:zms/][zms]] :: A pure Zig solution to set up a mirror server for fetching Zig tarballs on demand and caching them on the local disk.
 - [[file:zigos/][zigos]] :: Zig 写 OS 的中文教程
 * Rust
-- [[file:rust-ffi/][rust-ffi]] :: Demonstrate how to interop C with Rust.
+- [[file:rust-ffi/][rust-ffi]] :: Demo project show how to interop C with Rust.
 * JS
 - [[file:link-preview/][Link preview]] :: Browser extension to preview link metadata (title and description) on hover, saving you time to open many tabs just to preview the link!
 - [[file:text-saver/][Text saver]] :: Browser extension to save texts anytime, anywhere.
