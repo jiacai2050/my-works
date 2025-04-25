@@ -1,8 +1,5 @@
 'use strict';
 
-const titleCache = {};
-const MAX_LENGTH = 350;
-
 const linkSelector = 'a[href]:not([href=""]):not([href^="#"])';
 const links = document.querySelectorAll(linkSelector);
 // console.log(`Total links:${links.length}`);
@@ -40,7 +37,6 @@ async function handleLinkHover(event) {
   await handleLink(link);
 }
 
-const innerStatusTag = 'preview_status';
 async function handleLink(link) {
   if (link.href === '' || link.href.startsWith('#')) {
     return;
@@ -51,8 +47,10 @@ async function handleLink(link) {
   link.setAttribute('data-microtip-size', 'large');
   try {
     const value = await fetchLinkInfo(link);
-    link.setAttribute('aria-label', value);
-    link.setAttribute(innerStatusTag, 'ok');
+    const maxLength = await getMaxLength();
+    const label =
+      value.length > maxLength ? value.substring(0, maxLength) : value;
+    link.setAttribute('aria-label', label);
   } catch (e) {
     link.setAttribute('aria-label', e.toString());
     console.error(`Fetch link info failed, url:${link.href}, err:${e}`);
@@ -61,12 +59,13 @@ async function handleLink(link) {
 
 async function fetchLinkInfo(link) {
   const url = link.href;
-  if (titleCache[url]) {
-    return titleCache[url];
-  }
-
   if (!url.startsWith('http')) {
     return url;
+  }
+
+  let cached = await metaCache.get(url);
+  if (cached) {
+    return cached;
   }
 
   const customEncodings = await getDomainEncoding();
@@ -89,7 +88,7 @@ async function fetchLinkInfo(link) {
   }
 
   if (!isHtml) {
-    titleCache[url] = string;
+    await metaCache.set(url, string);
     return string;
   }
 
@@ -105,11 +104,8 @@ async function fetchLinkInfo(link) {
       value += `\n️\n${description}`;
     }
   }
-  if (value.length > MAX_LENGTH) {
-    value = value.substring(0, MAX_LENGTH) + '...';
-  }
 
-  titleCache[url] = value;
+  await metaCache.set(url, value);
   return value;
 }
 

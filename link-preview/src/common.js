@@ -51,12 +51,9 @@ class DB {
   }
 }
 
-let cache;
-if (isFirefox) {
-  cache = new DB(chrome.storage.local);
-} else {
-  cache = new DB(chrome.storage.session);
-}
+const metaCache = isFirefox
+  ? new DB(chrome.storage.local)
+  : new DB(chrome.storage.session);
 const settingStorage = new DB(chrome.storage.sync);
 
 async function getPosition() {
@@ -76,7 +73,7 @@ async function setMaxLength(len) {
 }
 
 async function getDomainEncoding() {
-  return (await settingStorage.get('domain-encoding-arr')) || '';
+  return (await settingStorage.get('domain-encoding-arr')) || [];
 }
 
 async function setDomainEncoding(v) {

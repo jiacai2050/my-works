@@ -25,7 +25,7 @@ async function onload() {
 
   const domainEncoding = document.getElementById('domain-encoding');
   const defaultDomainEncoding = await getDomainEncoding();
-  domainEncoding.value = defaultDomainEncoding;
+  domainEncoding.value = stringifyDomainEncoding(defaultDomainEncoding);
   const btnEncoding = document.getElementById('btn-encoding');
   btnEncoding.textContent = domainEncoding.hasAttribute('disabled')
     ? 'Edit'
@@ -42,7 +42,7 @@ async function onload() {
         await setDomainEncoding(encodings);
         domainEncoding.setAttribute('disabled', true);
         btnEncoding.textContent = 'Edit';
-        alert(`Succeed, ${encodings.length} custom encodings saved!`);
+        alert(`Succeed, ${encodings.length} rules saved!`);
       } catch (e) {
         alert(`${e}`);
       }
@@ -50,7 +50,7 @@ async function onload() {
   };
 
   const cacheSize = document.getElementById('cache-size');
-  cacheSize.textContent = humanSize(await cache.getBytesInUse());
+  cacheSize.textContent = humanSize(await metaCache.getBytesInUse());
 
   document.getElementById('clear-cache').onclick = async function () {
     if (confirm('Are you sure?')) {
@@ -90,4 +90,11 @@ function parseDomainEncoding(encodings) {
   }
 
   return result;
+}
+
+// return [ [domain, encoding], ...]
+function stringifyDomainEncoding(encodings) {
+  return encodings
+    .map(([domain, encoding]) => `${domain},${encoding}`)
+    .join('\n');
 }

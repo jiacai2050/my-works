@@ -65,6 +65,7 @@ There are some built-in [system contents](https://platform.openai.com/docs/guide
 - `commit`, used for generate git commit message, like `git diff --staged | sg -s commit`
 
 Users can define their own content in `~/.shellgpt/prompts.toml`
+
 - key being content name and
 - value being content body
 
