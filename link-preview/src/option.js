@@ -54,7 +54,7 @@ async function onload() {
 
   document.getElementById('clear-cache').onclick = async function () {
     if (confirm('Are you sure?')) {
-      await cache.clear();
+      await metaCache.clear();
       window.location.reload();
     }
   };
