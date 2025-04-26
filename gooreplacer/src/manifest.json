@@ -1,0 +1,29 @@
+{
+  "name": "Gooreplacer",
+  "description": "Modify, block URLs & Headers",
+  "homepage_url": "https://github.com/jiacai2050/my-works/tree/main/gooreplacer",
+  "version": "4.0.0",
+  "manifest_version": 3,
+  "action": {
+    "default_icon": "img/32.png"
+  },
+  "icons": {
+    "32": "img/32.png",
+    "16": "img/16.png",
+    "48": "img/48.png"
+  },
+  "permissions": [
+    "declarativeNetRequest",
+    "declarativeNetRequestWithHostAccess",
+    "declarativeNetRequestFeedback",
+    "storage"
+  ],
+  "options_ui": {
+    "page": "option.html",
+    "open_in_tab": true
+  },
+  "host_permissions": ["http://*/", "https://*/"],
+  "background": {
+    "service_worker": "background.js"
+  }
+}

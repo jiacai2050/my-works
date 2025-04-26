@@ -1,0 +1,74 @@
+#+TITLE: Gooreplacer
+#+DATE: 2025-04-26T10:34:27+0800
+#+LASTMOD: 2025-04-26T18:23:59+0800
+#+AUTHOR: Jiacai Liu
+
+#+begin_quote
+Modify, block URLs & Headers
+#+end_quote
+
+对于只想重定向谷歌资源的同学，可以直接使用下面的规则，目前会重定向到 [[https://u.sb/css-cdn/][loli.net]] 的代理。
+
+#+begin_example
+ajax.googleapis.com,wlidcard,redirect
+transform:host=ajax.loli.net
+
+fonts.googleapis.com,wlidcard,redirect
+transform:host=fonts.loli.net
+
+fonts.gstatic.com,wlidcard,redirect
+transform:host=gstatic.loli.net
+
+secure.gravatar.com,wlidcard,redirect
+transform:host=gravatar.loli.net
+#+end_example
+
+* Install
+- [[https://chrome.google.com/webstore/detail/gooreplacer/jnlkjeecojckkigmchmfoigphmgkgbip][Chrome]]
+- [[https://addons.mozilla.org/firefox/addon/gooreplacer][Firefox]]
+* Rules
+#+begin_example
+[filter][filter_type][action]
+[action_options]
+#+end_example
+- =[filter]=
+- =[filter_type]=, =wildcard= or =regex=
+- =action=, =block= or =redirect= or =modifyHeaders=
+- =action_options=
+  - For =redirect=, it's redirected url, it can be
+    - =url:url= Static redirected url
+    - =regexSubstitution:url= Dynamic redirected URL, use =\1= =\2= to
+    - ~transform:k1=v1;k2=v2~ Transform part of a URL, see [[https://developer.chrome.com/docs/extensions/reference/api/declarativeNetRequest#type-URLTransform][URLTransform]] for valid values. Frequently used properties are: =host=, =path=, =query=, =scheme=.
+  - For =modifyHeaders=, it's headers to modify, =[type][operation][headers]=.
+    - =type= is =requestHeaders= or =responseHeaders=.
+    - =operation= is =set= =append= or =remove=
+    - =header= Format like ~k1=v1;k2=v2~
+* Filter Type
+** Wildcard
+The pattern which is matched against the network request url. Supported constructs:
+- =*= :: Wildcard: Matches any number of characters.
+- =|= :: Left/right anchor: If used at either end of the pattern, specifies the beginning/end of the url respectively.
+- =||= :: Domain name anchor: If used at the beginning of the pattern, specifies the start of a (sub-)domain of the URL.
+- =^= : Separator character: This matches anything except a letter, a digit, or one of the following: =_=, =-=, =.=, or =%=. This also match the end of the URL.
+
+Therefore =urlFilter= is composed of the following parts: (optional Left/Domain name anchor) + pattern + (optional Right anchor).
+
+If omitted, all urls are matched. An empty string is not allowed.
+
+#+begin_quote
+Note: The =urlFilter= must be composed of only ASCII characters. This is matched against a url where the host is encoded in the punycode format (in case of internationalized domains) and any other non-ascii characters are url encoded in utf-8. For example, when the request url is =http://abc.рф?q=ф=, the urlFilter will be matched against the url =http://abc.xn--p1ai/?q=%D1%84=.
+#+end_quote
+** Regex
+Regular expression to match against the network request url. This follows the [[https://github.com/google/re2/wiki/Syntax][RE2 syntax]].
+
+The first match of =regexFilter= within the url will be replaced with this pattern. Within =regexSubstitution=, backslash-escaped digits (=\1= to =\9=) can be used to insert the corresponding capture groups. =\0= refers to the entire matching text.
+
+#+begin_example
+^https://www\\.(abc|def)\\.xyz\\.com/,regex,redirect
+regexSubstitution:https://\\1.xyz.com/
+#+end_example
+This rule will redirect from =https://www.abc.xyz.com/path= to =https://abc.xyz.com/path=.
+
+#+begin_quote
+Note: The =regexFilter= must be composed of only ASCII characters. This is matched against a url where the host is encoded in the punycode format (in case of internationalized domains) and any other non-ascii characters are url encoded in utf-8.
+#+end_quote
