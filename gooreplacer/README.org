@@ -1,13 +1,13 @@
 #+TITLE: Gooreplacer
 #+DATE: 2025-04-26T10:34:27+0800
-#+LASTMOD: 2025-04-26T18:23:59+0800
+#+LASTMOD: 2025-04-27T09:35:54+0800
 #+AUTHOR: Jiacai Liu
 
 #+begin_quote
 Modify, block URLs & Headers
 #+end_quote
 
-对于只想重定向谷歌资源的同学，可以直接使用下面的规则，目前会重定向到 [[https://u.sb/css-cdn/][loli.net]] 的代理。
+对于只想重定向谷歌资源的用户，可以直接使用下面的规则，目前会重定向到 [[https://u.sb/css-cdn/][loli.net]] 的代理。
 
 #+begin_example
 ajax.googleapis.com,wlidcard,redirect
@@ -31,33 +31,44 @@ transform:host=gravatar.loli.net
 [filter][filter_type][action]
 [action_options]
 #+end_example
-- =[filter]=
-- =[filter_type]=, =wildcard= or =regex=
-- =action=, =block= or =redirect= or =modifyHeaders=
-- =action_options=
+- =[filter]= acting on URLs under a specified domain.
+- =[filter_type]=, available values: =wildcard= or =regex=
+- =[action]=, available values: =block= or =redirect= or =modifyHeaders=
+- =[action_options]=
   - For =redirect=, it's redirected url, it can be
     - =url:url= Static redirected url
-    - =regexSubstitution:url= Dynamic redirected URL, use =\1= =\2= to
+    - =regexSubstitution:url= Dynamic redirected URL, see regex filter docs below for example.
     - ~transform:k1=v1;k2=v2~ Transform part of a URL, see [[https://developer.chrome.com/docs/extensions/reference/api/declarativeNetRequest#type-URLTransform][URLTransform]] for valid values. Frequently used properties are: =host=, =path=, =query=, =scheme=.
-  - For =modifyHeaders=, it's headers to modify, =[type][operation][headers]=.
-    - =type= is =requestHeaders= or =responseHeaders=.
-    - =operation= is =set= =append= or =remove=
-    - =header= Format like ~k1=v1;k2=v2~
+  - For =modifyHeaders=, it's headers to modify, format =[type][operation][headers]=.
+    - =type= can be =requestHeaders= or =responseHeaders=.
+    - =operation= can be =set= =append= or =remove=
+    - =header= has format like ~k1=v1;k2=v2~
 * Filter Type
 ** Wildcard
 The pattern which is matched against the network request url. Supported constructs:
 - =*= :: Wildcard: Matches any number of characters.
 - =|= :: Left/right anchor: If used at either end of the pattern, specifies the beginning/end of the url respectively.
 - =||= :: Domain name anchor: If used at the beginning of the pattern, specifies the start of a (sub-)domain of the URL.
-- =^= : Separator character: This matches anything except a letter, a digit, or one of the following: =_=, =-=, =.=, or =%=. This also match the end of the URL.
+- =^= :: Separator character: This matches anything except a letter, a digit, or one of the following: =_=, =-=, =.=, or =%=. This also match the end of the URL.
 
 Therefore =urlFilter= is composed of the following parts: (optional Left/Domain name anchor) + pattern + (optional Right anchor).
 
 If omitted, all urls are matched. An empty string is not allowed.
 
+| urlFilter         | Matches                                                                            | Does  not match                          |
+|-------------------+------------------------------------------------------------------------------------+------------------------------------------|
+| =abc=             | =https://abcd.com=, =https://example.com/abcd=                                     | =https://ab.com=                         |
+| =abc*d=           | =https://abcd.com=, =https://example.com/abcxyzd=                                  | =https://abc.com=                        |
+| =\vert{}\vert{}a.example.com= | =https://a.example.com/= =https://b.a.example.com/xyz= =https://a.example.company= | =https://example.com/=                   |
+| =\vert{}https*=         | =https://example.com=                                                              | =http://example.com/= =http://https.com= |
+| =example*^123\vert{}=   | =https://example.com/123= =http://abc.com/example?123=                             | =https://example.com/1234=               |
+
 #+begin_quote
 Note: The =urlFilter= must be composed of only ASCII characters. This is matched against a url where the host is encoded in the punycode format (in case of internationalized domains) and any other non-ascii characters are url encoded in utf-8. For example, when the request url is =http://abc.рф?q=ф=, the urlFilter will be matched against the url =http://abc.xn--p1ai/?q=%D1%84=.
+
+=\vert{}= above represents =|= , which is required in [[https://orgmode.org/worg/org-symbols.html][org mode]].
 #+end_quote
+See [[https://developer.chrome.com/docs/extensions/reference/api/declarativeNetRequest#url_filter_syntax][URL filter syntax]] for more details.
 ** Regex
 Regular expression to match against the network request url. This follows the [[https://github.com/google/re2/wiki/Syntax][RE2 syntax]].
 

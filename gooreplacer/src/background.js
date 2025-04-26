@@ -2,15 +2,6 @@
 
 const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 
-// https://developer.chrome.com/docs/extensions/reference/api/declarativeNetRequest#type-RuleActionType
-const ACTIONS = [
-  'block',
-  'redirect',
-  'allow',
-  'upgradeScheme',
-  'modifyHeaders',
-  'allowAllRequests',
-];
 const REDIRECT_OPS = ['url', 'transform', 'regexSubstitution'];
 const MODIFY_HEADER_TYPES = ['requestHeaders', 'responseHeaders'];
 const MODIFY_HEADER_OPS = ['append', 'set', 'remove'];
@@ -200,9 +191,9 @@ function parseRules(input) {
         });
       }
       if (type === 'requestHeaders') {
-        requestHeaders = requestHeaders.concat(headerArr);
+        requestHeaders.push(...headerArr);
       } else {
-        responseHeaders = responseHeaders.concat(headerArr);
+        responseHeaders.push(...headerArr);
       }
     } else {
       throw new Error(`Parse rules failed, unknown state: ${state}`);
