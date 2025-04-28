@@ -1,6 +1,6 @@
 #+TITLE: Gooreplacer
 #+DATE: 2025-04-26T10:34:27+0800
-#+LASTMOD: 2025-04-28T20:18:29+0800
+#+LASTMOD: 2025-04-28T20:57:16+0800
 #+AUTHOR: Jiacai Liu
 
 #+begin_quote
@@ -47,7 +47,10 @@ transform:host=recaptcha.net
     - ~transform:k1=v1;k2=v2~ Transform part of a URL, see [[https://developer.chrome.com/docs/extensions/reference/api/declarativeNetRequest#type-URLTransform][URLTransform]] for valid values. Frequently used properties are: =host=, =path=, =query=, =scheme=.
   - For =modifyHeaders=, it's headers to modify, format =[type][operation][header]=. This line can be repeated to modify multiple headers at once.
     - =type= can be =requestHeaders= or =responseHeaders=.
-    - =operation= can be =set= =append= or =remove=
+    - =operation= can be
+      - =set=, Sets a new value for the specified header, removing any existing headers with the same name.
+      - =append=, Adds a new entry for the specified header. This operation is not supported for request headers.
+      - =remove=, Removes all entries for the specified header.
     - =header= has format like ~key=name~
 
 * Filter Type
@@ -105,3 +108,27 @@ Consider using:
 - =|https://www.google.com/= which matches all paths and no subdomains.
 
 Similarly, use the =^= and =/= characters to anchor a regular expression. For example, =^https:\/\/www\.google\.com\/= matches any path on =https://www.google.com=.
+
+* Header modification
+According to [[https://developer.chrome.com/docs/extensions/reference/api/declarativeNetRequest#header_modification][docs]], the append operation is only supported for the following headers:
+- =accept=
+- =accept-encoding=
+- =accept-language=
+- =access-control-request-headers=
+- =cache-control=
+- =connection=
+- =content-language=
+- =cookie=
+- =forwarded=
+- =if-match=
+- =if-none-match=
+- =keep-alive=
+- =range=
+- =te=
+- =trailer=
+- =transfer-encoding=
+- =upgrade=
+- =user-agent=
+- =via=
+- =want-digest=
+- =x-forwarded-for=

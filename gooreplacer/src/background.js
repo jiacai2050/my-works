@@ -105,6 +105,9 @@ const resourceTypes = {
   ],
 };
 
+const FILTER_TYPES = ['wildcard', 'regex'];
+const ACTION_TYPES = ['block', 'redirect', 'modifyHeaders'];
+
 function parseRules(input) {
   const lines = input.split('\n');
   let state = 'init';
@@ -129,6 +132,16 @@ function parseRules(input) {
         throw Error(`Each rule must have three parts, current:${row}`);
       }
       const [filter, filterType, action] = parts;
+      if (FILTER_TYPES.indexOf(filterType) < 0) {
+        throw new Error(
+          `Invalid filterType, valid:${FILTER_TYPES.join(',')}, current:${filterType}`,
+        );
+      }
+      if (ACTION_TYPES.indexOf(action) < 0) {
+        throw new Error(
+          `Invalid action, valid:${ACTION_TYPES.join(',')}, current:${action}`,
+        );
+      }
       if (action === 'block') {
         const filterExpr =
           filterType === 'wildcard'
