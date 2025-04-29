@@ -1,6 +1,6 @@
 #+TITLE: Gooreplacer
 #+DATE: 2025-04-26T10:34:27+0800
-#+LASTMOD: 2025-04-28T20:57:16+0800
+#+LASTMOD: 2025-04-29T21:36:06+0800
 #+AUTHOR: Jiacai Liu
 
 #+begin_quote
@@ -28,24 +28,28 @@ transform:host=recaptcha.net
 
 也欢迎大家在[[https://github.com/jiacai2050/my-works/discussions/7][这里]]分享自己使用的规则，以应对各种棘手情况，提供更好地互联网冲浪体验。🚀
 
+对于从 v3 版本升级过来的用户，可以参考[[https://github.com/jiacai2050/my-works/wiki/Gooreplacer%E2%80%90v4-upgrade][升级指南]]。
+
 * Install
 - [[https://chrome.google.com/webstore/detail/gooreplacer/jnlkjeecojckkigmchmfoigphmgkgbip][Chrome]]
 - [[https://addons.mozilla.org/firefox/addon/gooreplacer][Firefox]]
 * Rules
 #+begin_example
-[filter][filter_type][action]
+[filter],[filter_type],[action]
+[condition]
 [action_options]
 #+end_example
 - Empty lines or lines start with =#= act as rule delimiter.
 - =[filter]= acting on URLs under a specified domain.
 - =[filter_type]=, available values: =wildcard= or =regex=
 - =[action]=, available values: =block= or =redirect= or =modifyHeaders=
-- =[action_options]=
-  - For =redirect=, it's redirected url, it can be
-    - =url:url= Static redirected url
-    - =regexSubstitution:url= Dynamic redirected URL, see regex filter docs below for example.
-    - ~transform:k1=v1;k2=v2~ Transform part of a URL, see [[https://developer.chrome.com/docs/extensions/reference/api/declarativeNetRequest#type-URLTransform][URLTransform]] for valid values. Frequently used properties are: =host=, =path=, =query=, =scheme=.
-  - For =modifyHeaders=, it's headers to modify, format =[type][operation][header]=. This line can be repeated to modify multiple headers at once.
+- =[action_options]=, options based on actions:
+  - =block= has no options.
+  - =redirect=
+    - =url:[url]= static redirected url
+    - =regexSubstitution:[url]= Dynamic redirected URL, see regex filter docs below for example.
+    - ~transform:[k1=v1;k2=v2]~ Transform part of a URL, see [[https://developer.chrome.com/docs/extensions/reference/api/declarativeNetRequest#type-URLTransform][URLTransform]] for valid values. Frequently used properties are: =host=, =path=, =query=, =scheme=.
+  - For =modifyHeaders=, it's headers to modify, format =[type]:[operation]:[header]=. This line can be repeated to modify multiple headers at once.
     - =type= can be =requestHeaders= or =responseHeaders=.
     - =operation= can be
       - =set=, Sets a new value for the specified header, removing any existing headers with the same name.

@@ -2,6 +2,11 @@
 
 const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 
+// https://developer.chrome.com/docs/extensions/reference/api/declarativeNetRequest#type-ExtensionActionOptions
+chrome.declarativeNetRequest.setExtensionActionOptions({
+  displayActionCountAsBadgeText: true
+});
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'updateDynamicRules') {
     updateDynamicRules(request.input)
@@ -110,6 +115,8 @@ const ACTION_TYPES = ['block', 'redirect', 'modifyHeaders'];
 
 function parseRules(input) {
   const lines = input.split('\n');
+  // push one more empty line if case of missing the last line when parsing
+  lines.push('');
   let state = 'init';
   let rules = [];
   let id = 0;
@@ -224,7 +231,16 @@ function parseRules(input) {
   return rules;
 }
 
-// Return redirect args
+const CONDITION_TYPES = ['initiatorDomains', 'excludedInitiatorDomains', 'isUrlFilterCaseSensitive'];
+
+// Condition when rule will in effect. See `CONDITION_TYPES` for supported keys.
+https://developer.chrome.com/docs/extensions/reference/api/declarativeNetRequest#type-RuleCondition
+function parseActionCondition(line) {
+  // TODO
+}
+
+// Return redirect options, supported: regexSubstitution, transform, url.
+// https://developer.chrome.com/docs/extensions/reference/api/declarativeNetRequest#type-Redirect
 function parseRedirectOptions(line) {
   const parts = splitN(line, ':', 2);
   if (parts.length !== 2) {
