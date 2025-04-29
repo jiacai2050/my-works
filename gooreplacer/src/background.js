@@ -4,7 +4,7 @@ const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 
 // https://developer.chrome.com/docs/extensions/reference/api/declarativeNetRequest#type-ExtensionActionOptions
 chrome.declarativeNetRequest.setExtensionActionOptions({
-  displayActionCountAsBadgeText: true
+  displayActionCountAsBadgeText: true,
 });
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -231,7 +231,11 @@ function parseRules(input) {
   return rules;
 }
 
-const CONDITION_TYPES = ['initiatorDomains', 'excludedInitiatorDomains', 'isUrlFilterCaseSensitive'];
+const CONDITION_TYPES = [
+  'initiatorDomains',
+  'excludedInitiatorDomains',
+  'isUrlFilterCaseSensitive',
+];
 
 // Condition when rule will in effect. See `CONDITION_TYPES` for supported keys.
 // https://developer.chrome.com/docs/extensions/reference/api/declarativeNetRequest#type-RuleCondition
