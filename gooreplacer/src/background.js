@@ -234,7 +234,7 @@ function parseRules(input) {
 const CONDITION_TYPES = ['initiatorDomains', 'excludedInitiatorDomains', 'isUrlFilterCaseSensitive'];
 
 // Condition when rule will in effect. See `CONDITION_TYPES` for supported keys.
-https://developer.chrome.com/docs/extensions/reference/api/declarativeNetRequest#type-RuleCondition
+// https://developer.chrome.com/docs/extensions/reference/api/declarativeNetRequest#type-RuleCondition
 function parseActionCondition(line) {
   // TODO
 }
