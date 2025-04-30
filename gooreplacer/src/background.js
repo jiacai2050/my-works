@@ -2,10 +2,12 @@
 
 const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 
-// https://developer.chrome.com/docs/extensions/reference/api/declarativeNetRequest#type-ExtensionActionOptions
-chrome.declarativeNetRequest.setExtensionActionOptions({
-  displayActionCountAsBadgeText: true,
-});
+if (!isFirefox) {
+  // https://developer.chrome.com/docs/extensions/reference/api/declarativeNetRequest#type-ExtensionActionOptions
+  chrome.declarativeNetRequest.setExtensionActionOptions({
+    displayActionCountAsBadgeText: true,
+  });
+}
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'updateDynamicRules') {
@@ -109,6 +111,16 @@ const RESOURCE_TYPES = [
 ];
 const FILTER_TYPES = ['wildcard', 'regex'];
 const ACTION_TYPES = ['block', 'redirect', 'modifyHeaders'];
+const METHODS = [
+  'connect',
+  'delete',
+  'get',
+  'head',
+  'options',
+  'patch',
+  'post',
+  'put',
+];
 
 function isRuleSeparator(line) {
   return line.trim().length === 0 || line.startsWith('#');
@@ -276,6 +288,9 @@ const CONDITION_TYPES = [
   'excludedInitiatorDomains',
   'isUrlFilterCaseSensitive',
   'resourceTypes',
+  'excludedResourceTypes',
+  'requestDomains',
+  'requestMethods',
 ];
 
 // Conditions when rule will in effect. See `CONDITION_TYPES` for supported keys.
@@ -301,6 +316,7 @@ function tryParseActionCondition(line) {
   }
 
   switch (conditionType) {
+    case 'requestDomains':
     case 'initiatorDomains':
     case 'excludedInitiatorDomains': {
       const domains = value
@@ -324,6 +340,7 @@ function tryParseActionCondition(line) {
       const isCaseSensitive = value.trim().toLowerCase() === 'true';
       return { [conditionType]: isCaseSensitive };
     }
+    case 'excludedResourceTypes':
     case 'resourceTypes': {
       const resourceTypes = value
         .trim()
@@ -339,6 +356,20 @@ function tryParseActionCondition(line) {
       }
 
       return { [conditionType]: resourceTypes };
+    }
+    case 'requestMethods': {
+      const methods = value
+        .trim()
+        .split(',')
+        .map((method) => method.trim());
+      for (const method of methods) {
+        if (METHODS.indexOf(method) < 0) {
+          throw new Error(
+            `Invalid request method, valid:[${METHODS.join(',')}], current:${method}`,
+          );
+        }
+      }
+      return { [conditionType]: methods };
     }
     default:
       throw new Error(`Invalid action conditionType, current:${conditionType}`);
