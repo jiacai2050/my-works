@@ -271,7 +271,7 @@ const CONDITION_TYPES = [
   'resourceTypes',
 ];
 
-// Condition when rule will in effect. See `CONDITION_TYPES` for supported keys.
+// Conditions when rule will in effect. See `CONDITION_TYPES` for supported keys.
 // https://developer.chrome.com/docs/extensions/reference/api/declarativeNetRequest#type-RuleCondition
 function tryParseActionCondition(line) {
   if (!line.startsWith('condition:')) {
@@ -297,6 +297,10 @@ function tryParseActionCondition(line) {
     case 'initiatorDomains':
     case 'excludedInitiatorDomains': {
       const domains = value.split(',').map((domain) => domain.trim());
+      if (domains.length === 0) {
+        throw new Error(`Invalid domains, should not be empty`);
+      }
+
       return { [conditionType]: domains };
     }
     case 'isUrlFilterCaseSensitive': {
@@ -339,7 +343,7 @@ function parseRedirectOptions(line) {
     moreArgs['url'] = url;
   } else if (op === 'transform') {
     moreArgs['transform'] = {};
-    for (const part of url.split(';')) {
+    for (const part of url.split(',')) {
       const kv = part.split('=');
       const k = kv[0].trim();
       if (URL_TRANSFORM_OPS.indexOf(k) < 0) {
