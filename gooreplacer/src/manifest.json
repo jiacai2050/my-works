@@ -2,7 +2,7 @@
   "name": "Gooreplacer",
   "description": "Modify, block URLs & Headers",
   "homepage_url": "https://github.com/jiacai2050/my-works/tree/main/gooreplacer",
-  "version": "4.0.1",
+  "version": "4.1.0",
   "manifest_version": 3,
   "action": {
     "default_icon": "img/32.png"

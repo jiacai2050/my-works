@@ -1,5 +1,8 @@
-blank_issues_enabled: true
+blank_issues_enabled: false
 contact_links:
-  - name: Suggest idea
+  - name: Suggest ideas
     url: https://github.com/jiacai2050/my-works/discussions/categories/ideas
-    about: Your valuable suggestions can help us improve and provide the best possible experience, please feel free to share your thoughts.
+    about: Share ideas for new features.
+  - name: Ask questions
+    url: https://github.com/jiacai2050/my-works/discussions/categories/q-a
+    about: Ask the community for help.

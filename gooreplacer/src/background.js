@@ -2,6 +2,13 @@
 
 const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 
+if (!isFirefox) {
+  // https://developer.chrome.com/docs/extensions/reference/api/declarativeNetRequest#type-ExtensionActionOptions
+  chrome.declarativeNetRequest.setExtensionActionOptions({
+    displayActionCountAsBadgeText: true,
+  });
+}
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'updateDynamicRules') {
     updateDynamicRules(request.input)
@@ -90,46 +97,57 @@ const URL_TRANSFORM_OPS = [
   'username',
 ];
 
-const resourceTypes = {
-  resourceTypes: [
-    'main_frame',
-    'sub_frame',
-    'stylesheet',
-    'script',
-    'image',
-    'font',
-    'object',
-    'xmlhttprequest',
-    'media',
-    'websocket',
-  ],
-};
-
+const RESOURCE_TYPES = [
+  'main_frame',
+  'sub_frame',
+  'stylesheet',
+  'script',
+  'image',
+  'font',
+  'object',
+  'xmlhttprequest',
+  'media',
+  'websocket',
+];
 const FILTER_TYPES = ['wildcard', 'regex'];
 const ACTION_TYPES = ['block', 'redirect', 'modifyHeaders'];
+const METHODS = [
+  'connect',
+  'delete',
+  'get',
+  'head',
+  'options',
+  'patch',
+  'post',
+  'put',
+];
+
+function isRuleSeparator(line) {
+  return line.trim().length === 0 || line.startsWith('#');
+}
 
 function parseRules(input) {
   const lines = input.split('\n');
-  let state = 'init';
+  // push one more empty line if case of missing the last line when parsing
+  lines.push('');
   let rules = [];
   let id = 0;
-  let prevFilter;
-  let prevFilterType;
-  let requestHeaders = [];
-  let responseHeaders = [];
+  let state = 'init';
+  let prevAction = {};
+  let prevCondition = {};
   for (const row of lines) {
     console.log(state, row);
-    if (row.startsWith('#')) {
-      continue;
-    }
     id += 1;
     if (state === 'init') {
-      if (row.trim().length === 0) {
+      if (isRuleSeparator(row)) {
         continue;
       }
+
       const parts = row.split(',');
       if (parts.length !== 3) {
-        throw Error(`Each rule must have three parts, current:${row}`);
+        throw Error(
+          `Each rule must in format '[filter],[filterType],[action]', current:${row}`,
+        );
       }
       const [filter, filterType, action] = parts;
       if (FILTER_TYPES.indexOf(filterType) < 0) {
@@ -142,79 +160,120 @@ function parseRules(input) {
           `Invalid action, valid:${ACTION_TYPES.join(',')}, current:${action}`,
         );
       }
-      if (action === 'block') {
-        const filterExpr =
-          filterType === 'wildcard'
-            ? { urlFilter: filter }
-            : { regexFilter: filter };
-        rules.push({
-          id: id,
-          priority: id,
-          action: { type: 'block' },
-          condition: {
-            ...resourceTypes,
-            ...filterExpr,
-          },
-        });
+      if (filterType === 'wildcard') {
+        prevCondition['urlFilter'] = filter;
       } else {
-        prevFilter = filter;
-        prevFilterType = filterType;
-        state = action === 'redirect' ? 'redirect_opt' : 'header_opt';
+        prevCondition['regexFilter'] = filter;
       }
-    } else if (state === 'redirect_opt') {
-      // [operation]:[url]
-      const filterExpr =
-        prevFilterType === 'wildcard'
-          ? { urlFilter: prevFilter }
-          : { regexFilter: prevFilter };
-      const moreArgs = parseRedirectOptions(row.trim());
-      rules.push({
-        id: id,
-        priority: id,
-        action: { type: 'redirect', redirect: moreArgs },
-        condition: {
-          ...resourceTypes,
-          ...filterExpr,
-        },
-      });
-      state = 'init';
-    } else if (state === 'header_opt') {
-      const line = row.trim();
-      if (line.length === 0) {
-        if (requestHeaders.length === 0 && responseHeaders.length === 0) {
-          throw new Error(`No header options`);
-        }
-        const filterExpr =
-          prevFilterType === 'wildcard'
-            ? { urlFilter: prevFilter }
-            : { regexFilter: prevFilter };
-        const action = { type: 'modifyHeaders' };
-        if (requestHeaders.length > 0) {
-          action['requestHeaders'] = requestHeaders;
-        }
-        if (responseHeaders.length > 0) {
-          action['responseHeaders'] = responseHeaders;
-        }
+      prevCondition['resourceTypes'] = RESOURCE_TYPES;
+      prevAction['type'] = action;
+      switch (action) {
+        case 'block':
+          state = 'block_opt';
+          break;
+        case 'redirect':
+          state = 'redirect_opt';
+          break;
+        case 'modifyHeaders':
+          state = 'header_opt';
+          break;
+        default:
+          throw new Error(
+            `Invalid action, valid:${ACTION_TYPES.join(',')}, current:${action}`,
+          );
+      }
+    } else if (state === 'block_opt') {
+      if (isRuleSeparator(row)) {
         rules.push({
           id: id,
           priority: id,
-          action: action,
+          action: {
+            ...prevAction,
+          },
           condition: {
-            ...resourceTypes,
-            ...filterExpr,
+            ...prevCondition,
           },
         });
         state = 'init';
-        requestHeaders = [];
-        responseHeaders = [];
+        prevAction = {};
+        prevCondition = {};
         continue;
       }
 
-      let [type, header] = parseHeaderOptions(line);
-      if (type === 'requestHeaders') {
-        requestHeaders.push(header);
+      const cond = tryParseActionCondition(row.trim());
+      if (cond) {
+        // Merge current cond into prevCondition.
+        Object.assign(prevCondition, cond);
       } else {
-        responseHeaders.push(header);
+        throw new Error(
+          `Parse block options failed, format 'condition:key=value'`,
+        );
+      }
+    } else if (state === 'redirect_opt') {
+      if (isRuleSeparator(row)) {
+        if (!prevAction.hasOwnProperty('redirect')) {
+          throw new Error(
+            `redirect action should have redirect option, rule:'${JSON.stringify(prevAction)}'`,
+          );
+        }
+        rules.push({
+          id: id,
+          priority: id,
+          action: {
+            ...prevAction,
+          },
+          condition: {
+            ...prevCondition,
+          },
+        });
+
+        state = 'init';
+        prevAction = {};
+        prevCondition = {};
+        continue;
+      }
+
+      const line = row.trim();
+      const cond = tryParseActionCondition(line);
+      if (cond) {
+        Object.assign(prevCondition, cond);
+      } else {
+        Object.assign(prevAction, { redirect: parseRedirectOptions(line) });
+      }
+    } else if (state === 'header_opt') {
+      if (isRuleSeparator(row)) {
+        if (
+          !prevAction.hasOwnProperty('requestHeaders') &&
+          !prevAction.hasOwnProperty('responseHeaders')
+        ) {
+          throw new Error(
+            `modifyHeaders action should have header option, rule:'${JSON.stringify(prevAction)}'`,
+          );
+        }
+        rules.push({
+          id: id,
+          priority: id,
+          action: {
+            ...prevAction,
+          },
+          condition: {
+            ...prevCondition,
+          },
+        });
+
+        state = 'init';
+        prevAction = {};
+        prevCondition = {};
+        continue;
+      }
+
+      const line = row.trim();
+      const cond = tryParseActionCondition(line);
+      if (cond) {
+        Object.assign(prevCondition, cond);
+      } else {
+        let [type, header] = parseHeaderOptions(line);
+        (prevAction[type] ||= []).push(header);
       }
     } else {
       throw new Error(`Parse rules failed, unknown state: ${state}`);
@@ -224,7 +283,122 @@ function parseRules(input) {
   return rules;
 }
 
-// Return redirect args
+const CONDITION_TYPES = [
+  'initiatorDomains',
+  'excludedInitiatorDomains',
+  'isUrlFilterCaseSensitive',
+  'resourceTypes',
+  'excludedResourceTypes',
+  'requestDomains',
+  'requestMethods',
+];
+
+// Conditions when rule will in effect. See `CONDITION_TYPES` for supported keys.
+// https://developer.chrome.com/docs/extensions/reference/api/declarativeNetRequest#type-RuleCondition
+/**
+ * Parses a condition line and returns a structured object if valid.
+ *
+ * Expected input format:
+ *   - The line must start with "condition:".
+ *   - The format should be "conditionType=value".
+ *
+ * Supported condition keys (from CONDITION_TYPES):
+ *   - 'initiatorDomains': A comma-separated list of domains that initiate the request.
+ *   - 'excludedInitiatorDomains': A comma-separated list of domains to exclude as initiators.
+ *   - 'isUrlFilterCaseSensitive': A boolean ('true' or 'false') indicating case sensitivity.
+ *   - 'resourceTypes': A comma-separated list of resource types (e.g., 'script', 'image').
+ *   - 'excludedResourceTypes': A comma-separated list of resource types to exclude.
+ *   - 'requestDomains': A comma-separated list of domains for the request.
+ *   - 'requestMethods': A comma-separated list of HTTP methods (e.g., 'get', 'post').
+ *
+ * Throws an error if the input format is invalid or if unsupported keys/values are provided.
+ *
+ * @param {string} line - The condition line to parse.
+ * @returns {Object|null} - A structured object representing the condition, or null if the line is invalid.
+ */
+function tryParseActionCondition(line) {
+  if (!line.startsWith('condition:')) {
+    return null;
+  }
+
+  const [_, condition] = splitN(line, ':', 2);
+  const parts = splitN(condition, '=', 2);
+  if (parts.length !== 2) {
+    throw new Error(
+      `Invalid action condition, format 'conditionType=value', current:${condition}`,
+    );
+  }
+
+  const [conditionType, value] = parts;
+  if (CONDITION_TYPES.indexOf(conditionType) < 0) {
+    throw new Error(
+      `Invalid action conditionType, valid: ${CONDITION_TYPES.join(',')}, current:${conditionType}`,
+    );
+  }
+
+  switch (conditionType) {
+    case 'requestDomains':
+    case 'initiatorDomains':
+    case 'excludedInitiatorDomains': {
+      const domains = value
+        .trim()
+        .split(',')
+        .map((domain) => domain.trim());
+      if (domains.length === 0) {
+        throw new Error(`Invalid domains, should not be empty. line:'${line}'`);
+      }
+      for (const domain of domains) {
+        if (domain.length === 0) {
+          throw new Error(
+            `Invalid domain, should not be empty. line:'${line}'`,
+          );
+        }
+      }
+
+      return { [conditionType]: domains };
+    }
+    case 'isUrlFilterCaseSensitive': {
+      const isCaseSensitive = value.trim().toLowerCase() === 'true';
+      return { [conditionType]: isCaseSensitive };
+    }
+    case 'excludedResourceTypes':
+    case 'resourceTypes': {
+      const resourceTypes = value
+        .trim()
+        .split(',')
+        .map((type) => type.trim());
+
+      for (const type of resourceTypes) {
+        if (RESOURCE_TYPES.indexOf(type) < 0) {
+          throw new Error(
+            `Invalid resource type, valid:[${RESOURCE_TYPES.join(',')}], current:${type}`,
+          );
+        }
+      }
+
+      return { [conditionType]: resourceTypes };
+    }
+    case 'requestMethods': {
+      const methods = value
+        .trim()
+        .split(',')
+        .map((method) => method.toLowerCase().trim());
+      for (const method of methods) {
+        if (METHODS.indexOf(method) < 0) {
+          throw new Error(
+            `Invalid request method, valid:[${METHODS.join(',')}], current:${method}`,
+          );
+        }
+      }
+      return { [conditionType]: methods };
+    }
+    default:
+      throw new Error(`Invalid action conditionType, current:${conditionType}`);
+  }
+}
+
+// Return redirect options, supported: regexSubstitution, transform, url.
+// https://developer.chrome.com/docs/extensions/reference/api/declarativeNetRequest#type-Redirect
 function parseRedirectOptions(line) {
   const parts = splitN(line, ':', 2);
   if (parts.length !== 2) {
@@ -241,16 +415,20 @@ function parseRedirectOptions(line) {
     moreArgs['url'] = url;
   } else if (op === 'transform') {
     moreArgs['transform'] = {};
-    for (const part of url.split(';')) {
-      const kv = part.split('=');
-      const k = kv[0].trim();
-      if (URL_TRANSFORM_OPS.indexOf(k) < 0) {
+    for (const part of url.split(',')) {
+      const kv = splitN(part, '=', 2);
+      if (kv.length !== 2) {
         throw new Error(
-          `Invalid transform key, valid: ${URL_TRANSFORM_OPS.join(',')}, current:{k}`,
+          `Invalid transform, format 'key=value', current:${part}`,
         );
       }
-      const v = kv[1].trim();
-      moreArgs['transform'][k] = v;
+      let [k, v] = kv;
+      if (URL_TRANSFORM_OPS.indexOf(k) < 0) {
+        throw new Error(
+          `Invalid transform key, valid:[${URL_TRANSFORM_OPS.join(',')}], current:${k}`,
+        );
+      }
+      moreArgs['transform'][k] = v.trim();
     }
   } else {
     moreArgs['regexSubstitution'] = url;
