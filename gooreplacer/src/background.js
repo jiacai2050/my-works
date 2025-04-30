@@ -187,6 +187,7 @@ function parseRules(input) {
         prevCondition = {};
         continue;
       }
+
       const cond = tryParseActionCondition(row.trim());
       if (cond) {
         // Merge current cond into prevCondition.
@@ -199,7 +200,9 @@ function parseRules(input) {
     } else if (state === 'redirect_opt') {
       if (isRuleSeparator(row)) {
         if (!prevAction.hasOwnProperty('redirect')) {
-          throw new Error(`redirect action should have redirect option`);
+          throw new Error(
+            `redirect action should have redirect option, rule:'${JSON.stringify(prevAction)}'`,
+          );
         }
         rules.push({
           id: id,
@@ -217,12 +220,13 @@ function parseRules(input) {
         prevCondition = {};
         continue;
       }
+
       const line = row.trim();
       const cond = tryParseActionCondition(line);
       if (cond) {
         Object.assign(prevCondition, cond);
       } else {
-        Object.assign(prevAction, parseRedirectOptions(line));
+        Object.assign(prevAction, { redirect: parseRedirectOptions(line) });
       }
     } else if (state === 'header_opt') {
       if (isRuleSeparator(row)) {
@@ -230,7 +234,9 @@ function parseRules(input) {
           !prevAction.hasOwnProperty('requestHeaders') &&
           !prevAction.hasOwnProperty('responseHeaders')
         ) {
-          throw new Error(`modifyHeaders action should have header option`);
+          throw new Error(
+            `modifyHeaders action should have header option, rule:'${JSON.stringify(prevAction)}'`,
+          );
         }
         rules.push({
           id: id,
@@ -248,6 +254,7 @@ function parseRules(input) {
         prevCondition = {};
         continue;
       }
+
       const line = row.trim();
       const cond = tryParseActionCondition(line);
       if (cond) {
@@ -296,9 +303,19 @@ function tryParseActionCondition(line) {
   switch (conditionType) {
     case 'initiatorDomains':
     case 'excludedInitiatorDomains': {
-      const domains = value.split(',').map((domain) => domain.trim());
+      const domains = value
+        .trim()
+        .split(',')
+        .map((domain) => domain.trim());
       if (domains.length === 0) {
-        throw new Error(`Invalid domains, should not be empty`);
+        throw new Error(`Invalid domains, should not be empty. line:'${line}'`);
+      }
+      for (const domain of domains) {
+        if (domain.length === 0) {
+          throw new Error(
+            `Invalid domain, should not be empty. line:'${line}'`,
+          );
+        }
       }
 
       return { [conditionType]: domains };
@@ -308,12 +325,15 @@ function tryParseActionCondition(line) {
       return { [conditionType]: isCaseSensitive };
     }
     case 'resourceTypes': {
-      const resourceTypes = value.split(',').map((type) => type.trim());
+      const resourceTypes = value
+        .trim()
+        .split(',')
+        .map((type) => type.trim());
 
       for (const type of resourceTypes) {
         if (RESOURCE_TYPES.indexOf(type) < 0) {
           throw new Error(
-            `Invalid resource type, valid:${RESOURCE_TYPES.join(',')}, current:${type}`,
+            `Invalid resource type, valid:[${RESOURCE_TYPES.join(',')}], current:${type}`,
           );
         }
       }
