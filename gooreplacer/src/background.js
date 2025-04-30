@@ -399,7 +399,7 @@ function parseRedirectOptions(line) {
       const k = kv[0].trim();
       if (URL_TRANSFORM_OPS.indexOf(k) < 0) {
         throw new Error(
-          `Invalid transform key, valid: ${URL_TRANSFORM_OPS.join(',')}, current:{k}`,
+          `Invalid transform key, valid:[${URL_TRANSFORM_OPS.join(',')}], current:${k}`,
         );
       }
       const v = kv[1].trim();
