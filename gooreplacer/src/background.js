@@ -95,21 +95,18 @@ const URL_TRANSFORM_OPS = [
   'username',
 ];
 
-const resourceTypes = {
-  resourceTypes: [
-    'main_frame',
-    'sub_frame',
-    'stylesheet',
-    'script',
-    'image',
-    'font',
-    'object',
-    'xmlhttprequest',
-    'media',
-    'websocket',
-  ],
-};
-
+const RESOURCE_TYPES = [
+  'main_frame',
+  'sub_frame',
+  'stylesheet',
+  'script',
+  'image',
+  'font',
+  'object',
+  'xmlhttprequest',
+  'media',
+  'websocket',
+];
 const FILTER_TYPES = ['wildcard', 'regex'];
 const ACTION_TYPES = ['block', 'redirect', 'modifyHeaders'];
 
@@ -156,6 +153,7 @@ function parseRules(input) {
       } else {
         prevCondition['regexFilter'] = filter;
       }
+      prevCondition['resourceTypes'] = RESOURCE_TYPES;
       prevAction['type'] = action;
       switch (action) {
         case 'block':
@@ -181,7 +179,6 @@ function parseRules(input) {
             ...prevAction,
           },
           condition: {
-            ...resourceTypes,
             ...prevCondition,
           },
         });
@@ -211,7 +208,6 @@ function parseRules(input) {
             ...prevAction,
           },
           condition: {
-            ...resourceTypes,
             ...prevCondition,
           },
         });
@@ -221,11 +217,12 @@ function parseRules(input) {
         prevCondition = {};
         continue;
       }
-      const cond = tryParseActionCondition(row.trim());
+      const line = row.trim();
+      const cond = tryParseActionCondition(line);
       if (cond) {
         Object.assign(prevCondition, cond);
       } else {
-        Object.assign(prevAction, parseRedirectOptions(row.trim()));
+        Object.assign(prevAction, parseRedirectOptions(line));
       }
     } else if (state === 'header_opt') {
       if (isRuleSeparator(row)) {
@@ -242,7 +239,6 @@ function parseRules(input) {
             ...prevAction,
           },
           condition: {
-            ...resourceTypes,
             ...prevCondition,
           },
         });
@@ -272,6 +268,7 @@ const CONDITION_TYPES = [
   'initiatorDomains',
   'excludedInitiatorDomains',
   'isUrlFilterCaseSensitive',
+  'resourceTypes',
 ];
 
 // Condition when rule will in effect. See `CONDITION_TYPES` for supported keys.
@@ -296,17 +293,31 @@ function tryParseActionCondition(line) {
     );
   }
 
-  if (
-    conditionType === 'initiatorDomains' ||
-    conditionType === 'excludedInitiatorDomains'
-  ) {
-    const domains = value.split(',').map((domain) => domain.trim());
-    return { [conditionType]: domains };
-  } else if (conditionType === 'isUrlFilterCaseSensitive') {
-    const isCaseSensitive = value.trim().toLowerCase() === 'true';
-    return { [conditionType]: isCaseSensitive };
-  } else {
-    throw new Error(`Invalid action conditionType, current:${conditionType}`);
+  switch (conditionType) {
+    case 'initiatorDomains':
+    case 'excludedInitiatorDomains': {
+      const domains = value.split(',').map((domain) => domain.trim());
+      return { [conditionType]: domains };
+    }
+    case 'isUrlFilterCaseSensitive': {
+      const isCaseSensitive = value.trim().toLowerCase() === 'true';
+      return { [conditionType]: isCaseSensitive };
+    }
+    case 'resourceTypes': {
+      const resourceTypes = value.split(',').map((type) => type.trim());
+
+      for (const type of resourceTypes) {
+        if (RESOURCE_TYPES.indexOf(type) < 0) {
+          throw new Error(
+            `Invalid resource type, valid:${RESOURCE_TYPES.join(',')}, current:${type}`,
+          );
+        }
+      }
+
+      return { [conditionType]: resourceTypes };
+    }
+    default:
+      throw new Error(`Invalid action conditionType, current:${conditionType}`);
   }
 }
 
