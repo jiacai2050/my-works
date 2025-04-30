@@ -297,11 +297,11 @@ const CONDITION_TYPES = [
 // https://developer.chrome.com/docs/extensions/reference/api/declarativeNetRequest#type-RuleCondition
 /**
  * Parses a condition line and returns a structured object if valid.
- * 
+ *
  * Expected input format:
  *   - The line must start with "condition:".
  *   - The format should be "conditionType=value".
- * 
+ *
  * Supported condition keys (from CONDITION_TYPES):
  *   - 'initiatorDomains': A comma-separated list of domains that initiate the request.
  *   - 'excludedInitiatorDomains': A comma-separated list of domains to exclude as initiators.
@@ -309,10 +309,10 @@ const CONDITION_TYPES = [
  *   - 'resourceTypes': A comma-separated list of resource types (e.g., 'script', 'image').
  *   - 'excludedResourceTypes': A comma-separated list of resource types to exclude.
  *   - 'requestDomains': A comma-separated list of domains for the request.
- *   - 'requestMethods': A comma-separated list of HTTP methods (e.g., 'GET', 'POST').
- * 
+ *   - 'requestMethods': A comma-separated list of HTTP methods (e.g., 'get', 'post').
+ *
  * Throws an error if the input format is invalid or if unsupported keys/values are provided.
- * 
+ *
  * @param {string} line - The condition line to parse.
  * @returns {Object|null} - A structured object representing the condition, or null if the line is invalid.
  */
@@ -382,7 +382,7 @@ function tryParseActionCondition(line) {
       const methods = value
         .trim()
         .split(',')
-        .map((method) => method.trim());
+        .map((method) => method.toLowerCase().trim());
       for (const method of methods) {
         if (METHODS.indexOf(method) < 0) {
           throw new Error(
@@ -416,15 +416,19 @@ function parseRedirectOptions(line) {
   } else if (op === 'transform') {
     moreArgs['transform'] = {};
     for (const part of url.split(',')) {
-      const kv = part.split('=');
-      const k = kv[0].trim();
+      const kv = splitN(part, '=', 2);
+      if (kv.length !== 2) {
+        throw new Error(
+          `Invalid transform, format 'key=value', current:${part}`,
+        );
+      }
+      let [k, v] = kv;
       if (URL_TRANSFORM_OPS.indexOf(k) < 0) {
         throw new Error(
           `Invalid transform key, valid:[${URL_TRANSFORM_OPS.join(',')}], current:${k}`,
         );
       }
-      const v = kv[1].trim();
-      moreArgs['transform'][k] = v;
+      moreArgs['transform'][k] = v.trim();
     }
   } else {
     moreArgs['regexSubstitution'] = url;
