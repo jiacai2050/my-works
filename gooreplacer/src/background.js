@@ -295,6 +295,27 @@ const CONDITION_TYPES = [
 
 // Conditions when rule will in effect. See `CONDITION_TYPES` for supported keys.
 // https://developer.chrome.com/docs/extensions/reference/api/declarativeNetRequest#type-RuleCondition
+/**
+ * Parses a condition line and returns a structured object if valid.
+ * 
+ * Expected input format:
+ *   - The line must start with "condition:".
+ *   - The format should be "conditionType=value".
+ * 
+ * Supported condition keys (from CONDITION_TYPES):
+ *   - 'initiatorDomains': A comma-separated list of domains that initiate the request.
+ *   - 'excludedInitiatorDomains': A comma-separated list of domains to exclude as initiators.
+ *   - 'isUrlFilterCaseSensitive': A boolean ('true' or 'false') indicating case sensitivity.
+ *   - 'resourceTypes': A comma-separated list of resource types (e.g., 'script', 'image').
+ *   - 'excludedResourceTypes': A comma-separated list of resource types to exclude.
+ *   - 'requestDomains': A comma-separated list of domains for the request.
+ *   - 'requestMethods': A comma-separated list of HTTP methods (e.g., 'GET', 'POST').
+ * 
+ * Throws an error if the input format is invalid or if unsupported keys/values are provided.
+ * 
+ * @param {string} line - The condition line to parse.
+ * @returns {Object|null} - A structured object representing the condition, or null if the line is invalid.
+ */
 function tryParseActionCondition(line) {
   if (!line.startsWith('condition:')) {
     return null;
