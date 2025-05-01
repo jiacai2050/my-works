@@ -3,17 +3,17 @@
 document.addEventListener('DOMContentLoaded', onload);
 
 async function onload() {
-  const footer = document.getElementById('footer');
-  const home = document.getElementById('home');
   const manifest = chrome.runtime.getManifest();
-  footer.textContent = `Current version: ${manifest.version}`;
-  home.href = manifest.homepage_url;
+  document.getElementById('version').textContent = manifest.version;
+  document.getElementById('home').href = manifest.homepage_url;
+  document.getElementById('description').textContent = manifest.description;
 
   const rules = document.getElementById('rules');
   const defaultRules = await getDynamicRules();
   rules.value = defaultRules;
 
   const previewPre = document.getElementById('preview');
+  const ruleNumSpan = document.getElementById('rule-num');
   const { success, preview, error } = await chrome.runtime.sendMessage({
     action: 'preview',
     input: rules.value,
@@ -22,6 +22,7 @@ async function onload() {
     previewPre.textContent = `Invalid rules: error:${error}`;
   } else {
     previewPre.textContent = JSON.stringify(preview, null, 2);
+    ruleNumSpan.textContent = preview.length;
   }
 
   const btnRule = document.getElementById('btn-rule');
@@ -47,6 +48,7 @@ async function onload() {
         rules.setAttribute('disabled', true);
         btnRule.textContent = 'Edit';
         previewPre.textContent = JSON.stringify(preview, null, 2);
+        ruleNumSpan.textContent = preview.length;
         alert(`Succeed, ${preview.length} rules saved!`);
       } catch (e) {
         alert(`${e}`);

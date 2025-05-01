@@ -1,34 +1,13 @@
 #+TITLE: Gooreplacer
 #+DATE: 2025-04-26T10:34:27+0800
-#+LASTMOD: 2025-04-30T21:38:39+0800
+#+LASTMOD: 2025-05-01T09:47:41+0800
 #+AUTHOR: Jiacai Liu
 
 #+begin_quote
-Modify, block URLs & Headers
+A browser extension to block/redirect URLs and modify headers
+
+https://liujiacai.net/gooreplacer
 #+end_quote
-
-对于只想重定向谷歌资源的用户，可以直接使用下面的规则，目前会重定向到 [[https://u.sb/css-cdn/][loli.net]] 的代理。
-
-#+begin_src
-||ajax.googleapis.com/,wildcard,redirect
-transform:host=ajax.loli.net
-
-||fonts.googleapis.com/,wildcard,redirect
-transform:host=fonts.loli.net
-
-||fonts.gstatic.com/,wildcard,redirect
-transform:host=gstatic.loli.net
-
-||secure.gravatar.com/,wildcard,redirect
-transform:host=gravatar.loli.net
-
-||www.google.com/recaptcha/,wildcard,redirect
-transform:host=recaptcha.net
-#+end_src
-
-也欢迎大家在[[https://github.com/jiacai2050/my-works/discussions/7][这里]]分享自己使用的规则，以应对各种棘手情况，提供更好地互联网冲浪体验。🚀
-
-对于从 v3 版本升级过来的用户，可以参考[[https://github.com/jiacai2050/my-works/wiki/Gooreplacer%E2%80%90v4-upgrade][升级指南]]。
 
 * Install
 - [[https://chrome.google.com/webstore/detail/gooreplacer/jnlkjeecojckkigmchmfoigphmgkgbip][Chrome]]
