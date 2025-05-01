@@ -1,13 +1,11 @@
 #+TITLE: Gooreplacer
 #+DATE: 2025-04-26T10:34:27+0800
-#+LASTMOD: 2025-05-01T09:34:07+0800
+#+LASTMOD: 2025-05-01T09:47:41+0800
 #+AUTHOR: Jiacai Liu
 
 #+begin_quote
-Modify, block URLs & Headers
-#+end_quote
+A browser extension to block/redirect URLs and modify headers
 
-#+begin_quote
 https://liujiacai.net/gooreplacer
 #+end_quote
 
