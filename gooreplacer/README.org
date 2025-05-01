@@ -1,6 +1,6 @@
 #+TITLE: Gooreplacer
 #+DATE: 2025-04-26T10:34:27+0800
-#+LASTMOD: 2025-05-01T09:47:41+0800
+#+LASTMOD: 2025-05-01T21:50:45+0800
 #+AUTHOR: Jiacai Liu
 
 #+begin_quote
@@ -12,129 +12,11 @@ https://liujiacai.net/gooreplacer
 * Install
 - [[https://chrome.google.com/webstore/detail/gooreplacer/jnlkjeecojckkigmchmfoigphmgkgbip][Chrome]]
 - [[https://addons.mozilla.org/firefox/addon/gooreplacer][Firefox]]
-* Rules
-#+begin_example
-[filter],[filter_type],[action]
-[condition]+
-[action_options]+
-#+end_example
-- Empty lines or lines start with =#= act as rule delimiter.
-- =[filter]= acting on URLs under a specified domain.
-- =[filter_type]=, available values: =wildcard= or =regex=
-- =[action]=, available values: =block= or =redirect= or =modifyHeaders=
-- =[condition]= conditions when this rule will take effect. Format: ~condition:[key=value]~. This line can be repeated to set multiple conditions.
-  - =initiatorDomains= The rule will only match network requests originating from the list of initiatorDomains, format =domain1,domain2=.
-  - =excludedInitiatorDomains= The rule will not match network requests originating from the list of excludedInitiatorDomains, format =domain1,domain2=.
-    This takes precedence over initiatorDomains
-  - =requestDomains= The rule will only match network requests when the domain matches one from the list of requestDomains. If the list is omitted, the rule is applied to requests from all domains.
-  - =isUrlFilterCaseSensitive= Whether the filter is case sensitive, default =false=.
-  - =resourceTypes= List of resource types which the rule can match. See [[https://developer.chrome.com/docs/extensions/reference/api/declarativeNetRequest#type-ResourceType][here]] for available values.
-  - =excludedResourceTypes= List of resource types which the rule won't match. Only one of resourceTypes and excludedResourceTypes should be specified.
-  - =requestMethods= List of HTTP request methods which the rule can match. See [[https://developer.chrome.com/docs/extensions/reference/api/declarativeNetRequest#type-RequestMethod][here]] for available values.
-- =[action_options]=, options based on actions:
-  - =block= has no options.
-  - =redirect=
-    - =url:[url]= static redirected url
-    - =regexSubstitution:[url]= Dynamic redirected URL, see regex filter docs below for example.
-    - ~transform:[k1=v1,k2=v2]~ Transform part of a URL, see [[https://developer.chrome.com/docs/extensions/reference/api/declarativeNetRequest#type-URLTransform][URLTransform]] for valid values. Frequently used properties are: =host=, =path=, =query=, =scheme=.
-  - For =modifyHeaders=, it's headers to modify, format =[type]:[operation]:[header]=. This line can be repeated to modify multiple headers at once.
-    - =type= can be =requestHeaders= or =responseHeaders=.
-    - =operation= can be
-      - =set=, Sets a new value for the specified header, removing any existing headers with the same name.
-      - =append=, Adds a new entry for the specified header. This operation is not supported for request headers.
-      - =remove=, Removes all entries for the specified header.
-    - =header= has format like ~key=name~
+- [[https://microsoftedge.microsoft.com/addons/detail/gooreplacer/cidbonnpjopamnhfjdgfcmjmlmehjnej][Edge]]
 
-** Examples
-#+begin_example
-# Rule 1
-example.com,wildcard,block
-condition:resourceTypes=main_frame
-condition:isUrlFilterCaseSensitive=true
-condition:initiatorDomains=google.com,x.com
-condition:requestMethods=get,post
+* Changelog
+- v4.1.0 (2025-05-01) ::
+  - Rule support condition
 
-# Rule 2
-liujiacai.net,wildcard,modifyHeaders
-responseHeaders:append:x-forwarded-for=129.9.9.1
-requestHeaders:set:user-agent=gooreplacer
-#+end_example
-* Filter Type
-** Wildcard
-The pattern which is matched against the network request url. Supported constructs:
-- =*= :: Wildcard: Matches any number of characters.
-- =|= :: Left/right anchor: If used at either end of the pattern, specifies the beginning/end of the url respectively.
-- =||= :: Domain name anchor: If used at the beginning of the pattern, specifies the start of a (sub-)domain of the URL.
-- =^= :: Separator character: This matches anything except a letter, a digit, or one of the following: =_=, =-=, =.=, or =%=. This also match the end of the URL.
-
-Therefore =urlFilter= is composed of the following parts: (optional Left/Domain name anchor) + pattern + (optional Right anchor).
-
-If omitted, all urls are matched. An empty string is not allowed.
-
-| urlFilter         | Matches                                                                            | Does  not match                          |
-|-------------------+------------------------------------------------------------------------------------+------------------------------------------|
-| =abc=             | =https://abcd.com=, =https://example.com/abcd=                                     | =https://ab.com=                         |
-| =abc*d=           | =https://abcd.com=, =https://example.com/abcxyzd=                                  | =https://abc.com=                        |
-| =\vert{}\vert{}a.example.com= | =https://a.example.com/= =https://b.a.example.com/xyz= =https://a.example.company= | =https://example.com/=                   |
-| =\vert{}https*=         | =https://example.com=                                                              | =http://example.com/= =http://https.com= |
-| =example*^123\vert{}=   | =https://example.com/123= =http://abc.com/example?123=                             | =https://example.com/1234=               |
-
-#+begin_quote
-Note: The =urlFilter= must be composed of only ASCII characters. This is matched against a url where the host is encoded in the punycode format (in case of internationalized domains) and any other non-ascii characters are url encoded in utf-8. For example, when the request url is =http://abc.рф?q=ф=, the urlFilter will be matched against the url =http://abc.xn--p1ai/?q=%D1%84=.
-
-=\vert{}= above represents =|= , which is required in [[https://orgmode.org/worg/org-symbols.html][org mode]].
-#+end_quote
-See [[https://developer.chrome.com/docs/extensions/reference/api/declarativeNetRequest#url_filter_syntax][URL filter syntax]] for more details.
-** Regex
-Regular expression to match against the network request url. This follows the [[https://github.com/google/re2/wiki/Syntax][RE2 syntax]].
-
-The first match of =regexFilter= within the url will be replaced with this pattern. Within =regexSubstitution=, backslash-escaped digits (=\1= to =\9=) can be used to insert the corresponding capture groups. =\0= refers to the entire matching text.
-
-#+begin_example
-^https://www\\.(abc|def)\\.xyz\\.com/,regex,redirect
-regexSubstitution:https://\\1.xyz.com/
-#+end_example
-This rule will redirect from =https://www.abc.xyz.com/path= to =https://abc.xyz.com/path=.
-
-#+begin_quote
-Note: The =regexFilter= must be composed of only ASCII characters. This is matched against a url where the host is encoded in the punycode format (in case of internationalized domains) and any other non-ascii characters are url encoded in utf-8.
-#+end_quote
-
-
-* Write good URL conditions
-Take care when writing rules to always match an entire domain. Otherwise, your rule may match in situations that are unexpected. For example, when using the pattern matching syntax:
-
-- =google.com= incorrectly matches =https://example.com/?param=google.com=
-- =||google.com= incorrectly matches =https://google.company=
-- =https://www.google.com= incorrectly matches =https://example.com/?param=https://www.google.com=
-
-Consider using:
-
-- =||google.com/=, which matches all paths and all subdomains.
-- =|https://www.google.com/= which matches all paths and no subdomains.
-
-Similarly, use the =^= and =/= characters to anchor a regular expression. For example, =^https:\/\/www\.google\.com\/= matches any path on =https://www.google.com=.
-
-* Header modification
-According to [[https://developer.chrome.com/docs/extensions/reference/api/declarativeNetRequest#header_modification][docs]], the append operation is only supported for the following headers:
-- =accept=
-- =accept-encoding=
-- =accept-language=
-- =access-control-request-headers=
-- =cache-control=
-- =connection=
-- =content-language=
-- =cookie=
-- =forwarded=
-- =if-match=
-- =if-none-match=
-- =keep-alive=
-- =range=
-- =te=
-- =trailer=
-- =transfer-encoding=
-- =upgrade=
-- =user-agent=
-- =via=
-- =want-digest=
-- =x-forwarded-for=
+* License
+[[http://liujiacai.net/license/MIT.html?year=2023][MIT License]] © Jiacai Liu

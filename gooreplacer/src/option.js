@@ -11,6 +11,10 @@ async function onload() {
   const rules = document.getElementById('rules');
   const defaultRules = await getDynamicRules();
   rules.value = defaultRules;
+  const ruleRowNum = defaultRules.split('\n').length;
+  if (ruleRowNum > 20) {
+    rules.setAttribute('rows', ruleRowNum + 1);
+  }
 
   const previewPre = document.getElementById('preview');
   const ruleNumSpan = document.getElementById('rule-num');

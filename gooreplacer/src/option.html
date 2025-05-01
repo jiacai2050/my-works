@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css" />
+    <link href="img/48.png" rel="icon" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
@@ -12,7 +13,7 @@
   <body>
     <header>
       <nav>
-        <a id="home">Home</a>
+        <a id="home" class="current">Home</a>
         <a
           href="https://chrome.google.com/webstore/detail/gooreplacer/jnlkjeecojckkigmchmfoigphmgkgbip"
           >Chrome</a
@@ -20,27 +21,31 @@
         <a href="https://addons.mozilla.org/firefox/addon/gooreplacer"
           >Firefox</a
         >
+        <a
+          href="https://microsoftedge.microsoft.com/addons/detail/gooreplacer/cidbonnpjopamnhfjdgfcmjmlmehjnej"
+          >Microsoft Edge</a
+        >
       </nav>
-      <h1>Gooreplacer</h1>
+      <h1><img src="img/48.png" /> Gooreplacer</h1>
       <p id="description"></p>
     </header>
 
     <main>
       <h4>Rule Editor</h4>
       See
-      <a
-        href="https://github.com/jiacai2050/my-works/tree/main/gooreplacer#rules"
-        >README</a
+      <a href="https://liujiacai.net/gooreplacer/rules/"
+        >Rule Format Specification</a
       >
-      for rule format.
-      <textarea rows="25" disabled="true" name="rules" id="rules"></textarea>
+      to learn details.
+
+      <textarea rows="20" disabled="true" name="rules" id="rules"></textarea>
       <button id="btn-rule"></button>
 
       <h4>Rule Preview</h4>
       <p>Total: <span id="rule-num"></span></p>
       <pre id="preview"></pre>
 
-      <h4>Community</h4>
+      <h4>Feedback</h4>
       <p>
         If you have any questions or suggestions, welcome to
         <a
@@ -51,10 +56,10 @@
       </p>
 
       <p>
-        Welcome everyone to share your Gooreplacer rules
-        <a href="https://github.com/jiacai2050/my-works/discussions/7">here</a>!
-        Help us all tackle those annoying internet roadblocks and enhance our
-        browsing experience. 🚀
+        Welcome everyone to
+        <a href="https://github.com/jiacai2050/my-works/discussions/7">share</a>
+        your Gooreplacer rules. Help us all tackle those annoying internet
+        roadblocks and enhance our browsing experience. 🚀
       </p>
     </main>
     <footer>
