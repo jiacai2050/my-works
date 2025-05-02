@@ -6,11 +6,8 @@ const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 createMenus();
 
 function createMenus() {
-  let ctx = ['all'];
   // Firefox support more contexts
-  if (isFirefox) {
-    ctx = ['all', 'bookmark', 'tab'];
-  }
+  const ctx = isFirefox ? ['all', 'bookmark', 'tab'] : ['all'];
 
   chrome.contextMenus.create({
     id: ADD_TEXT_ID,
@@ -20,22 +17,22 @@ function createMenus() {
   });
 }
 
-chrome.contextMenus.onClicked.addListener(async (item, tab) => {
+async function saveSelection(item, tab) {
   let { pageUrl, srcUrl, selectionText } = item;
+
   // when selection is null, fallback to others.
   if (!selectionText) {
     selectionText = srcUrl || tab.title || pageUrl;
   }
 
-  let uuid = crypto.randomUUID();
+  const id = `id-${Date.now()}`;
   const row = {
-    [uuid]: {
+    [id]: {
       url: pageUrl,
       text: selectionText,
-      createdAt: Date.now(),
     },
   };
-  await chrome.storage.local.set(row);
+  await chrome.storage.sync.set(row);
   if (await getNotification()) {
     await chrome.notifications.create(null, {
       type: 'basic',
@@ -43,6 +40,21 @@ chrome.contextMenus.onClicked.addListener(async (item, tab) => {
       contextMessage: 'Saved',
       message: selectionText,
       iconUrl: 'logo.png',
+    });
+  }
+}
+
+chrome.contextMenus.onClicked.addListener(async (item, tab) => {
+  try {
+    saveSelection(item, tab);
+  } catch (err) {
+    console.error('Error in context menu onclick:', err);
+    chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      func: (errorMessage) => {
+        alert('Error occurred when save selection: ' + errorMessage);
+      },
+      args: [err.message],
     });
   }
 });
