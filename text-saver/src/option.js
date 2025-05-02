@@ -50,7 +50,9 @@ function humanSize(size) {
 async function textAction(id, action, btn) {
   switch (action) {
     case 'copy':
-      navigator.clipboard.writeText(document.getElementById(`${id}`).innerHTML);
+      navigator.clipboard.writeText(
+        document.getElementById(`${id}`).textContent,
+      );
       btn.textContent = 'Copied!';
       setTimeout(() => {
         btn.textContent = 'Copy';
@@ -132,6 +134,7 @@ window.onload = async function () {
 
   document.getElementById('input-size').value = humanSize(await textStats());
 
+  document.getElementById('export-old').onclick = exportOldTexts;
   await refresh(table);
 };
 
@@ -152,4 +155,9 @@ async function createDownload(texts) {
     saveAs: true,
     filename: 'saved-texts.json',
   });
+}
+
+async function exportOldTexts() {
+  const texts = await chrome.storage.local.get();
+  await createDownload(texts);
 }
