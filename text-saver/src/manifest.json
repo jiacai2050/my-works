@@ -2,14 +2,14 @@
   "name": "Text Saver",
   "version": "1.5.0",
   "description": "Save & Organize Web Text Instantly",
-  "homepage_url": "https://github.com/jiacai2050/my-works/tree/main/text-saver",
+  "homepage_url": "https://liujiacai.net/text-saver",
   "author": "dev@liujiacai.net",
   "action": {
     "default_title": "Save texts anytime, anywhere",
-    "default_icon": "logo.png"
+    "default_icon": "128x128.png"
   },
   "icons": {
-    "100": "logo.png"
+    "128": "128x128.png"
   },
   "options_ui": {
     "page": "option.html",
@@ -21,7 +21,6 @@
   },
   "permissions": [
     "contextMenus",
-    "notifications",
     "downloads",
     "scripting",
     "activeTab",

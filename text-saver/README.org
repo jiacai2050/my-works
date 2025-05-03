@@ -1,8 +1,7 @@
 #+TITLE: Text Saver
 #+DATE: 2023-03-11T17:50:32+0800
-#+LASTMOD: 2025-04-16T11:00:17+0800
+#+LASTMOD: 2025-05-03T21:23:29+0800
 #+AUTHOR: Jiacai Liu
-#+EMAIL: blog@liujiacai.net
 #+OPTIONS: toc:nil num:nil
 #+STARTUP: content
 
@@ -10,18 +9,9 @@
 [[https://addons.mozilla.org/firefox/addon/text-saver/][https://img.shields.io/amo/v/text-saver.svg?style=plastic]]
 #+begin_quote
 Save & Organize Web Text Instantly
+
+https://liujiacai.net/text-saver/
 #+end_quote
-
-Never lose a brilliant quote, research note, or inspiring passage again! TextSaver lets you save any text on a webpage with one click —- building your personal knowledge library effortlessly.
-
-=Text Saver= works on any website, just click =Add to Text Saver= in context menu, then
-- Current text selection will be saved if there is any, otherwise
-- Current link will be saved if mouse hover on image or link, otherwise
-- URL of current tab will be saved when none of above are met.
-
-All saved texts sync seamlessly across browsers and devices. Access your collection anywhere, export anytime - no vendor lock-in, just pure portability.
-
-[[https://www.producthunt.com/posts/textsaver][https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=383517&theme=light]]
 
 * Install
 - [[https://chrome.google.com/webstore/detail/text-saver/egelicndigijclebpggemngfhpnkeglk][Chrome Web Store]]
@@ -33,10 +23,11 @@ All saved texts sync seamlessly across browsers and devices. Access your collect
 * Used permission
 - =contextMenus=, interface to add texts
 - =storage=, =unlimitedStorage= where saved texts is stored.
-- =tab=, get title/url of current tab.
-- =notifications=, notify after save text successfully.
+- =activeTab= =scripting=, used for notification when save failed.
 - =downloads=, export saved texts.
 * Changelog
+- v1.5.0 (2025-05-03) ::
+  - Use sync storage to save texts.
 - v1.4.2 (2023-10-07) ::
   - Fix =contextMenu.create= doesn't get invoked for Firefox
 - v1.4.0 (2023-03-16) ::
