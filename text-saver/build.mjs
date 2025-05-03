@@ -7,7 +7,7 @@ const overwrite = {
   },
   browser_specific_settings: {
     gecko: {
-      id: 'dev@liujiacai.net',
+      id: 'liujiacai@yandex.com',
     },
   },
 };
