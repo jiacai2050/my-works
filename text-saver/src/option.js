@@ -71,9 +71,12 @@ async function textAction(id, action, btn) {
 
 async function refresh(tableElement) {
   let rows = [];
-  for (const [id, { text, url }] of Object.entries(await getTexts())) {
+  for (const [id, [text, url]] of Object.entries(await getTexts())) {
+    if (!id.startsWith('id-')) {
+      continue;
+    }
     const createdAt = parseInt(removePrefix(id, 'id-'), 10);
-    console.table(id, text, url, createdAt);
+    // console.table(id, text, url, createdAt);
     rows.push([id, text, url, createdAt]);
   }
   // sort by createdAt desc
@@ -85,7 +88,7 @@ async function refresh(tableElement) {
 <td id="${id}">${text}</td>
 <td>${new Date(createdAt).toLocaleString('en-GB')}</td>
 <td>
-  <a href="${url}">Goto</a>
+  <a href="${url}">Goto</a><br/>
   <button>Copy</button>
   <button>Delete</button>
 </td>

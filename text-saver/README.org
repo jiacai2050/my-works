@@ -9,17 +9,17 @@
 [[https://chrome.google.com/webstore/detail/text-saver/egelicndigijclebpggemngfhpnkeglk][https://img.shields.io/chrome-web-store/v/egelicndigijclebpggemngfhpnkeglk.svg?style=plastic]]
 [[https://addons.mozilla.org/firefox/addon/text-saver/][https://img.shields.io/amo/v/text-saver.svg?style=plastic]]
 #+begin_quote
-Browser extension to save texts anytime, anywhere.
+Save & Organize Web Text Instantly
 #+end_quote
 
-When read issues/pulls of my favorite projects on GitHub, often there are comments I think are worth digging further, but GitHub has no =SAVE= button for single issue/pull, not to mention specific comment, so I create =Text Saver= to fix this, once and for all.
+Never lose a brilliant quote, research note, or inspiring passage again! TextSaver lets you save any text on a webpage with one click —- building your personal knowledge library effortlessly.
 
 =Text Saver= works on any website, just click =Add to Text Saver= in context menu, then
 - Current text selection will be saved if there is any, otherwise
 - Current link will be saved if mouse hover on image or link, otherwise
 - URL of current tab will be saved when none of above are met.
 
-All saved texts can be viewed in option page, and users can export their saved texts to local disk, so no need to worry about vendor lock-in.
+All saved texts sync seamlessly across browsers and devices. Access your collection anywhere, export anytime - no vendor lock-in, just pure portability.
 
 [[https://www.producthunt.com/posts/textsaver][https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=383517&theme=light]]
 
