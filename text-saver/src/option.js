@@ -71,10 +71,12 @@ async function textAction(id, action, btn) {
 
 async function refresh(tableElement) {
   let rows = [];
-  for (const [id, [text, url]] of Object.entries(await getTexts())) {
+  for (const entry of Object.entries(await getTexts())) {
+    const id = entry[0];
     if (!id.startsWith('id-')) {
       continue;
     }
+    const [text, url] = entry[1];
     const createdAt = parseInt(removePrefix(id, 'id-'), 10);
     // console.table(id, text, url, createdAt);
     rows.push([id, text, url, createdAt]);
