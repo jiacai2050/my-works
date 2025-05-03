@@ -2,7 +2,7 @@
   "name": "Gooreplacer",
   "description": "A browser extension to block/redirect URLs and modify headers",
   "homepage_url": "https://liujiacai.net/gooreplacer",
-  "version": "4.1.1",
+  "version": "4.1.2",
   "manifest_version": 3,
   "action": {
     "default_icon": "img/32.png"
