@@ -160,6 +160,8 @@ async function createDownload(texts) {
   });
 }
 
+// This function is designed to export legacy data stored in chrome.storage.local.
+// It is intentionally using local storage instead of sync storage to handle older data.
 async function exportOldTexts() {
   const texts = await chrome.storage.local.get();
   await createDownload(texts);
