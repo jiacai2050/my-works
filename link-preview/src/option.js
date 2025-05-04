@@ -3,11 +3,10 @@
 document.addEventListener('DOMContentLoaded', onload);
 
 async function onload() {
-  const footer = document.getElementById('footer');
-  const home = document.getElementById('home');
   const manifest = chrome.runtime.getManifest();
-  footer.textContent = `Current version: ${manifest.version}`;
-  home.href = manifest.homepage_url;
+  document.getElementById('version').textContent = manifest.version;
+  document.getElementById('description').textContent = manifest.description;
+  document.getElementById('home').href = manifest.homepage_url;
 
   const position = document.getElementById('position');
   const defaultPosition = await getPosition();

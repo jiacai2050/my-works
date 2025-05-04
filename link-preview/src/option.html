@@ -7,7 +7,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
-    <title>Link Preview Settings</title>
+    <title>Link Preview</title>
   </head>
   <body>
     <header>
@@ -20,9 +20,12 @@
         <a href="https://addons.mozilla.org/en-US/firefox/addon/preview-link/"
           >Firefox</a
         >
+        <a href="https://addons.mozilla.org/en-US/firefox/addon/preview-link/"
+          >Edge</a
+        >
       </nav>
-      <h1>Link Preview Settings</h1>
-      <p>Preview link metadata (title and description) on hover!</p>
+      <h1><img src="logo.png" width="48px" /> Link Preview</h1>
+      <p id="description"></p>
     </header>
 
     <main>
@@ -66,7 +69,7 @@
       </p>
       <button id="clear-cache">Clear Cache</button>
     </main>
-    <footer id="footer"></footer>
+    <footer>Current version: <span id="version"></span></footer>
     <script src="common.js"></script>
     <script src="option.js"></script>
   </body>

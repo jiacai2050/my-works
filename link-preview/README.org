@@ -1,11 +1,16 @@
 #+TITLE: Link Preview
 #+DATE: 2025-04-12T17:57:44+0800
-#+LASTMOD: 2025-04-25T08:48:48+0800
+#+LASTMOD: 2025-05-04T18:26:43+0800
 #+AUTHOR: Jiacai Liu
 
 #+begin_quote
-Preview link metadata (title and description) on hover, saving you time by avoiding unnecessary tab opening
+Your Instant Window to the Web.
+
+https://liujiacai.net/link-preview/
 #+end_quote
+
+Simply hover over a link, and a sleek, instant preview pops up, giving you a clear glimpse of what awaits. No more guessing, no more unnecessary tabs! Link Preview empowers you to quickly assess the relevance of a link, helping you navigate the web with unprecedented speed and efficiency.
+
 [[file:img/demo.png]]
 
 * Key Benefits
@@ -15,28 +20,18 @@ Preview link metadata (title and description) on hover, saving you time by avoid
 - Reduce tab clutter in your browser
 
 * Install
-** Chrome
-[[https://chromewebstore.google.com/detail/ckmbklmhlmhglbokadhhljpmalopjocj][https://img.shields.io/chrome-web-store/v/ckmbklmhlmhglbokadhhljpmalopjocj.svg]]
-
-[[https://chromewebstore.google.com/detail/ckmbklmhlmhglbokadhhljpmalopjocj/reviews][https://img.shields.io/chrome-web-store/rating/ckmbklmhlmhglbokadhhljpmalopjocj.svg]]
-
-[[https://chromewebstore.google.com/detail/ckmbklmhlmhglbokadhhljpmalopjocj][https://img.shields.io/chrome-web-store/users/ckmbklmhlmhglbokadhhljpmalopjocj.svg]]
-
-** Firefox
-[[https://addons.mozilla.org/en-US/firefox/addon/preview-link/][https://img.shields.io/amo/v/preview-link.svg]]
-
-[[https://addons.mozilla.org/en-US/firefox/addon/preview-link/][https://img.shields.io/amo/rating/preview-link.svg]]
-
-[[https://addons.mozilla.org/en-US/firefox/addon/preview-link/][https://img.shields.io/amo/users/preview-link.svg]]
+- [[https://chromewebstore.google.com/detail/ckmbklmhlmhglbokadhhljpmalopjocj][Chrome]]
+- [[https://addons.mozilla.org/firefox/addon/preview-link/][Firefox]]
+- [[https://microsoftedge.microsoft.com/addons/detail/link-preview/gahpjchpomlmailbmblhhnhmopncchej][Edge]]
 
 Firefox users must grant permission to all sites for this extension to function correctly. Upon clicking the extension icon in the toolbar, it will prompt for permission.
 
   [[file:img/grant-permission.png]]
 
 
-** Edge
-- https://microsoftedge.microsoft.com/addons/detail/link-preview/gahpjchpomlmailbmblhhnhmopncchej
 * Changelog
+- v1.3.0 (2024-05-04) ::
+  - A brand new logo
 - v1.2.0 (2024-04-20) ::
   - Add custom encoding options
 * Thanks
