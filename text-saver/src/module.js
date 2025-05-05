@@ -84,7 +84,7 @@ export class Database {
     if (isFirefox && engine === 'local') {
       // https://bugzilla.mozilla.org/show_bug.cgi?id=1385832#c20
       return new TextEncoder().encode(
-        Object.entries(await this.getStorage().get())
+        Object.entries(await this.getAll())
           .map(([key, value]) => key + JSON.stringify(value))
           .join(''),
       ).length;
