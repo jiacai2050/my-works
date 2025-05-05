@@ -86,7 +86,7 @@ window.onload = async function () {
     }
   };
   document.getElementById('btn-export').onclick = async function () {
-    const texts = await getTexts();
+    const texts = await db.getTexts();
     await createDownload(texts);
   };
 
