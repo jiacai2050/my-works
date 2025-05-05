@@ -1,37 +1,103 @@
 'use strict';
 
-export class Options {
-  static keyNotification = 'enable-notification';
-  // system, light, dark
-  static keyColor = 'color-scheme';
+const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 
-  constructor(storage) {
-    this.storage = storage;
+export class Database {
+  static #keyEngine = 'engine';
+  static #instance = null; // Private static field to hold the instance
+
+  constructor() {
+    if (Database.#instance) {
+      throw new Error('Database can only be instantiated once.');
+    }
+    Database.#instance = this;
   }
 
-  async getNotification() {
-    const opt = await this.storage.get({ [Options.keyNotification]: false });
-    return opt[Options.keyNotification];
+  static getInstance() {
+    if (!this.#instance) {
+      this.#instance = new Database();
+    }
+    return this.#instance;
   }
 
-  async setNotification(enable) {
-    return await this.storage.set({ [Options.keyNotification]: enable });
+  async getEngine() {
+    const opt = await chrome.storage.sync.get({
+      [Database.#keyEngine]: 'local',
+    });
+    return opt[Database.#keyEngine];
   }
 
-  async getColorScheme() {
-    const opt = await this.storage.get({ [Options.keyColor]: 'system' });
-    return opt[Options.keyColor];
+  async setEngine(engine) {
+    return await chrome.storage.sync.set({ [Database.#keyEngine]: engine });
   }
 
-  async setColorScheme(scheme) {
-    return await this.storage.set({ [Options.keyColor]: scheme });
+  async getStorage() {
+    const engine = await this.getEngine();
+    return chrome.storage[engine];
   }
 
-  // Mainly for testing
+  async remove(key) {
+    const storage = await this.getStorage();
+    return await storage.remove(key);
+  }
+
+  async getTexts() {
+    const engine = await this.getEngine();
+    switch (engine) {
+      case 'local': // { 'uuid': { text, url, createdAt } }
+        const allTexts = await chrome.storage.local.get();
+        return Object.entries(allTexts).map(([uuid, value]) => {
+          const { text, url, createdAt } = value;
+          return [uuid, text, url, createdAt];
+        });
+      case 'sync': // [ { id-{createdAt}:  [text, url] } ]
+        const allItems = await chrome.storage.sync.get();
+        const rows = [];
+        for (const entry of Object.entries(allItems)) {
+          const id = entry[0];
+          if (!id.startsWith('id-')) {
+            continue;
+          }
+          const [text, url] = entry[1];
+          const createdAt = parseInt(removePrefix(id, 'id-'), 10);
+          rows.push([id, text, url, createdAt]);
+        }
+        return rows;
+      default:
+        throw new Error(`Unknown storage engine: ${engine}`);
+    }
+  }
+
   async clear() {
-    return await this.storage.clear(null);
+    const storage = await this.getStorage();
+    return await storage.clear(null);
   }
-  async dump() {
-    return await this.storage.get(null);
+
+  async getAll() {
+    const storage = await this.getStorage();
+    return await storage.get(null);
   }
+
+  async getBytesInUse() {
+    const engine = await this.getEngine();
+    // Only firefox local storage need this
+    if (isFirefox && engine === 'local') {
+      // https://bugzilla.mozilla.org/show_bug.cgi?id=1385832#c20
+      return new TextEncoder().encode(
+        Object.entries(await this.getStorage().get())
+          .map(([key, value]) => key + JSON.stringify(value))
+          .join(''),
+      ).length;
+    }
+
+    const storage = await this.getStorage();
+    return await storage.getBytesInUse(null);
+  }
+}
+
+function removePrefix(str, prefix) {
+  if (str.startsWith(prefix)) {
+    return str.slice(prefix.length);
+  }
+  return str; // Return the original string if it doesn't start with the prefix
 }

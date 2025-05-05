@@ -27,11 +27,7 @@ async function saveSelection(item, tab) {
   }
 
   const url = linkUrl || pageUrl;
-  const id = `id-${Date.now()}`;
-  const row = {
-    [id]: [selectionText, url],
-  };
-  await chrome.storage.sync.set(row);
+  await saveText(selectionText, url);
   return selectionText;
 }
 
@@ -96,4 +92,38 @@ function createAndShowPopup(text) {
       document.body.removeChild(popupContainer);
     }
   }, 4000);
+}
+
+async function saveText(text, url) {
+  const key = 'engine';
+  const now = Date.now();
+  const engine = (await chrome.storage.sync.get({ [key]: 'local' }))[key];
+  switch (engine) {
+    case 'local':
+      return await saveTextToLocal(now, text, url);
+    case 'sync':
+      return await saveTextToSync(now, text, url);
+    default:
+      throw new Error(`Unknown storage engine: ${engine}`);
+  }
+}
+
+async function saveTextToLocal(now, text, url) {
+  const uuid = crypto.randomUUID();
+  const row = {
+    [uuid]: {
+      text: text,
+      url: url,
+      createdAt: now,
+    },
+  };
+  await chrome.storage.local.set(row);
+}
+
+async function saveTextToSync(now, text, url) {
+  const id = `id-${now}`;
+  const row = {
+    [id]: [text, url],
+  };
+  await chrome.storage.sync.set(row);
 }

@@ -1,11 +1,10 @@
 {
   "name": "Text Saver",
-  "version": "1.5.2",
+  "version": "1.6.0",
   "description": "Save & Organize Web Text Instantly",
   "homepage_url": "https://liujiacai.net/text-saver",
   "author": "dev@liujiacai.net",
   "action": {
-    "default_title": "Save texts anytime, anywhere",
     "default_icon": "128x128.png"
   },
   "icons": {

@@ -8,7 +8,7 @@
     />
     <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css" />
 
-    <title>Save texts anytime, anywhere</title>
+    <title>Text Saver</title>
   </head>
   <body>
     <header>
@@ -31,11 +31,22 @@
         <tbody id="text-list"></tbody>
       </table>
 
-      <h4>Storage Size</h4>
-      <p>
-        Browser limit total amount (in bytes) of data that can be stored in sync
-        storage is 102400. Currently used:
-      </p>
+      <h4>Storage Engine</h4>
+      <select id="storage-engine">
+        <option value="local">Local</option>
+        <option value="sync">Sync</option>
+      </select>
+      <ul>
+        <li>
+          <b>Sync storage</b> is shared across all devices where you are logged
+          in, but it has a limit of <b>100KB</b>.
+        </li>
+        <li>
+          <b>Local storage</b> has unlimited capacity but cannot be synced
+          across devices.
+        </li>
+      </ul>
+
       <input disabled id="input-size" />
 
       <h4>Reset</h4>
