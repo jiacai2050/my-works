@@ -63,9 +63,6 @@ window.onload = async function () {
   document.getElementById('version').textContent = manifest.version;
   document.getElementById('home').href = manifest.homepage_url;
   document.getElementById('description').textContent = manifest.description;
-
-  // console.log(await opt.dump());
-
   const table = document.getElementById('text-list');
   table.addEventListener('click', function (event) {
     if (event.target && event.target.tagName === 'BUTTON') {
@@ -97,7 +94,6 @@ window.onload = async function () {
   engineSelect.value = await db.getEngine();
   engineSelect.onchange = async function () {
     await db.setEngine(engineSelect.value);
-    console.log(engineSelect.value);
     window.location.reload();
   };
 

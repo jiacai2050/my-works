@@ -95,10 +95,9 @@ function createAndShowPopup(text) {
 }
 
 async function saveText(text, url) {
-  const key = 'storage-engine';
+  const key = 'engine';
   const now = Date.now();
   const engine = (await chrome.storage.sync.get({ [key]: 'local' }))[key];
-  console.log(engine, text, url);
   switch (engine) {
     case 'local':
       return await saveTextToLocal(now, text, url);
