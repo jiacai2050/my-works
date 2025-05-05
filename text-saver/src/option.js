@@ -1,41 +1,9 @@
 'use strict';
 
-import { Options } from './module.js';
+import { Database } from './module.js';
 
 const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
-
-async function getTexts() {
-  return await chrome.storage.sync.get();
-}
-
-async function clearTexts() {
-  return await chrome.storage.sync.clear();
-}
-
-async function removeTexts(id) {
-  return await chrome.storage.sync.remove(id);
-}
-
-async function textStats() {
-  // Only firefox local storage need this
-  // if (isFirefox) {
-  //   // https://bugzilla.mozilla.org/show_bug.cgi?id=1385832#c20
-  //   return new TextEncoder().encode(
-  //     Object.entries(await browser.storage.local.get())
-  //       .map(([key, value]) => key + JSON.stringify(value))
-  //       .join(''),
-  //   ).length;
-  // }
-
-  return await chrome.storage.sync.getBytesInUse(null);
-}
-
-function removePrefix(str, prefix) {
-  if (str.startsWith(prefix)) {
-    return str.slice(prefix.length);
-  }
-  return str; // Return the original string if it doesn't start with the prefix
-}
+const db = Database.getInstance();
 
 function humanSize(size) {
   const units = ['B', 'KB', 'MB', 'GB'];
@@ -60,7 +28,7 @@ async function textAction(id, action, btn) {
       break;
     case 'delete':
       if (confirm('Are you sure?')) {
-        await removeTexts(id);
+        await db.remove(id);
         btn.closest('tr').remove();
       }
       break;
@@ -70,17 +38,7 @@ async function textAction(id, action, btn) {
 }
 
 async function refresh(tableElement) {
-  let rows = [];
-  for (const entry of Object.entries(await getTexts())) {
-    const id = entry[0];
-    if (!id.startsWith('id-')) {
-      continue;
-    }
-    const [text, url] = entry[1];
-    const createdAt = parseInt(removePrefix(id, 'id-'), 10);
-    // console.table(id, text, url, createdAt);
-    rows.push([id, text, url, createdAt]);
-  }
+  const rows = await db.getTexts();
   // sort by createdAt desc
   rows.sort((a, b) => b[3] - a[3]);
   let table = [];
@@ -106,17 +64,15 @@ window.onload = async function () {
   document.getElementById('home').href = manifest.homepage_url;
   document.getElementById('description').textContent = manifest.description;
 
-  let opt = new Options(chrome.storage.sync);
   // console.log(await opt.dump());
 
   const table = document.getElementById('text-list');
-
   table.addEventListener('click', function (event) {
     if (event.target && event.target.tagName === 'BUTTON') {
       const button = event.target;
       const action = button.textContent.toLowerCase();
       const row = button.closest('tr');
-      const idElement = row.querySelector('[id^="id-"]');
+      const idElement = row.querySelector('td:first-child'); // row.querySelector('[id^="id-"]');
       try {
         textAction(idElement.id, action, button);
       } catch (e) {
@@ -137,7 +93,17 @@ window.onload = async function () {
     await createDownload(texts);
   };
 
-  document.getElementById('input-size').value = humanSize(await textStats());
+  const engineSelect = document.getElementById('storage-engine');
+  engineSelect.value = await db.getEngine();
+  engineSelect.onchange = async function () {
+    await db.setEngine(engineSelect.value);
+    console.log(engineSelect.value);
+    window.location.reload();
+  };
+
+  document.getElementById('input-size').value = humanSize(
+    await db.getBytesInUse(),
+  );
 
   document.getElementById('export-old').onclick = exportOldTexts;
   await refresh(table);
