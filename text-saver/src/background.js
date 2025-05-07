@@ -1,5 +1,8 @@
 'use strict';
 
+import { Database } from './module.js';
+const db = Database.getInstance();
+
 const ADD_TEXT_ID = 'add-text';
 const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 
@@ -95,9 +98,8 @@ function createAndShowPopup(text) {
 }
 
 async function saveText(text, url) {
-  const key = 'engine';
   const now = Date.now();
-  const engine = (await chrome.storage.sync.get({ [key]: 'local' }))[key];
+  const engine = await db.getEngine();
   switch (engine) {
     case 'local':
       return await saveTextToLocal(now, text, url);
