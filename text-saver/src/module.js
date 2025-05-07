@@ -44,16 +44,19 @@ export class Database {
   async getTexts() {
     const engine = await this.getEngine();
     switch (engine) {
-      case 'local': // { 'uuid': { text, url, createdAt } }
+      // { 'uuid': { text, url, createdAt } }
+      case 'local': {
         const allTexts = await chrome.storage.local.get();
         return Object.entries(allTexts).map(([uuid, value]) => {
           const { text, url, createdAt } = value;
           return [uuid, text, url, createdAt];
         });
-      case 'sync': // [ { id-{createdAt}:  [text, url] } ]
-        const allItems = await chrome.storage.sync.get();
+      }
+      // [ { id-{createdAt}:  [text, url] } ]
+      case 'sync': {
+        const allTexts = await chrome.storage.sync.get();
         const rows = [];
-        for (const entry of Object.entries(allItems)) {
+        for (const entry of Object.entries(allTexts)) {
           const id = entry[0];
           if (!id.startsWith('id-')) {
             continue;
@@ -63,6 +66,7 @@ export class Database {
           rows.push([id, text, url, createdAt]);
         }
         return rows;
+      }
       default:
         throw new Error(`Unknown storage engine: ${engine}`);
     }

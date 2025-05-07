@@ -2,7 +2,6 @@
 
 import { Database } from './module.js';
 
-const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 const db = Database.getInstance();
 
 function humanSize(size) {
@@ -48,7 +47,7 @@ async function refresh(tableElement) {
 <td id="${id}">${text}</td>
 <td>${new Date(createdAt).toLocaleString('en-GB')}</td>
 <td>
-  <a href="${url}">Goto</a><br/>
+  <a class="button" href="${url}">Goto</a><br/>
   <button>Copy</button>
   <button>Delete</button>
 </td>
@@ -81,7 +80,7 @@ window.onload = async function () {
 
   document.getElementById('btn-clear').onclick = async function () {
     if (confirm('Are you sure to clear all saved texts?')) {
-      await clearTexts();
+      await db.clear();
       await refresh(table);
     }
   };

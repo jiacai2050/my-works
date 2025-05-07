@@ -1,9 +1,11 @@
-import manifest from './src/manifest.json' assert { type: 'json' };
-import { writeFileSync } from 'fs';
+import { readFileSync, writeFileSync } from 'fs';
+
+const manifest = JSON.parse(readFileSync('./src/manifest.json', 'utf8'));
 
 const overwrite = {
   background: {
     scripts: ['background.js'],
+    type: 'module',
   },
   browser_specific_settings: {
     gecko: {

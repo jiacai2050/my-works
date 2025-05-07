@@ -4,7 +4,8 @@ FIREFOX_DST = /tmp/text-saver-firefox.zip
 build: buildc buildf
 
 lint:
-	npx prettier@2.7.1 --write .
+	npx eslint src
+	npx prettier --write .
 
 buildc:
 	rm -f $(CHROME_DST)
