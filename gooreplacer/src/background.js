@@ -211,7 +211,7 @@ function parseRules(input) {
       }
     } else if (state === 'redirect_opt') {
       if (isRuleSeparator(row)) {
-        if (!prevAction.hasOwnProperty('redirect')) {
+        if (!prevAction.hasOwn('redirect')) {
           throw new Error(
             `redirect action should have redirect option, rule:'${JSON.stringify(prevAction)}'`,
           );
@@ -243,8 +243,8 @@ function parseRules(input) {
     } else if (state === 'header_opt') {
       if (isRuleSeparator(row)) {
         if (
-          !prevAction.hasOwnProperty('requestHeaders') &&
-          !prevAction.hasOwnProperty('responseHeaders')
+          !prevAction.hasOwn('requestHeaders') &&
+          !prevAction.hasOwn('responseHeaders')
         ) {
           throw new Error(
             `modifyHeaders action should have header option, rule:'${JSON.stringify(prevAction)}'`,
@@ -321,7 +321,7 @@ function tryParseActionCondition(line) {
     return null;
   }
 
-  const [_, condition] = splitN(line, ':', 2);
+  const condition = splitN(line, ':', 2)[1];
   const parts = splitN(condition, '=', 2);
   if (parts.length !== 2) {
     throw new Error(
