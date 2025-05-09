@@ -26,5 +26,6 @@ jobs:
           submodules: true
       - name: Run Style Check
         run: |
+          npm i
           # If you found any errors, execute `make write` to automatically correct them.
           make check

@@ -211,7 +211,7 @@ function parseRules(input) {
       }
     } else if (state === 'redirect_opt') {
       if (isRuleSeparator(row)) {
-        if (!prevAction.hasOwn('redirect')) {
+        if (!Object.hasOwn(prevAction, 'redirect')) {
           throw new Error(
             `redirect action should have redirect option, rule:'${JSON.stringify(prevAction)}'`,
           );
@@ -243,8 +243,8 @@ function parseRules(input) {
     } else if (state === 'header_opt') {
       if (isRuleSeparator(row)) {
         if (
-          !prevAction.hasOwn('requestHeaders') &&
-          !prevAction.hasOwn('responseHeaders')
+          !Object.hasOwn(prevAction, 'requestHeaders') &&
+          !Object.hasOwn(prevAction, 'responseHeaders')
         ) {
           throw new Error(
             `modifyHeaders action should have header option, rule:'${JSON.stringify(prevAction)}'`,
