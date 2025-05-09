@@ -1,5 +1,16 @@
 'use strict';
 
+import {
+  metaCache,
+  getPosition,
+  setPosition,
+  getMaxLength,
+  setMaxLength,
+  getDomainEncoding,
+  setDomainEncoding,
+  humanSize,
+} from './common.js';
+
 document.addEventListener('DOMContentLoaded', onload);
 
 async function onload() {

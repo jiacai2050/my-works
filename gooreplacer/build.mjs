@@ -1,19 +1,3 @@
-import manifest from './src/manifest.json' assert { type: 'json' };
-import { writeFileSync } from 'fs';
+import { rewriteManifest } from '../common/firefox-build.mjs';
 
-const overwrite = {
-  background: {
-    scripts: ['background.js'],
-  },
-  browser_specific_settings: {
-    gecko: {
-      id: 'gooreplacer@liujiacai.net',
-    },
-  },
-};
-
-for (const [key, value] of Object.entries(overwrite)) {
-  manifest[key] = value;
-}
-
-writeFileSync('./src/manifest.json', JSON.stringify(manifest, null, 2));
+rewriteManifest('./src/manifest.json', 'gooreplacer@liujiacai.net');

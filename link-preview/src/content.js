@@ -1,5 +1,7 @@
 'use strict';
 
+/* global getPosition:readonly, getMaxLength:readonly metaCache:readonly getDomainEncoding:readonly */
+
 const linkSelector = 'a[href]:not([href=""]):not([href^="#"])';
 const links = document.querySelectorAll(linkSelector);
 // console.log(`Total links:${links.length}`);

@@ -20,7 +20,7 @@ class DB {
       // https://stackoverflow.com/a/40287132/2163429
       return await this.storage.set({ [key]: value });
     } catch (e) {
-      console.error(`DB set failed, key:${key}, value:${value}`);
+      console.error(`DB set failed, key:${key}, value:${value}, err:${e}`);
     }
   }
 
@@ -51,36 +51,36 @@ class DB {
   }
 }
 
-const metaCache = isFirefox
+export const metaCache = isFirefox
   ? new DB(chrome.storage.local)
   : new DB(chrome.storage.session);
 const settingStorage = new DB(chrome.storage.sync);
 
-async function getPosition() {
+export async function getPosition() {
   return (await settingStorage.get('position')) || 'bottom-right';
 }
 
-async function setPosition(pos) {
+export async function setPosition(pos) {
   await settingStorage.set('position', pos);
 }
 
-async function getMaxLength() {
+export async function getMaxLength() {
   return (await settingStorage.get('max-length')) || 350;
 }
 
-async function setMaxLength(len) {
+export async function setMaxLength(len) {
   await settingStorage.set('max-length', len);
 }
 
-async function getDomainEncoding() {
+export async function getDomainEncoding() {
   return (await settingStorage.get('domain-encoding-arr')) || [];
 }
 
-async function setDomainEncoding(v) {
+export async function setDomainEncoding(v) {
   await settingStorage.set('domain-encoding-arr', v);
 }
 
-function humanSize(size) {
+export function humanSize(size) {
   const units = ['B', 'KB', 'MB', 'GB'];
   let i = 0;
   while (i < units.length - 1 && size >= 1024) {

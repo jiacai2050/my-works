@@ -30,17 +30,17 @@ async function saveSelection(item, tab) {
   }
 
   const url = linkUrl || pageUrl;
-  await saveText(selectionText, url);
-  return selectionText;
+  const engine = await saveText(selectionText, url);
+  return [selectionText, engine];
 }
 
 chrome.contextMenus.onClicked.addListener(async (item, tab) => {
   try {
-    const text = await saveSelection(item, tab);
+    const [text, engine] = await saveSelection(item, tab);
     await chrome.scripting.executeScript({
       target: { tabId: tab.id },
       func: createAndShowPopup,
-      args: [text],
+      args: [text, engine],
     });
   } catch (err) {
     console.error('Error in context menu onclick:', err);
@@ -58,7 +58,7 @@ chrome.action.onClicked.addListener(function () {
   chrome.runtime.openOptionsPage();
 });
 
-function createAndShowPopup(text) {
+function createAndShowPopup(text, engine) {
   // Check if the popup already exists
   const existingPopup = document.getElementById('ext-text-saver-popup');
   if (existingPopup) {
@@ -70,17 +70,18 @@ function createAndShowPopup(text) {
   popupContainer.style.top = '10px';
   popupContainer.style.right = '10px';
   popupContainer.style.width = '300px';
-  popupContainer.style.backgroundColor = '#f8f8f8';
   popupContainer.style.border = '1px solid black';
   popupContainer.style.padding = '20px';
   popupContainer.style.zIndex = '9999';
   popupContainer.style.boxShadow = '2px 2px 10px rgba(0,0,0,0.3)';
+  popupContainer.style.backgroundColor = '#F6F8FA';
   popupContainer.style.borderRadius = '5px';
 
-  // Create the title element
-  const titleElement = document.createElement('h5');
-  titleElement.textContent = 'Saved Text'; // Set your desired title
-  titleElement.style.marginTop = '0'; // Remove default top margin for h3
+  const titleElement = document.createElement('header');
+  titleElement.textContent = `Saved to ${engine}`;
+  titleElement.style.textAlign = 'center';
+  titleElement.style.backgroundColor = '#f5f7ff';
+  titleElement.style.fontSize = '1.2rem';
   popupContainer.appendChild(titleElement);
 
   const message = document.createElement('p');
@@ -89,7 +90,6 @@ function createAndShowPopup(text) {
 
   document.body.appendChild(popupContainer);
 
-  // Automatically remove the popup after 2 seconds (2000 milliseconds)
   setTimeout(() => {
     if (document.body.contains(popupContainer)) {
       document.body.removeChild(popupContainer);
@@ -102,9 +102,11 @@ async function saveText(text, url) {
   const engine = await db.getEngine();
   switch (engine) {
     case 'local':
-      return await saveTextToLocal(now, text, url);
+      await saveTextToLocal(now, text, url);
+      return engine;
     case 'sync':
-      return await saveTextToSync(now, text, url);
+      await saveTextToSync(now, text, url);
+      return engine;
     default:
       throw new Error(`Unknown storage engine: ${engine}`);
   }

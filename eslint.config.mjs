@@ -1,8 +1,10 @@
 import js from '@eslint/js';
 import globals from 'globals';
-import { defineConfig } from 'eslint/config';
+import { defineConfig, globalIgnores } from 'eslint/config';
 
 export default defineConfig([
+  globalIgnores(['zigos']),
+
   {
     files: ['**/*.{js,mjs,cjs}'],
     plugins: { js },
