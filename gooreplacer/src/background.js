@@ -463,13 +463,15 @@ function parseHeaderOptions(line) {
       `Header should be in 'key=value' format, current:${header}`,
     );
   }
+  const h = {
+    header: kv[0].trim(),
+    operation: op,
+    value: kv[1].trim(),
+  };
 
-  return [
-    type,
-    {
-      header: kv[0].trim(),
-      operation: op,
-      value: kv[1].trim(),
-    },
-  ];
+  if (op === 'remove') {
+    delete h.value;
+  }
+
+  return [type, h];
 }
