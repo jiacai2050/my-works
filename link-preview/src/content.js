@@ -79,7 +79,7 @@ async function fetchLinkInfo(link) {
     }
   }
 
-  console.log(link.hostname, encoding);
+  // console.log(link.hostname, encoding);
   const { success, string, isHtml, error } = await chrome.runtime.sendMessage({
     action: 'fetchPage',
     url: url,

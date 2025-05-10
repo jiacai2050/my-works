@@ -1,15 +1,6 @@
 'use strict';
 
-import {
-  metaCache,
-  getPosition,
-  setPosition,
-  getMaxLength,
-  setMaxLength,
-  getDomainEncoding,
-  setDomainEncoding,
-  humanSize,
-} from './common.js';
+/* global getPosition:readonly, getMaxLength:readonly metaCache:readonly getDomainEncoding:readonly setPosition:readonly setMaxLength:readonly setDomainEncoding: readonly humanSize:readonly */
 
 document.addEventListener('DOMContentLoaded', onload);
 

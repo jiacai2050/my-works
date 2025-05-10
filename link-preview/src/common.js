@@ -51,36 +51,36 @@ class DB {
   }
 }
 
-export const metaCache = isFirefox
+const metaCache = isFirefox
   ? new DB(chrome.storage.local)
   : new DB(chrome.storage.session);
 const settingStorage = new DB(chrome.storage.sync);
 
-export async function getPosition() {
+async function getPosition() {
   return (await settingStorage.get('position')) || 'bottom-right';
 }
 
-export async function setPosition(pos) {
+async function setPosition(pos) {
   await settingStorage.set('position', pos);
 }
 
-export async function getMaxLength() {
+async function getMaxLength() {
   return (await settingStorage.get('max-length')) || 350;
 }
 
-export async function setMaxLength(len) {
+async function setMaxLength(len) {
   await settingStorage.set('max-length', len);
 }
 
-export async function getDomainEncoding() {
+async function getDomainEncoding() {
   return (await settingStorage.get('domain-encoding-arr')) || [];
 }
 
-export async function setDomainEncoding(v) {
+async function setDomainEncoding(v) {
   await settingStorage.set('domain-encoding-arr', v);
 }
 
-export function humanSize(size) {
+function humanSize(size) {
   const units = ['B', 'KB', 'MB', 'GB'];
   let i = 0;
   while (i < units.length - 1 && size >= 1024) {

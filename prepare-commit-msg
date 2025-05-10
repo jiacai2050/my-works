@@ -1,0 +1,61 @@
+#!/usr/bin/env python3
+# -*- mode: python; vim: ft=python -*-
+
+import sys
+import os
+import re
+import subprocess
+from collections import Counter
+
+PREFIX_TYPES = ["feat", "fix", "refactor", "chore"]
+
+def main():
+    # 获取提交信息文件路径和提交类型
+    commit_msg_file = sys.argv[1]
+    commit_source = sys.argv[2] if len(sys.argv) > 2 else ""
+
+    # 如果已经是合并或其他特殊提交，不修改消息
+    if commit_source:
+        sys.exit(0)
+
+    # 获取暂存区中的文件列表
+    try:
+        git_output = subprocess.check_output(["git", "diff", "--cached", "--name-only"],
+                                            universal_newlines=True)
+        files = git_output.strip().split("\n") if git_output.strip() else []
+    except subprocess.CalledProcessError:
+        sys.exit(1)
+
+    # 如果没有文件被修改，则退出
+    if not files:
+        sys.exit(0)
+
+    # 提取每个文件的第一级目录
+    dirs = []
+    for file_path in files:
+        if "/" in file_path:
+            dir_name = file_path.split("/")[0]
+            dirs.append(dir_name)
+
+    # 如果没有有效的目录，则退出
+    if not dirs:
+        sys.exit(0)
+
+    # 找出出现次数最多的目录
+    dir_counter = Counter(dirs)
+    most_common_dir = dir_counter.most_common(1)[0][0]
+
+    # 读取当前的提交信息
+    with open(commit_msg_file, 'r') as f:
+        current_msg = f.read()
+
+    # 如果提交信息不是以"feat("开头，添加前缀
+    for prefix in PREFIX_TYPES:
+        if current_msg.startswith(prefix):
+            sys.exit(0)
+
+    with open(commit_msg_file, 'w') as f:
+        f.write(f"feat|fix({most_common_dir}): {current_msg}")
+
+if __name__ == "__main__":
+    main()
