@@ -1,6 +1,6 @@
 #+TITLE: Text Saver
 #+DATE: 2023-03-11T17:50:32+0800
-#+LASTMOD: 2025-05-03T21:32:53+0800
+#+LASTMOD: 2025-05-12T06:59:50+0800
 #+AUTHOR: Jiacai Liu
 #+OPTIONS: toc:nil num:nil
 #+STARTUP: content
@@ -26,6 +26,11 @@ https://liujiacai.net/text-saver/
 - =activeTab= =scripting=, used for notification when save failed.
 - =downloads=, export saved texts.
 * Changelog
+- v1.6.3 (2025-05-09) ::
+  - Notification show storage engine when saved.
+- v1.6.2 (2025-05-07) ::
+  - Vendor simple.min.css
+  - Apply eslint
 - v1.5.1 (2025-05-03) ::
   - Use sync storage to save texts.
 - v1.4.2 (2023-10-07) ::
