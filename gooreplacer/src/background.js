@@ -32,7 +32,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 chrome.action.onClicked.addListener(function () {
   if (isFirefox) {
     (async () => {
-      // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/permissions/request
       const perm = { origins: ['https://*/*', 'http://*/*'] };
       if (await chrome.permissions.contains(perm)) {
         await chrome.runtime.openOptionsPage();

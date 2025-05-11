@@ -14,9 +14,14 @@ if (!isFirefox) {
 
 chrome.action.onClicked.addListener(function () {
   if (isFirefox) {
-    // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/permissions/request
-    const perm = { origins: ['https://*/*', 'http://*/*'] };
-    chrome.permissions.request(perm);
+    (async () => {
+      const perm = { origins: ['https://*/*', 'http://*/*'] };
+      if (await chrome.permissions.contains(perm)) {
+        await chrome.runtime.openOptionsPage();
+      } else {
+        await chrome.permissions.request(perm);
+      }
+    })();
   } else {
     chrome.runtime.openOptionsPage();
   }
