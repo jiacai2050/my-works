@@ -5,11 +5,13 @@ on:
   pull_request:
     paths:
       - 'zigos/**'
+      - '.github/workflows/zigos-ci.yml'
   push:
     branches:
       - main
     paths:
       - 'zigos/**'
+      - '.github/workflows/zigos-ci.yml'
 
 defaults:
   run:
@@ -27,14 +29,11 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest]
-        zig-version: [0.13.0]
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: true
-      - uses: mlugg/setup-zig@v1
-        with:
-          version: ${{ matrix.zig-version }}
+      - uses: mlugg/setup-zig@v2
       - name: fmt
         run: |
           zig fmt --check .

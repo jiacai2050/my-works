@@ -34,9 +34,7 @@ jobs:
         os: [ubuntu-latest, macos-latest]
     steps:
       - uses: actions/checkout@v4
-      - uses: mlugg/setup-zig@v1
-        with:
-          version: master
+      - uses: mlugg/setup-zig@v2
       - name: Install ZigCC
         run: |
           mkdir ${HOME}/bin

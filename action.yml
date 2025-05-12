@@ -6,7 +6,7 @@ inputs:
   zig-version:
     description: 'Zig version to use'
     required: true
-    default: 'master'
+    default: 'latest'
 
 runs:
   using: 'composite'
@@ -16,7 +16,7 @@ runs:
         repository: jiacai2050/my-works
         path: .jiacai2050-zigcc
         sparse-checkout: 'zigcc'
-    - uses: mlugg/setup-zig@v1
+    - uses: mlugg/setup-zig@v2
       with:
         version: ${{ inputs.zig-version }}
     - name: Set GitHub Path

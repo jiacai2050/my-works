@@ -5,11 +5,13 @@ on:
   pull_request:
     paths:
       - 'zms/**'
+      - '.github/workflows/zms-ci.yml'
   push:
     branches:
       - main
     paths:
       - 'zms/**'
+      - '.github/workflows/zms-ci.yml'
 
 defaults:
   run:
@@ -23,14 +25,11 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        zig-version: [0.13.0, master]
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: true
-      - uses: mlugg/setup-zig@v1
-        with:
-          version: ${{ matrix.zig-version }}
+      - uses: mlugg/setup-zig@v2
       - name: fmt and test(windows)
         if: matrix.os == 'windows-latest'
         run: |
