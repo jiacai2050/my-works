@@ -12,6 +12,23 @@
         grid-template-columns: 0fr 80% 0fr;
         place-content: center;
       }
+      table {
+        width: 100%;
+        table-layout: fixed;
+        border-collapse: collapse;
+      }
+      table th:nth-child(1),
+      table td:nth-child(1) {
+        width: 80%;
+      }
+      table th:nth-child(2),
+      table td:nth-child(2) {
+        width: 10%;
+      }
+      table th:nth-child(3),
+      table td:nth-child(3) {
+        width: 10%;
+      }
     </style>
 
     <title>Text Saver</title>
@@ -27,10 +44,7 @@
       <p id="description"></p>
     </header>
     <main>
-      <input
-        type="file"
-        id="import-file"
-        style="display:none" />
+      <input type="file" id="import-file" style="display: none" />
       <table>
         <thead>
           <tr>
@@ -66,7 +80,8 @@
 
     <footer>
       Version: <span id="version"></span> <br />
-      Since v1.6.4, Text-Saver support import your <a href="https://getpocket.com/farewell">Pocket contents</a>!
+      📣 Text-Saver supports importing
+      <a href="https://getpocket.com/farewell">contents from Pocket</a>!
     </footer>
     <script type="module" src="option.js"></script>
   </body>

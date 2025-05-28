@@ -42,6 +42,7 @@ async function refresh(tableElement) {
   rows.sort((a, b) => b[3] - a[3]);
   let table = [];
   for (const row of rows) {
+    // console.log('Row:', row);
     let [id, text, url, createdAt] = row;
     table.push(`<tr>
 <td id="${id}">${text}</td>
@@ -89,7 +90,7 @@ window.onload = async function () {
     await createDownload(texts);
   };
   const inputImportFile = document.getElementById('import-file');
-  inputImportFile.addEventListener("change", importTexts, false);
+  inputImportFile.addEventListener('change', handleFiles, false);
   document.getElementById('btn-import').onclick = async function () {
     inputImportFile.click();
   };
@@ -127,32 +128,100 @@ async function createDownload(texts) {
   });
 }
 
-async function importTexts() {
+async function handleFiles() {
   if (!this.files || this.files.length === 0) {
     alert('Please select a file to import.');
     return;
   }
   const file = this.files[0];
+  await importTexts(file);
+}
+
+async function importTexts(file) {
+  const fileType = file.type;
+  const fileSize = file.size;
+  console.log('Importing file:', file, 'Size:', humanSize(fileSize));
 
   const reader = new FileReader();
   reader.onload = async function (event) {
-    try {
-      const body = event.target.result;
-      console.log('Importing file:', body);
-      return;
-      const data = JSON.parse(event.target.result);
-      if (!data.texts || !Array.isArray(data.texts)) {
-        throw new Error('Invalid file format');
-      }
-      for (const text of data.texts) {
-        await db.addText(text[0], text[1], text[2], text[3]);
-      }
-      alert('Import successful!');
-      window.location.reload();
-    } catch (e) {
-      console.error(e);
-      alert('Import failed: ' + e.message);
+    const body = event.target.result.trim();
+    switch (fileType) {
+      case 'text/csv':
+        await importPocket(body);
+        break;
+      case 'application/json':
+        await importJson(event);
+        break;
+      default:
+        throw new Error('Unsupported file type: ' + fileType);
     }
   };
   reader.readAsText(file);
+}
+
+async function importJson(jsonContent) {
+  //
+}
+async function importPocket(csvContent) {
+  const lines = csvContent.split('\n');
+  const texts = [];
+  for (const line of lines) {
+    try {
+      const { title, url, createdAt } = parsePocketRow(line);
+      if (title === 'title' || url === 'url') {
+        // Skip header line
+        continue;
+      }
+      texts.push([title, url, createdAt * 1000]);
+    } catch (e) {
+      alert('Error parsing line: ' + line + '\n' + e.message);
+      return;
+    }
+  }
+  for (const text of texts) {
+    await db.addText(text[0], text[1], text[2]);
+  }
+  alert(`Successful, import {texts.length} contents!`);
+  window.location.reload();
+}
+
+function parsePocketRow(inputString) {
+  const parts = [];
+  let inQuote = false;
+  let currentPart = '';
+
+  for (let i = 0; i < inputString.length; i++) {
+    const char = inputString[i];
+
+    if (char === '"') {
+      inQuote = !inQuote; // 切换引用状态
+      // 如果是开头的引号，不添加到 currentPart；如果是结尾的引号，也不添加到 currentPart
+      if (i === 0 || inputString[i - 1] === ',') {
+        // 假设开头或紧跟逗号的引号是标题的开始
+        continue;
+      }
+      if (i === inputString.length - 1 || inputString[i + 1] === ',') {
+        // 假设结尾或紧跟逗号的引号是标题的结束
+        continue;
+      }
+    }
+
+    if (char === ',' && !inQuote) {
+      parts.push(currentPart);
+      currentPart = '';
+    } else {
+      currentPart += char;
+    }
+  }
+  parts.push(currentPart); // 添加最后一个部分
+
+  // 解析并返回结构化数据
+  return {
+    title: parts[0].trim(),
+    url: parts[1].trim(),
+    createdAt: Number(parts[2]),
+    // those fieldsare not used in this extension
+    // tags: parts[3],
+    // status: parts[4]
+  };
 }
