@@ -20,12 +20,17 @@
     <header>
       <nav>
         <a id="home">Home</a>
-        <a href="#" id="btn-export">Export </a>
+        <a href="#" id="btn-export">Export</a>
+        <a href="#" id="btn-import" title="aa">Import</a>
       </nav>
       <h1><img src="128x128.png" width="40px" />&nbsp;&nbsp;TextSaver</h1>
       <p id="description"></p>
     </header>
     <main>
+      <input
+        type="file"
+        id="import-file"
+        style="display:none" />
       <table>
         <thead>
           <tr>
@@ -61,7 +66,7 @@
 
     <footer>
       Version: <span id="version"></span> <br />
-      Texts missing? Try <a href="#" id="export-old">export old texts.</a>
+      Since v1.6.4, Text-Saver support import your <a href="https://getpocket.com/farewell">Pocket contents</a>!
     </footer>
     <script type="module" src="option.js"></script>
   </body>

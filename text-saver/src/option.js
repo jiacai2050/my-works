@@ -88,6 +88,11 @@ window.onload = async function () {
     const texts = await db.getTexts();
     await createDownload(texts);
   };
+  const inputImportFile = document.getElementById('import-file');
+  inputImportFile.addEventListener("change", importTexts, false);
+  document.getElementById('btn-import').onclick = async function () {
+    inputImportFile.click();
+  };
 
   const engineSelect = document.getElementById('storage-engine');
   engineSelect.value = await db.getEngine();
@@ -100,7 +105,6 @@ window.onload = async function () {
     await db.getBytesInUse(),
   );
 
-  document.getElementById('export-old').onclick = exportOldTexts;
   await refresh(table);
 };
 
@@ -123,9 +127,32 @@ async function createDownload(texts) {
   });
 }
 
-// This function is designed to export legacy data stored in chrome.storage.local.
-// It is intentionally using local storage instead of sync storage to handle older data.
-async function exportOldTexts() {
-  const texts = await chrome.storage.local.get();
-  await createDownload(texts);
+async function importTexts() {
+  if (!this.files || this.files.length === 0) {
+    alert('Please select a file to import.');
+    return;
+  }
+  const file = this.files[0];
+
+  const reader = new FileReader();
+  reader.onload = async function (event) {
+    try {
+      const body = event.target.result;
+      console.log('Importing file:', body);
+      return;
+      const data = JSON.parse(event.target.result);
+      if (!data.texts || !Array.isArray(data.texts)) {
+        throw new Error('Invalid file format');
+      }
+      for (const text of data.texts) {
+        await db.addText(text[0], text[1], text[2], text[3]);
+      }
+      alert('Import successful!');
+      window.location.reload();
+    } catch (e) {
+      console.error(e);
+      alert('Import failed: ' + e.message);
+    }
+  };
+  reader.readAsText(file);
 }
