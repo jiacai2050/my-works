@@ -41,19 +41,19 @@ export class Database {
     return await storage.remove(key);
   }
 
-  async addText(text, url, createdAt = Date.now()) {
+  async addText(text, url, createdAt = Date.now(), id) {
     const storage = await this.getStorage();
     const engine = await this.getEngine();
     switch (engine) {
       case 'local': {
-        const uuid = crypto.randomUUID();
+        const uuid = id || crypto.randomUUID();
         await storage.set({
           [uuid]: { text, url, createdAt },
         });
         break;
       }
       case 'sync': {
-        const id = `id-${createdAt}`;
+        const id = id || `id-${createdAt}`;
         await storage.set({ [id]: [text, url] });
         break;
       }

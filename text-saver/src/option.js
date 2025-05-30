@@ -150,7 +150,7 @@ async function importTexts(file) {
         await importPocket(body);
         break;
       case 'application/json':
-        await importJson(event);
+        await importJson(body);
         break;
       default:
         throw new Error('Unsupported file type: ' + fileType);
@@ -159,12 +159,58 @@ async function importTexts(file) {
   reader.readAsText(file);
 }
 
-async function importJson(jsonContent) {
-  //
+const StorageFormat = Object.freeze({
+  // Version 0: Initial version
+  // Texts are stored as an array of objects with id, text, url and createdAt fields.
+  ZERO: 0,
+});
+
+function formatFromVersion(version) {
+  const parts = version.split('.');
+  if (parts.length !== 3) {
+    throw new Error('Invalid version format. Expected format: x.y.z');
+  }
+  // Each part should less than 1000
+  const _numVersion =
+    Number(parts[0]) * 1000_000 + Number(parts[1]) * 1000 + Number(parts[2]);
+
+  return StorageFormat.ZERO;
 }
+
+async function importJson(jsonContent) {
+  const json = JSON.parse(jsonContent);
+  if (!json.texts || !Array.isArray(json.texts)) {
+    alert('Invalid JSON format. Expected an array of texts.');
+    return;
+  }
+  const format = formatFromVersion(json.version);
+  switch (format) {
+    case StorageFormat.ZERO: {
+      // Version 0: Initial version
+      // Texts are stored as an array of objects with id, text, url and createdAt fields.
+      for (const text of json.texts) {
+        const [id, content, url, createdAt] = text;
+        console.log(id, content, url, createdAt);
+        if (!id || !content || !url || !createdAt) {
+          alert(
+            `Invalid text format. Each text must have id, text, url and createdAt fields. line: ${JSON.stringify(text)}`,
+          );
+          return;
+        }
+        await db.addText(content, url, createdAt, id);
+      }
+      alert(`Successful, imported ${json.texts.length} contents!`);
+      window.location.reload();
+      break;
+    }
+    default:
+      throw new Error(`Unsupported storage format: ${format}`);
+  }
+}
+
 async function importPocket(csvContent) {
   const lines = csvContent.split('\n');
-  const texts = [];
+  let successCount = 0;
   for (const line of lines) {
     try {
       const { title, url, createdAt } = parsePocketRow(line);
@@ -172,16 +218,15 @@ async function importPocket(csvContent) {
         // Skip header line
         continue;
       }
-      texts.push([title, url, createdAt * 1000]);
+      const createdAtMs = createdAt * 1000; // Convert to milliseconds
+      await db.addText(title, url, createdAtMs * 1000, `id-${createdAtMs}`);
+      successCount += 1;
     } catch (e) {
-      alert('Error parsing line: ' + line + '\n' + e.message);
+      alert(`Error when parsing line: ${line}\n${e.message}`);
       return;
     }
   }
-  for (const text of texts) {
-    await db.addText(text[0], text[1], text[2]);
-  }
-  alert(`Successful, import {texts.length} contents!`);
+  alert(`Successful, import {successCount} contents!`);
   window.location.reload();
 }
 

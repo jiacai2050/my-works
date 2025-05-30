@@ -1,5 +1,7 @@
 'use strict';
 
+/* exported metaCache, getPosition, setPosition, getMaxLength, setMaxLength, getDomainEncoding, setDomainEncoding, humanSize */
+
 const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 
 class DB {
