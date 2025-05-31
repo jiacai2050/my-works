@@ -40,7 +40,6 @@ async function refresh(tableElement) {
   rows.sort((a, b) => b[3] - a[3]);
   let table = [];
   for (const row of rows) {
-    // console.log('Row:', row);
     let [id, text, url, createdAt] = row;
     table.push(`<tr>
 <td id="${id}">${text}</td>
@@ -172,6 +171,7 @@ function formatFromVersion(version) {
   const _numVersion =
     Number(parts[0]) * 1000_000 + Number(parts[1]) * 1000 + Number(parts[2]);
 
+  // For now we always return ZERO.
   return StorageFormat.ZERO;
 }
 
@@ -207,7 +207,7 @@ async function importJson(jsonContent) {
 
   await db.saveItems(items);
   alert(
-    `Import Success! input:{json.texts.length}, imported:${Object.keys(items).length}`,
+    `Import Success! input:${json.texts.length}, imported:${Object.keys(items).length}`,
   );
   window.location.reload();
 }
