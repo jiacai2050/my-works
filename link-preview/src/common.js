@@ -1,6 +1,6 @@
 'use strict';
 
-/* exported metaCache, getPosition, setPosition, getMaxLength, setMaxLength, getDomainEncoding, setDomainEncoding, humanSize */
+/* eslint-disable no-unused-vars */
 
 const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 

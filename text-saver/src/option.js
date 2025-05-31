@@ -17,9 +17,7 @@ function humanSize(size) {
 async function textAction(id, action, btn) {
   switch (action) {
     case 'copy':
-      navigator.clipboard.writeText(
-        document.getElementById(`${id}`).textContent,
-      );
+      navigator.clipboard.writeText(document.getElementById(id).textContent);
       btn.textContent = 'Copied!';
       setTimeout(() => {
         btn.textContent = 'Copy';
@@ -184,6 +182,7 @@ async function importJson(jsonContent) {
     return;
   }
   const format = formatFromVersion(json.version);
+  const items = {};
   switch (format) {
     case StorageFormat.ZERO: {
       // Version 0: Initial version
@@ -197,36 +196,56 @@ async function importJson(jsonContent) {
           );
           return;
         }
-        await db.addText(content, url, createdAt, id);
+        const newText = await db.prepareText(content, url, createdAt, id);
+        Object.assign(items, newText);
       }
-      alert(`Successful, imported ${json.texts.length} contents!`);
-      window.location.reload();
       break;
     }
     default:
       throw new Error(`Unsupported storage format: ${format}`);
   }
+
+  await db.saveItems(items);
+  alert(
+    `Import Success! input:{json.texts.length}, imported:${Object.keys(items).length}`,
+  );
+  window.location.reload();
 }
 
 async function importPocket(csvContent) {
   const lines = csvContent.split('\n');
   let successCount = 0;
+  const items = {};
   for (const line of lines) {
     try {
       const { title, url, createdAt } = parsePocketRow(line);
+      console.log(createdAt);
       if (title === 'title' || url === 'url') {
         // Skip header line
         continue;
       }
       const createdAtMs = createdAt * 1000; // Convert to milliseconds
-      await db.addText(title, url, createdAtMs * 1000, `id-${createdAtMs}`);
+      const newText = await db.prepareText(
+        title,
+        url,
+        createdAtMs,
+        `id-${createdAtMs}`,
+      );
+      Object.assign(items, newText);
       successCount += 1;
     } catch (e) {
-      alert(`Error when parsing line: ${line}\n${e.message}`);
+      console.error(e);
+      alert(
+        `Error when parsing line: ${line}, processed:${successCount}, error:\n${e.message}`,
+      );
       return;
     }
   }
-  alert(`Successful, import {successCount} contents!`);
+
+  await db.saveItems(items);
+  alert(
+    `Import Success! input:${successCount}, imported:${Object.keys(items).length}`,
+  );
   window.location.reload();
 }
 
