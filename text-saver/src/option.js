@@ -136,9 +136,6 @@ async function handleFiles() {
 
 async function importTexts(file) {
   const fileType = file.type;
-  const fileSize = file.size;
-  console.log('Importing file:', file, 'Size:', humanSize(fileSize));
-
   const reader = new FileReader();
   reader.onload = async function (event) {
     const body = event.target.result.trim();
@@ -189,7 +186,6 @@ async function importJson(jsonContent) {
       // Texts are stored as an array of [id, text, url, createdAt].
       for (const text of json.texts) {
         const [id, content, url, createdAt] = text;
-        console.log(id, content, url, createdAt);
         if (!id || !content || !url || !createdAt) {
           alert(
             `Invalid text format. Each text must have id, text, url and createdAt fields. line: ${JSON.stringify(text)}`,
