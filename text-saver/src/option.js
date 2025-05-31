@@ -186,7 +186,7 @@ async function importJson(jsonContent) {
   switch (format) {
     case StorageFormat.ZERO: {
       // Version 0: Initial version
-      // Texts are stored as an array of objects with id, text, url and createdAt fields.
+      // Texts are stored as an array of [id, text, url, createdAt].
       for (const text of json.texts) {
         const [id, content, url, createdAt] = text;
         console.log(id, content, url, createdAt);
