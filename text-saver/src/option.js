@@ -17,9 +17,7 @@ function humanSize(size) {
 async function textAction(id, action, btn) {
   switch (action) {
     case 'copy':
-      navigator.clipboard.writeText(
-        document.getElementById(`${id}`).textContent,
-      );
+      navigator.clipboard.writeText(document.getElementById(id).textContent);
       btn.textContent = 'Copied!';
       setTimeout(() => {
         btn.textContent = 'Copy';
@@ -88,6 +86,11 @@ window.onload = async function () {
     const texts = await db.getTexts();
     await createDownload(texts);
   };
+  const inputImportFile = document.getElementById('import-file');
+  inputImportFile.addEventListener('change', handleFiles, false);
+  document.getElementById('btn-import').onclick = async function () {
+    inputImportFile.click();
+  };
 
   const engineSelect = document.getElementById('storage-engine');
   engineSelect.value = await db.getEngine();
@@ -100,7 +103,6 @@ window.onload = async function () {
     await db.getBytesInUse(),
   );
 
-  document.getElementById('export-old').onclick = exportOldTexts;
   await refresh(table);
 };
 
@@ -123,9 +125,164 @@ async function createDownload(texts) {
   });
 }
 
-// This function is designed to export legacy data stored in chrome.storage.local.
-// It is intentionally using local storage instead of sync storage to handle older data.
-async function exportOldTexts() {
-  const texts = await chrome.storage.local.get();
-  await createDownload(texts);
+async function handleFiles() {
+  if (!this.files || this.files.length === 0) {
+    alert('Please select a file to import.');
+    return;
+  }
+  const file = this.files[0];
+  await importTexts(file);
+}
+
+async function importTexts(file) {
+  const fileType = file.type;
+  const reader = new FileReader();
+  reader.onload = async function (event) {
+    const body = event.target.result.trim();
+    switch (fileType) {
+      case 'text/csv':
+        await importPocket(body);
+        break;
+      case 'application/json':
+        await importJson(body);
+        break;
+      default:
+        throw new Error('Unsupported file type: ' + fileType);
+    }
+  };
+  reader.readAsText(file);
+}
+
+const StorageFormat = Object.freeze({
+  // Version 0: Initial version
+  // Texts are stored as an array of objects with id, text, url and createdAt fields.
+  ZERO: 0,
+});
+
+function formatFromVersion(version) {
+  const parts = version.split('.');
+  if (parts.length !== 3) {
+    throw new Error('Invalid version format. Expected format: x.y.z');
+  }
+  // Each part should less than 1000
+  const _numVersion =
+    Number(parts[0]) * 1000_000 + Number(parts[1]) * 1000 + Number(parts[2]);
+
+  // For now we always return ZERO.
+  return StorageFormat.ZERO;
+}
+
+async function importJson(jsonContent) {
+  const json = JSON.parse(jsonContent);
+  if (!json.texts || !Array.isArray(json.texts)) {
+    alert('Invalid JSON format. Expected an array of texts.');
+    return;
+  }
+  const format = formatFromVersion(json.version);
+  const items = {};
+  switch (format) {
+    case StorageFormat.ZERO: {
+      // Version 0: Initial version
+      // Texts are stored as an array of [id, text, url, createdAt].
+      for (const text of json.texts) {
+        const [id, content, url, createdAt] = text;
+        if (!id || !content || !url || !createdAt) {
+          alert(
+            `Invalid text format. Each text must have id, text, url and createdAt fields. line: ${JSON.stringify(text)}`,
+          );
+          return;
+        }
+        const newText = await db.prepareText(content, url, createdAt, id);
+        Object.assign(items, newText);
+      }
+      break;
+    }
+    default:
+      throw new Error(`Unsupported storage format: ${format}`);
+  }
+
+  await db.saveItems(items);
+  alert(
+    `Import Success! input:${json.texts.length}, imported:${Object.keys(items).length}`,
+  );
+  window.location.reload();
+}
+
+async function importPocket(csvContent) {
+  const lines = csvContent.split('\n');
+  let successCount = 0;
+  const items = {};
+  for (const line of lines) {
+    if (line.trim() === '') {
+      continue;
+    }
+
+    try {
+      const { title, url, createdAt } = parsePocketRow(line);
+      if (title === 'title' || url === 'url') {
+        // Skip header line
+        continue;
+      }
+      const createdAtMs = createdAt * 1000; // Convert to milliseconds
+      const newText = await db.prepareText(
+        title,
+        url,
+        createdAtMs,
+        `id-${createdAtMs}`,
+      );
+      Object.assign(items, newText);
+      successCount += 1;
+    } catch (e) {
+      console.error(e);
+      alert(
+        `Error when parsing line: ${line}, processed:${successCount}, error:\n${e.message}`,
+      );
+      return;
+    }
+  }
+
+  await db.saveItems(items);
+  alert(
+    `Import Success! input:${successCount}, imported:${Object.keys(items).length}`,
+  );
+  window.location.reload();
+}
+
+function parsePocketRow(inputString) {
+  const parts = [];
+  let inQuote = false;
+  let currentPart = '';
+
+  for (let i = 0; i < inputString.length; i++) {
+    const char = inputString[i];
+
+    if (char === '"') {
+      inQuote = !inQuote;
+      // If it's in the beginning of delimiter position, skip to next char.
+      if (i === 0 || inputString[i - 1] === ',') {
+        continue;
+      }
+      // If it's in the ending of delimiter position, skip to next char.
+      if (i === inputString.length - 1 || inputString[i + 1] === ',') {
+        continue;
+      }
+    }
+
+    if (char === ',' && !inQuote) {
+      parts.push(currentPart);
+      currentPart = '';
+    } else {
+      currentPart += char;
+    }
+  }
+  parts.push(currentPart);
+
+  return {
+    title: parts[0].trim(),
+    url: parts[1].trim(),
+    createdAt: Number(parts[2]),
+    // those fields are not used in this extension
+    // tags: parts[3],
+    // status: parts[4]
+  };
 }

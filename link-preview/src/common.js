@@ -1,5 +1,7 @@
 'use strict';
 
+/* eslint-disable no-unused-vars */
+
 const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 
 class DB {

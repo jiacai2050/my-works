@@ -41,6 +41,36 @@ export class Database {
     return await storage.remove(key);
   }
 
+  async addText(text, url, createdAt = Date.now(), id) {
+    const storeItems = await this.prepareText(text, url, createdAt, id);
+    return await this.saveItems(storeItems);
+  }
+
+  async saveItems(storeItems) {
+    const storage = await this.getStorage();
+    const engine = await this.getEngine();
+    await storage.set(storeItems);
+    return engine;
+  }
+
+  async prepareText(text, url, createdAt = Date.now(), id) {
+    const engine = await this.getEngine();
+    switch (engine) {
+      case 'local': {
+        const uuid = id || crypto.randomUUID();
+        return {
+          [uuid]: { text, url, createdAt },
+        };
+      }
+      case 'sync': {
+        const uuid = id || `id-${createdAt}`;
+        return { [uuid]: [text, url] };
+      }
+      default:
+        throw new Error(`Unknown storage engine: ${engine}`);
+    }
+  }
+
   async getTexts() {
     const engine = await this.getEngine();
     switch (engine) {

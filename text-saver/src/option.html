@@ -12,6 +12,24 @@
         grid-template-columns: 0fr 80% 0fr;
         place-content: center;
       }
+      table {
+        width: 100%;
+        table-layout: fixed;
+        border-collapse: collapse;
+        word-break: break-word;
+      }
+      table th:nth-child(1),
+      table td:nth-child(1) {
+        width: 80%;
+      }
+      table th:nth-child(2),
+      table td:nth-child(2) {
+        width: 10%;
+      }
+      table th:nth-child(3),
+      table td:nth-child(3) {
+        width: 10%;
+      }
     </style>
 
     <title>Text Saver</title>
@@ -20,12 +38,19 @@
     <header>
       <nav>
         <a id="home">Home</a>
-        <a href="#" id="btn-export">Export </a>
+        <a href="#" id="btn-export">Export</a>
+        <a
+          href="#"
+          id="btn-import"
+          title="Import exported JSON files or Pocket's CSV files into Text Saver"
+          >Import</a
+        >
       </nav>
       <h1><img src="128x128.png" width="40px" />&nbsp;&nbsp;TextSaver</h1>
       <p id="description"></p>
     </header>
     <main>
+      <input type="file" id="import-file" style="display: none" />
       <table>
         <thead>
           <tr>
@@ -61,7 +86,9 @@
 
     <footer>
       Version: <span id="version"></span> <br />
-      Texts missing? Try <a href="#" id="export-old">export old texts.</a>
+      📣 Text-Saver supports importing
+      <a href="https://liujiacai.net/text-saver/#import">contents from Pocket</a
+      >!
     </footer>
     <script type="module" src="option.js"></script>
   </body>

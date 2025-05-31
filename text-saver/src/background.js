@@ -30,7 +30,7 @@ async function saveSelection(item, tab) {
   }
 
   const url = linkUrl || pageUrl;
-  const engine = await saveText(selectionText, url);
+  const engine = await db.addText(selectionText, url);
   return [selectionText, engine];
 }
 
@@ -95,39 +95,4 @@ function createAndShowPopup(text, engine) {
       document.body.removeChild(popupContainer);
     }
   }, 4000);
-}
-
-async function saveText(text, url) {
-  const now = Date.now();
-  const engine = await db.getEngine();
-  switch (engine) {
-    case 'local':
-      await saveTextToLocal(now, text, url);
-      return engine;
-    case 'sync':
-      await saveTextToSync(now, text, url);
-      return engine;
-    default:
-      throw new Error(`Unknown storage engine: ${engine}`);
-  }
-}
-
-async function saveTextToLocal(now, text, url) {
-  const uuid = crypto.randomUUID();
-  const row = {
-    [uuid]: {
-      text: text,
-      url: url,
-      createdAt: now,
-    },
-  };
-  await chrome.storage.local.set(row);
-}
-
-async function saveTextToSync(now, text, url) {
-  const id = `id-${now}`;
-  const row = {
-    [id]: [text, url],
-  };
-  await chrome.storage.sync.set(row);
 }
