@@ -284,7 +284,7 @@ function parsePocketRow(inputString) {
     title: parts[0].trim(),
     url: parts[1].trim(),
     createdAt: Number(parts[2]),
-    // those fieldsare not used in this extension
+    // those fields are not used in this extension
     // tags: parts[3],
     // status: parts[4]
   };
