@@ -36,6 +36,8 @@ async function textAction(id, action, btn) {
 
 async function refresh(tableElement) {
   const rows = await db.getTexts();
+  document.getElementById('total-texts').textContent = rows.length;
+
   // sort by createdAt desc
   rows.sort((a, b) => b[3] - a[3]);
   let table = [];
@@ -94,6 +96,7 @@ window.onload = async function () {
 
   const engineSelect = document.getElementById('storage-engine');
   engineSelect.value = await db.getEngine();
+  document.getElementById('storage-type').textContent = engineSelect.value;
   engineSelect.onchange = async function () {
     await db.setEngine(engineSelect.value);
     window.location.reload();
