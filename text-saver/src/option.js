@@ -201,7 +201,13 @@ async function importJson(jsonContent) {
       throw new Error(`Unsupported storage format: ${format}`);
   }
 
-  await db.saveItems(items);
+  try {
+    await db.saveItems(items);
+  } catch (e) {
+    console.error('Error saving items:', e);
+    alert(`Failed to save texts to database. Error: \n${e.message}`);
+    return;
+  }
   alert(
     `Import Success! input:${json.texts.length}, imported:${Object.keys(items).length}`,
   );
@@ -241,7 +247,14 @@ async function importPocket(csvContent) {
     }
   }
 
-  await db.saveItems(items);
+  try {
+    await db.saveItems(items);
+  } catch (e) {
+    console.error('Error saving items:', e);
+    alert(`Failed to save texts to database. Error: \n${e.message}`);
+    return;
+  }
+
   alert(
     `Import Success! input:${successCount}, imported:${Object.keys(items).length}`,
   );
