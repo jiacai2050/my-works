@@ -217,9 +217,12 @@ async function importPocket(csvContent) {
   let successCount = 0;
   const items = {};
   for (const line of lines) {
+    if (line.trim() === '') {
+      continue;
+    }
+
     try {
       const { title, url, createdAt } = parsePocketRow(line);
-      console.log(createdAt);
       if (title === 'title' || url === 'url') {
         // Skip header line
         continue;
@@ -258,14 +261,13 @@ function parsePocketRow(inputString) {
     const char = inputString[i];
 
     if (char === '"') {
-      inQuote = !inQuote; // 切换引用状态
-      // 如果是开头的引号，不添加到 currentPart；如果是结尾的引号，也不添加到 currentPart
+      inQuote = !inQuote;
+      // If it's in the beginning of delimiter position, skip to next char.
       if (i === 0 || inputString[i - 1] === ',') {
-        // 假设开头或紧跟逗号的引号是标题的开始
         continue;
       }
+      // If it's in the ending of delimiter position, skip to next char.
       if (i === inputString.length - 1 || inputString[i + 1] === ',') {
-        // 假设结尾或紧跟逗号的引号是标题的结束
         continue;
       }
     }
@@ -277,9 +279,8 @@ function parsePocketRow(inputString) {
       currentPart += char;
     }
   }
-  parts.push(currentPart); // 添加最后一个部分
+  parts.push(currentPart);
 
-  // 解析并返回结构化数据
   return {
     title: parts[0].trim(),
     url: parts[1].trim(),
