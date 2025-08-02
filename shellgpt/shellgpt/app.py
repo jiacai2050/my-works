@@ -26,8 +26,6 @@ from .utils.common import (
 )
 from .history import History
 
-__version__ = '0.5.5'
-
 
 def init_app():
     print(f'Create {CONF_PATH}...')
@@ -228,6 +226,16 @@ When system content is shell , type "e" to explain, "r" to run last command.
         print()
 
 
+def get_version():
+    from importlib import metadata
+
+    try:
+        version = metadata.version('shgpt')
+        return version
+    except metadata.PackageNotFoundError:
+        return 'Version not found'
+
+
 def main():
     parser = argparse.ArgumentParser(
         prog='sg',
@@ -287,7 +295,7 @@ def main():
     parser.add_argument('--list', action='store_true', help='list known system content')
     parser.add_argument('-v', '--verbose', action='store_true', help='verbose mode')
     parser.add_argument(
-        '-V', '--version', action='version', version='%(prog)s ' + __version__
+        '-V', '--version', action='version', version='%(prog)s ' + get_version()
     )
     parser.add_argument('prompt', metavar='<prompt>', nargs='*')
     args = parser.parse_args()

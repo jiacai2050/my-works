@@ -5,7 +5,7 @@ repl:
 	python -m shellgpt -r $(args)
 
 build: clean
-	hatch build
+	uvbuild
 
 clean:
 	rm -rf build dist
@@ -18,20 +18,17 @@ lint:
 	ruff check
 	ruff format --check
 
-shell:
-	hatch shell
+sync:
+	uv sync
 
-ut:
-	hatch run python -m unittest -v
+ut: sync
+	.venv/bin/python -m unittest -v
 
 contents:
 	@ python download-contents.py
-
-env:
-	python3 -m venv env
 
 dep:
 	pip install -e .
 	pip install -e "shellgpt.[tui]"
 
-.PHONY: tui repl build clean fix lint shell contents dep
+.PHONY: tui repl build clean fix lint sync contents dep

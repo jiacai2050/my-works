@@ -16,10 +16,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install pypa
-        run: >-
-          pip install hatch
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+      - name: build
+        run: |
+          uv build
       - name: Pulish
         run: |
-          hatch build
-          hatch publish -u '__token__' -a '${{ secrets.HATCH_INDEX_AUTH }}'
+          uv publish -t '${{ secrets.HATCH_INDEX_AUTH }}'

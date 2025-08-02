@@ -1,10 +1,6 @@
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
 [project]
 name = "shgpt"
-dynamic = ["version"]
+version = "0.6.0"
 authors = [{name = "Jiacai Liu", email="dev@liujiacai.net"}]
 description = "Chat with LLM in your terminal, be it shell generator, story teller, linux-terminal, etc."
 readme = "README.md"
@@ -19,7 +15,6 @@ classifiers = [
     "Operating System :: OS Independent",
     "Topic :: Software Development",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
-    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Intended Audience :: Information Technology",
     "Intended Audience :: System Administrators",
     "Intended Audience :: Developers",
@@ -35,7 +30,7 @@ classifiers = [
 
 [project.optional-dependencies]
 test = []
-tui = ["textual"]
+# tui = ["textual"]
 
 [project.urls]
 Repository = "https://github.com/jiacai2050/my-works/tree/main/shellgpt"
@@ -45,22 +40,13 @@ Issues = "https://github.com/jiacai2050/my-works/issues"
 sg = "shellgpt:main"
 shellgpt = "shellgpt:main"
 
-[tool.hatch.version]
-path = "shellgpt/app.py"
+[build-system]
+requires = ["setuptools>=80.0"]
+build-backend = "setuptools.build_meta"
 
-[tool.hatch.build.targets.sdist]
-include = [
-  "shellgpt",
-  "tests",
-  "pyproject.toml",
-  "README.md",
-  "Makefile",
-]
-
-[tool.hatch.build.targets.wheel]
-include = [
-  "shellgpt",
-]
+[tool.setuptools.packages.find]
+exclude = ["tests"]
+include = ["shellgpt"]
 
 # https://github.com/astral-sh/ruff?tab=readme-ov-file#configuration
 [tool.ruff.lint]

@@ -4,10 +4,17 @@ from ..utils.http import TimeoutSession
 from ..utils.common import base64_image, debug_print, prepare_prompt
 from ..utils.conf import IMAGE_MODEL, SYSTEM_CONTENT
 from urllib.parse import urljoin
+from enum import Enum
 
 
 def get_system_content(sc):
     return SYSTEM_CONTENT.get(sc, sc)
+
+
+class Backend(Enum):
+    OpenAI = 1
+    Ollama = 2
+    GitHub = 3
 
 
 class LLM(object):
@@ -17,9 +24,12 @@ class LLM(object):
         session = TimeoutSession(timeout=timeout)
         if key is not None and key != '':
             session.headers = {'Authorization': f'Bearer {key}'}
-            self.use_openai = True
+            if base_url.startswith('https://models.github.ai'):
+                self.backend = Backend.GitHub
+            else:
+                self.backend = Backend.OpenAI
         else:
-            self.use_openai = False
+            self.backend = Backend.Ollama
         self.base_url = base_url
         self.model = model
         self.http_session = session
@@ -29,21 +39,32 @@ class LLM(object):
         self.messages = []
 
     def chat(self, prompt, stream=True, add_system_message=True):
-        return (
-            self.chat_openai(prompt, stream, add_system_message)
-            if self.use_openai
-            else self.chat_ollama(prompt, stream, add_system_message)
+        if self.backend == Backend.GitHub:
+            # GitHub request format is the same as OpenAI, only with different url path
+            return self.chat_openai(prompt, stream, add_system_message)
+        elif self.backend == Backend.OpenAI:
+            return self.chat_openai(prompt, stream, add_system_message)
+        elif self.backend == Backend.Ollama:
+            return self.chat_ollama(prompt, stream, add_system_message)
+
+        raise Exception(
+            f'Unsupported backend: {self.backend}, please check your configuration.'
         )
 
     def chat_openai(self, prompt, stream, add_system_message):
-        url = urljoin(self.base_url, '/v1/chat/completions')
+        # https://docs.github.com/en/rest/models/inference?apiVersion=2022-11-28#run-an-inference-request
+        url = (
+            urljoin(self.base_url, '/v1/chat/completions')
+            if self.backend == Backend.OpenAI
+            else urljoin(self.base_url, '/inference/chat/completions')
+        )
         messages, model = self.make_messages(
             prompt,
             False,
             add_system_message,
         )
         debug_print(
-            f'chat: {prompt} to {url} with model {self.model} system_content {self.system_content} and stream {stream}, messages: \n{messages}'
+            f'chat: {prompt} to {url} with model {self.model}-{self.backend} system_content {self.system_content} and stream {stream}, messages: \n{messages}'
         )
         payload = {
             'messages': messages,

@@ -20,12 +20,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install
-        run: |
-          pip install hatch
-          pip install ruff
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
       - name: lint
         run: |
+          pip install ruff
           make lint
       - name: unit test
-        run: make ut
+        run: |
+          make ut
