@@ -1,6 +1,6 @@
 [project]
 name = "shgpt"
-version = "0.6.0"
+version = "0.6.1"
 authors = [{name = "Jiacai Liu", email="dev@liujiacai.net"}]
 description = "Chat with LLM in your terminal, be it shell generator, story teller, linux-terminal, etc."
 readme = "README.md"
@@ -46,7 +46,7 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 exclude = ["tests"]
-include = ["shellgpt"]
+include = ["shellgpt", "shellgpt.*"]
 
 # https://github.com/astral-sh/ruff?tab=readme-ov-file#configuration
 [tool.ruff.lint]
