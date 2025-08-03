@@ -137,13 +137,24 @@ class ShellGPT(object):
                 return True
 
         if prompt.startswith('copy') or prompt.startswith('c'):
+            if not self.answers:
+                print('No answer to copy!')
+                return True
+
             args = prompt.strip().split(' ')
             if len(args) == 1:
                 copy_text(self.answers[-1])
                 return True
             elif len(args) == 2:
-                limit = -1 * int(args[1])
-                copy_text('\n'.join(self.answers[limit:]))
+                try:
+                    count = int(args[1])
+                    if count > 0:
+                        limit = -count
+                        copy_text('\n'.join(self.answers[limit:]))
+                    else:
+                        print("Number of entries to copy must be a positive integer.")
+                except ValueError:
+                    print(f"Invalid number: {args[1]}")
                 return True
 
         # Following parse set command
