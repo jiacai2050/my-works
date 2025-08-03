@@ -1,11 +1,11 @@
 tui:
-	python -m shellgpt -t $(args)
+	uv run python -m shellgpt -t $(args)
 
 repl:
-	python -m shellgpt -r $(args)
+	uv run python -m shellgpt -r $(args)
 
 build: clean
-	uvbuild
+	uv build
 
 clean:
 	rm -rf build dist
@@ -21,8 +21,8 @@ lint:
 sync:
 	uv sync
 
-ut: sync
-	.venv/bin/python -m unittest -v
+ut:
+	uv run python -m unittest -v
 
 contents:
 	@ python download-contents.py
