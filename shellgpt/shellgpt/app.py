@@ -152,9 +152,9 @@ class ShellGPT(object):
                         limit = -count
                         copy_text('\n'.join(self.answers[limit:]))
                     else:
-                        print("Number of entries to copy must be a positive integer.")
+                        print('Number of entries to copy must be a positive integer.')
                 except ValueError:
-                    print(f"Invalid number: {args[1]}")
+                    print(f'Invalid number: {args[1]}')
                 return True
 
         # Following parse set command
