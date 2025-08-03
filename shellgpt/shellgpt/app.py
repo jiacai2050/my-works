@@ -75,7 +75,7 @@ class ShellGPT(object):
         history,
     ):
         self.is_shell = system_content == 'shell'
-        self.last_answer = None
+        self.answers = []
         self.history = history
         self.num_prompt = 0
         self.llm = LLM(
@@ -108,33 +108,53 @@ class ShellGPT(object):
             except EOFError:  # Ctrl+D to finish
                 return prompt
 
-    # return true when prompt is a set command
+    # return true when prompt is a builtin command
     def repl_action(self, prompt):
         if 'exit' == prompt:
             self.history.remove_last()
             raise EOFError
-        elif prompt in ['c', 'copy']:
-            copy_text(self.last_answer)
-            return True
         elif prompt == 'clear':
             self.llm.messages.clear()
-            copy_text(self.last_answer)
             return True
         elif prompt in ['ed', 'editor']:
             new_prompt = self.editor()
             if new_prompt is not None:
                 self.infer(new_prompt)
             return True
-        elif prompt in ['clear']:
-            self.llm.messages = []
-            return True
 
         if self.is_shell:
             if prompt in ['e', 'explain']:
-                self.explain_cmd(self.last_answer)
+                if len(self.answers) == 0:
+                    print('No command to explain!')
+                else:
+                    self.explain_cmd(self.answers[-1])
                 return True
             elif prompt in ['r', 'run']:
-                print(execute_cmd(self.last_answer, ask=True))
+                if len(self.answers) == 0:
+                    print('No command to execute!')
+                else:
+                    print(execute_cmd(self.answers[-1], ask=True))
+                return True
+
+        if prompt.startswith('copy') or prompt.startswith('c'):
+            if not self.answers:
+                print('No answer to copy!')
+                return True
+
+            args = prompt.strip().split(' ')
+            if len(args) == 1:
+                copy_text(self.answers[-1])
+                return True
+            elif len(args) == 2:
+                try:
+                    count = int(args[1])
+                    if count > 0:
+                        limit = -count
+                        copy_text('\n'.join(self.answers[limit:]))
+                    else:
+                        print('Number of entries to copy must be a positive integer.')
+                except ValueError:
+                    print(f'Invalid number: {args[1]}')
                 return True
 
         # Following parse set command
@@ -167,7 +187,7 @@ __      __   _                    _         ___ _        _ _  ___ ___ _____
 
 Type "exit" or ctrl-d to exit; ctrl-c to stop response; "c" to copy last answer;
      "clear" to reset history messages; "ed" to enter editor mode.
-When system content is shell , type "e" to explain, "r" to run last command.
+When system content is shell, type "e" to explain, "r" to run last command.
 """,
             end='',
         )
@@ -197,33 +217,36 @@ When system content is shell , type "e" to explain, "r" to run last command.
             return
 
         self.num_prompt += 1
-        self.last_answer = ''
+        resp = ''
         try:
             for r in self.llm.chat(prompt):
-                self.last_answer += r
+                resp += r
                 if self.is_shell is False:
                     print(r, end='', flush=True)
 
             if self.is_shell:
-                shell = extract_code(self.last_answer)
-                if shell is not None:
-                    self.last_answer = shell
-                print(self.last_answer)
+                code = extract_code(resp)
+                if code is not None:
+                    resp = code
+                print(resp)
             else:
                 print()
         except Exception as e:
             print(f'Error when infer: ${e}')
             if is_verbose():
                 raise e
+        finally:
+            self.answers.append(resp)
 
     def explain_cmd(self, cmd):
-        self.last_answer = ''
+        resp = ''
         for r in self.llm.chat(
             f'Explain this command: {cmd}', add_system_message=False
         ):
-            self.last_answer += r
+            resp += r
             print(r, end='', flush=True)
         print()
+        self.answers.append(resp)
 
 
 def get_version():

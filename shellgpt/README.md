@@ -12,6 +12,12 @@ Chat with LLM in your terminal, be it shell generator, story teller, linux-termi
 pip install -U shgpt
 ```
 
+or if you prefer to use [uvtool](https://docs.astral.sh/uv/concepts/tools/)
+
+```bash
+uv tool install shgpt
+```
+
 This will install two commands: `sg` and `shellgpt`, which are identical.
 
 After install, use `sg --init` to create required directories(mainly `~/.shellgpt`).
@@ -39,6 +45,12 @@ export SHELLGPT_MODEL='gpt-3.5-turbo'
 export SHELLGPT_API_URL=https://api.cloudflare.com/client/v4/accounts/<account-id>/ai
 export SHELLGPT_API_KEY=<token>
 export SHELLGPT_MODEL='@cf/meta/llama-3-8b-instruct'
+
+# or GitHub Models
+# https://docs.github.com/en/github-models/quickstart
+export SHELLGPT_API_URL=https://models.github.ai
+export SHELLGPT_MODEL=openai/gpt-4.1
+export SHELLGPT_API_KEY=$GITHUB_TOKEN
 ```
 
 See [conf.py](shellgpt/utils/conf.py) for more configs.

@@ -57,7 +57,7 @@ def read_stdin():
 
 
 def copy_text(text):
-    if text is None:
+    if text is None or text.strip() == '':
         print('No text to copy!')
     else:
         pyperclip.copy(text)

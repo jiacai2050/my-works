@@ -26,6 +26,9 @@ class History:
     def len(self):
         return readline.get_current_history_length()
 
+    def get_item(self, i):
+        return readline.get_history_item(i)
+
     def remove_last(self):
         return readline.remove_history_item(self.len() - 1)
 
