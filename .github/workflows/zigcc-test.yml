@@ -33,7 +33,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: mlugg/setup-zig@v2
       - name: Install ZigCC
         run: |
@@ -83,7 +83,7 @@ jobs:
         os: [ubuntu-latest, macos-latest]
         # zig-targets: [x86_64-windows, x86_64-linux, x86_64-macos, aarch64-macos]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Cache Rust Dependencies
         uses: actions/cache@v4
         with:
