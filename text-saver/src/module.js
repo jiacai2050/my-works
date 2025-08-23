@@ -4,6 +4,7 @@ const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 
 export class Database {
   static #keyEngine = 'engine';
+  static #keyEnablePopup = 'popup';
   static #instance = null; // Private static field to hold the instance
 
   constructor() {
@@ -29,6 +30,19 @@ export class Database {
 
   async setEngine(engine) {
     return await chrome.storage.sync.set({ [Database.#keyEngine]: engine });
+  }
+
+  async getPopup() {
+    const opt = await chrome.storage.sync.get({
+      [Database.#keyEnablePopup]: true,
+    });
+    return opt[Database.#keyEnablePopup];
+  }
+
+  async setPopup(enable) {
+    return await chrome.storage.sync.set({
+      [Database.#keyEnablePopup]: enable,
+    });
   }
 
   async getStorage() {

@@ -94,6 +94,12 @@ window.onload = async function () {
     inputImportFile.click();
   };
 
+  const popupCheckbox = document.getElementById('enable-popup');
+  popupCheckbox.checked = await db.getPopup();
+  popupCheckbox.onchange = async function () {
+    await db.setPopup(popupCheckbox.checked);
+  };
+
   const engineSelect = document.getElementById('storage-engine');
   engineSelect.value = await db.getEngine();
   document.getElementById('storage-type').textContent = engineSelect.value;

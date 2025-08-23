@@ -37,6 +37,10 @@ async function saveSelection(item, tab) {
 chrome.contextMenus.onClicked.addListener(async (item, tab) => {
   try {
     const [text, engine] = await saveSelection(item, tab);
+    const enablePopup = await db.getPopup();
+    if (!enablePopup) {
+      return;
+    }
     await chrome.scripting.executeScript({
       target: { tabId: tab.id },
       func: createAndShowPopup,
