@@ -1,7 +1,19 @@
 'use strict';
 
-/* global getPosition:readonly, getMaxLength:readonly metaCache:readonly getDomainEncoding:readonly setPosition:readonly setMaxLength:readonly setDomainEncoding: readonly humanSize:readonly */
+/* global getPosition:readonly, getMaxLength:readonly metaCache:readonly
+   setPosition:readonly, getPerSiteConfig:readonly, setPerSiteConfig:readonly
+   setMaxLength:readonly, humanSize:readonly */
 
+const validPositions = Object.freeze([
+  'top',
+  'bottom',
+  'left',
+  'right',
+  'top-right',
+  'top-left',
+  'bottom-right',
+  'bottom-left',
+]);
 document.addEventListener('DOMContentLoaded', onload);
 
 async function onload() {
@@ -11,39 +23,44 @@ async function onload() {
   document.getElementById('home').href = manifest.homepage_url;
 
   const position = document.getElementById('position');
-  const defaultPosition = await getPosition();
+  validPositions.forEach((pos) => {
+    const option = document.createElement('option');
+    option.value = pos;
+    option.textContent = pos;
+    position.appendChild(option);
+  });
+  const defaultPosition = await getPosition([]);
   position.value = defaultPosition;
   position.onchange = async function () {
     await setPosition(position.value);
   };
 
   const maxLength = document.getElementById('max-length');
-  const defaultMaxLength = await getMaxLength();
+  const defaultMaxLength = await getMaxLength([]);
   maxLength.value = defaultMaxLength;
   maxLength.oninput = async function () {
     await setMaxLength(maxLength.value);
   };
 
-  const domainEncoding = document.getElementById('domain-encoding');
-  const defaultDomainEncoding = await getDomainEncoding();
-  domainEncoding.value = stringifyDomainEncoding(defaultDomainEncoding);
-  const btnEncoding = document.getElementById('btn-encoding');
-  btnEncoding.textContent = domainEncoding.hasAttribute('disabled')
+  const perSiteConfig = document.getElementById('per-site-config');
+  perSiteConfig.value = stringifyConfig(await getPerSiteConfig());
+  const btnConfig = document.getElementById('btn-config');
+  btnConfig.textContent = perSiteConfig.hasAttribute('disabled')
     ? 'Edit'
     : 'Save';
-  btnEncoding.onclick = async function () {
-    if (domainEncoding.hasAttribute('disabled')) {
+  btnConfig.onclick = async function () {
+    if (perSiteConfig.hasAttribute('disabled')) {
       // Enter input mode
-      domainEncoding.removeAttribute('disabled');
-      btnEncoding.textContent = 'Save';
+      perSiteConfig.removeAttribute('disabled');
+      btnConfig.textContent = 'Save';
     } else {
       // Enter review mode
       try {
-        const encodings = parseDomainEncoding(domainEncoding.value);
-        await setDomainEncoding(encodings);
-        domainEncoding.setAttribute('disabled', true);
-        btnEncoding.textContent = 'Edit';
-        alert(`Succeed, ${encodings.length} rules saved!`);
+        const str = parseConfig(perSiteConfig.value);
+        await setPerSiteConfig(str);
+        perSiteConfig.setAttribute('disabled', true);
+        btnConfig.textContent = 'Edit';
+        alert(`Succeed, ${str.length} rules saved!`);
       } catch (e) {
         alert(`${e}`);
       }
@@ -61,41 +78,86 @@ async function onload() {
   };
 }
 
-// return [ [domain, encoding], ...]
-function parseDomainEncoding(encodings) {
-  if (!encodings || encodings.trim() === '') {
+// return [ [domain, [k1,v1], [k2,v2]], ...]
+const validKeys = Object.freeze([
+  'status',
+  'encoding',
+  'max-length',
+  'position',
+]);
+const validValues = Object.freeze({
+  position: validPositions,
+  status: ['on', 'off'],
+  'max-length': (str) => {
+    const length = Number(str);
+    if (isNaN(length)) {
+      throw new Error(
+        `Invalid config, max-length config must be number, current:${str}`,
+      );
+    }
+    return length;
+  },
+});
+
+function parseConfig(str) {
+  if (str.trim() === '') {
     throw new Error('Input cannot be empty!');
   }
 
-  const lines = encodings.trim().split('\n');
+  const lines = str.trim().split('\n');
   const result = [];
-
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    const parts = line.split(',');
-
-    if (parts.length !== 2) {
-      throw new Error(
-        `Error occurs in line ${i + 1}, should be 'domain,encoding' format`,
-      );
+    const line = lines[i].trim();
+    if (line.length === 0 || line[0] === '#') {
+      continue;
     }
 
+    const parts = line.split(',');
     const domain = parts[0].trim();
-    const encoding = parts[1].trim();
-
-    if (domain === '' || encoding === '') {
+    if (domain === '') {
       throw new Error(`There are empty values in line ${i + 1}`);
     }
 
-    result.push([domain, encoding]);
+    const rule = [domain];
+    for (const kv of parts.slice(1)) {
+      const pair = kv.split('=');
+      if (pair.length !== 2) {
+        throw new Error(`There are valid setting(${kv}) in line ${i + 1}`);
+      }
+      let [key, value] = pair;
+      if (!validKeys.includes(key)) {
+        throw new Error(`There are known config(${key}) in line ${i + 1}`);
+      }
+      const values = validValues[key];
+      if (values) {
+        if (typeof values === 'function') {
+          value = values(value);
+        } else if (!values.includes(value)) {
+          throw new Error(
+            `Invalid config value(${value}) for ${key} in line ${i + 1}`,
+          );
+        }
+      }
+      rule.push([key, value]);
+    }
+
+    if (rule.length < 2) {
+      throw new Error(
+        `There is no config value for ${domain} in line ${i + 1}`,
+      );
+    }
+    result.push(rule);
   }
 
   return result;
 }
 
-// return [ [domain, encoding], ...]
-function stringifyDomainEncoding(encodings) {
-  return encodings
-    .map(([domain, encoding]) => `${domain},${encoding}`)
+// configs is [[domain, [k, v]... ], [...] ]
+function stringifyConfig(configs) {
+  return configs
+    .map(([domain, ...keyValues]) => {
+      const keyValueString = keyValues.map(([k, v]) => `${k}=${v}`).join(',');
+      return `${domain},${keyValueString}`;
+    })
     .join('\n');
 }

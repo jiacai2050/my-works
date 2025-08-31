@@ -1,38 +1,56 @@
 'use strict';
 
-/* global getPosition:readonly, getMaxLength:readonly metaCache:readonly getDomainEncoding:readonly */
+/* global getPosition:readonly, getMaxLength:readonly metaCache:readonly
+   getPerSiteConfig:readonly, getEncoding:readonly, getStatus:readonly */
 
 const linkSelector = 'a[href]:not([href=""]):not([href^="#"])';
-const links = document.querySelectorAll(linkSelector);
-// console.log(`Total links:${links.length}`);
+const currentDomain = window.location.hostname;
 
-links.forEach((link) => {
-  link.addEventListener('mouseover', handleLinkHover);
-});
+function isDisabled(siteConfig) {
+  const status = getStatus(siteConfig, currentDomain);
+  if (!status) {
+    return false;
+  }
 
-const observer = new MutationObserver((mutations) => {
-  mutations.forEach((mutation) => {
-    if (mutation.addedNodes) {
-      mutation.addedNodes.forEach((node) => {
-        if (node.nodeType === Node.ELEMENT_NODE) {
-          if (node.tagName === 'A' && node.href) {
-            node.addEventListener('mouseover', handleLinkHover);
-          }
+  return status === 'off';
+}
 
-          const childLinks = node.querySelectorAll(linkSelector);
-          childLinks.forEach((link) => {
-            link.addEventListener('mouseover', handleLinkHover);
-          });
-        }
-      });
-    }
+(async () => {
+  const siteConfig = await getPerSiteConfig();
+  if (isDisabled(siteConfig)) {
+    return;
+  }
+
+  const links = document.querySelectorAll(linkSelector);
+  // console.log(`Total links:${links.length}`);
+  links.forEach((link) => {
+    link.addEventListener('mouseover', handleLinkHover);
   });
-});
 
-observer.observe(document.body, {
-  childList: true,
-  subtree: true,
-});
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.addedNodes) {
+        mutation.addedNodes.forEach((node) => {
+          if (node.nodeType === Node.ELEMENT_NODE) {
+            if (node.tagName === 'A' && node.href) {
+              node.addEventListener('mouseover', handleLinkHover);
+            }
+
+            const childLinks = node.querySelectorAll(linkSelector);
+            childLinks.forEach((link) => {
+              link.addEventListener('mouseover', handleLinkHover);
+            });
+          }
+        });
+      }
+    });
+  });
+
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true,
+  });
+})();
 
 async function handleLinkHover(event) {
   const link = event.currentTarget;
@@ -44,12 +62,21 @@ async function handleLink(link) {
     return;
   }
 
+  const siteConfig = await getPerSiteConfig();
+  if (isDisabled(siteConfig)) {
+    link.removeAttribute('role');
+    return;
+  }
+
   link.setAttribute('role', 'tooltip');
-  link.setAttribute('data-microtip-position', await getPosition());
+  link.setAttribute(
+    'data-microtip-position',
+    await getPosition(siteConfig, currentDomain),
+  );
   link.setAttribute('data-microtip-size', 'large');
   try {
-    const value = await fetchLinkInfo(link);
-    const maxLength = await getMaxLength();
+    const value = await fetchLinkInfo(siteConfig, link);
+    const maxLength = await getMaxLength(siteConfig, currentDomain);
     const label =
       value.length > maxLength ? value.substring(0, maxLength) : value;
     link.setAttribute('aria-label', label);
@@ -59,7 +86,7 @@ async function handleLink(link) {
   }
 }
 
-async function fetchLinkInfo(link) {
+async function fetchLinkInfo(siteConfig, link) {
   const url = link.href;
   if (!url.startsWith('http')) {
     return url;
@@ -70,15 +97,7 @@ async function fetchLinkInfo(link) {
     return cached;
   }
 
-  const customEncodings = await getDomainEncoding();
-  let encoding;
-  for (const [domain, expected] of customEncodings) {
-    if (domain === link.hostname) {
-      encoding = expected;
-      break;
-    }
-  }
-
+  const encoding = getEncoding(siteConfig, currentDomain);
   // console.log(link.hostname, encoding);
   const { success, string, isHtml, error } = await chrome.runtime.sendMessage({
     action: 'fetchPage',

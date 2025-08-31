@@ -58,28 +58,44 @@ const metaCache = isFirefox
   : new DB(chrome.storage.session);
 const settingStorage = new DB(chrome.storage.sync);
 
-async function getPosition() {
-  return (await settingStorage.get('position')) || 'bottom-right';
+async function getPosition(siteConfig, inputDomain) {
+  return (
+    getSpecificConfig(siteConfig, inputDomain, 'position') ||
+    (await settingStorage.get('position')) ||
+    'bottom-right'
+  );
 }
 
 async function setPosition(pos) {
   await settingStorage.set('position', pos);
 }
 
-async function getMaxLength() {
-  return (await settingStorage.get('max-length')) || 350;
+async function getMaxLength(siteConfig, inputDomain) {
+  return (
+    getSpecificConfig(siteConfig, inputDomain, 'max-length') ||
+    (await settingStorage.get('max-length')) ||
+    350
+  );
 }
 
 async function setMaxLength(len) {
   await settingStorage.set('max-length', len);
 }
 
-async function getDomainEncoding() {
-  return (await settingStorage.get('domain-encoding-arr')) || [];
+function getEncoding(siteConfig, inputDomain) {
+  return getSpecificConfig(siteConfig, inputDomain, 'encoding');
 }
 
-async function setDomainEncoding(v) {
-  await settingStorage.set('domain-encoding-arr', v);
+function getStatus(siteConfig, inputDomain) {
+  return getSpecificConfig(siteConfig, inputDomain, 'status');
+}
+
+async function getPerSiteConfig() {
+  return (await settingStorage.get('per-site-config')) || [];
+}
+
+async function setPerSiteConfig(v) {
+  await settingStorage.set('per-site-config', v);
 }
 
 function humanSize(size) {
@@ -90,4 +106,16 @@ function humanSize(size) {
     i += 1;
   }
   return `${size.toFixed(2)} ${units[i]}`;
+}
+
+function getSpecificConfig(siteConfig, expectedDomain, expectedKey) {
+  for (const [domain, ...kvs] of siteConfig) {
+    if (domain === expectedDomain) {
+      for (const [key, value] of kvs) {
+        if (key === expectedKey) {
+          return value;
+        }
+      }
+    }
+  }
 }

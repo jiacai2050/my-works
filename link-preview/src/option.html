@@ -30,16 +30,7 @@
 
     <main>
       <h4>Tooltip position</h4>
-      <select id="position" name="position">
-        <option value="top">top</option>
-        <option value="bottom">bottom</option>
-        <option value="left">left</option>
-        <option value="right">right</option>
-        <option value="top-right">top-right</option>
-        <option value="top-left">top-left</option>
-        <option value="bottom-right">bottom-right</option>
-        <option value="bottom-left">bottom-left</option>
-      </select>
+      <select id="position" name="position"></select>
 
       <h4>Tooltip max length</h4>
       <input
@@ -51,17 +42,32 @@
         step="10"
       />
 
-      <h4>Domain Encoding</h4>
-      One domain per-line, format <code>domain,encoding</code>. Default encoding
-      is UTF-8.
+      <h4>Per-website config</h4>
+      <details>
+        <summary>Rule format</summary>
+        One website per-line, format
+        <code>hostname,key1=value1,key2=value2</code>.<br />
+        Valid config keys are:
+        <ul>
+          <li>
+            <code>status</code>: whether enable link preview, could be
+            <code>on/off</code>
+          </li>
+          <li>
+            <code>encoding</code>: used for response decode, default is
+            <code>utf-8</code>
+          </li>
+          <li><code>max-length</code>: per-site tooltip max length</li>
+          <li><code>position</code>: per-site tooltip position</li>
+        </ul>
+      </details>
       <textarea
         rows="5"
         disabled="true"
-        name="domain-encoding"
-        id="domain-encoding"
+        name="per-site-config"
+        id="per-site-config"
       ></textarea>
-      <button id="btn-encoding"></button>
-
+      <button id="btn-config"></button>
       <h4>Link metadata cache</h4>
       <p class="notice">
         <strong>Size: </strong>
