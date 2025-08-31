@@ -126,7 +126,7 @@ function parseConfig(str) {
       }
       let [key, value] = pair;
       if (!validKeys.includes(key)) {
-        throw new Error(`There are known config(${key}) in line ${i + 1}`);
+        throw new Error(`There is an unknown config(${key}) in line ${i + 1}`);
       }
       const values = validValues[key];
       if (values) {
