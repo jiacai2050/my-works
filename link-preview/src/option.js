@@ -122,7 +122,7 @@ function parseConfig(str) {
     for (const kv of parts.slice(1)) {
       const pair = kv.split('=');
       if (pair.length !== 2) {
-        throw new Error(`There are valid setting(${kv}) in line ${i + 1}`);
+        throw new Error(`There is an invalid setting (${kv}) in line ${i + 1}`);
       }
       let [key, value] = pair;
       if (!validKeys.includes(key)) {
