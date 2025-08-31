@@ -97,7 +97,7 @@ async function fetchLinkInfo(siteConfig, link) {
     return cached;
   }
 
-  const encoding = getEncoding(siteConfig, currentDomain);
+  const encoding = getEncoding(siteConfig, link.hostname);
   // console.log(link.hostname, encoding);
   const { success, string, isHtml, error } = await chrome.runtime.sendMessage({
     action: 'fetchPage',
