@@ -43,7 +43,7 @@ jobs:
           ln -s "${HOME}/bin/zigcc" "${HOME}/bin/zigcxx"
           ln -s "${HOME}/bin/zigcc" "${HOME}/bin/zigcargo"
       - name: Install Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version: 'stable'
           cache: false
