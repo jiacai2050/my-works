@@ -61,42 +61,31 @@ async function onload() {
   };
 }
 
-// 每段最大存储 7.5KB，给一些 margin
-const CHUNK_SIZE = 7500;
+const MAX_KEYS = 5;        // 最多用 5 个 key
+const CHUNK_SIZE = 7000;   // 每个 key 存 7KB 左右，避免超限
 
 async function getDynamicRules() {
-  const all = await chrome.storage.sync.get(null);
-  const keys = Object.keys(all).filter(k => k.startsWith('rules_part_'));
-  if (keys.length === 0) return '';
-
-  // 按序号排序后拼接
-  keys.sort((a, b) => {
-    const ai = parseInt(a.replace('rules_part_', ''), 10);
-    const bi = parseInt(b.replace('rules_part_', ''), 10);
-    return ai - bi;
-  });
-
-  return keys.map(k => all[k]).join('');
+  // 一次性取多个 key
+  const defaults = { rules: '', rules2: '', rules3: '', rules4: '', rules5: '' };
+  const data = await chrome.storage.sync.get(defaults);
+  return [data.rules, data.rules2, data.rules3, data.rules4, data.rules5].join('');
 }
 
 async function setDynamicRules(value) {
-  // 先清理旧的规则分片
-  const all = await chrome.storage.sync.get(null);
-  const oldKeys = Object.keys(all).filter(k => k.startsWith('rules_part_'));
-  if (oldKeys.length > 0) {
-    await chrome.storage.sync.remove(oldKeys);
+  // 切分为多个 key
+  const parts = [];
+  for (let i = 0; i < value.length && parts.length < MAX_KEYS; i += CHUNK_SIZE) {
+    parts.push(value.slice(i, i + CHUNK_SIZE));
   }
 
-  // 分片存储
-  const chunks = [];
-  for (let i = 0; i < value.length; i += CHUNK_SIZE) {
-    chunks.push(value.slice(i, i + CHUNK_SIZE));
-  }
-
-  const obj = {};
-  chunks.forEach((chunk, idx) => {
-    obj[`rules_part_${idx}`] = chunk;
-  });
+  // 构造存储对象，未用到的 key 清空
+  const obj = {
+    rules: parts[0] || '',
+    rules2: parts[1] || '',
+    rules3: parts[2] || '',
+    rules4: parts[3] || '',
+    rules5: parts[4] || '',
+  };
 
   await chrome.storage.sync.set(obj);
 }
