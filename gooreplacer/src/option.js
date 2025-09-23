@@ -61,11 +61,42 @@ async function onload() {
   };
 }
 
+// 每段最大存储 7.5KB，给一些 margin
+const CHUNK_SIZE = 7500;
+
 async function getDynamicRules() {
-  const opt = await chrome.storage.sync.get({ rules: '' });
-  return opt['rules'];
+  const all = await chrome.storage.sync.get(null);
+  const keys = Object.keys(all).filter(k => k.startsWith('rules_part_'));
+  if (keys.length === 0) return '';
+
+  // 按序号排序后拼接
+  keys.sort((a, b) => {
+    const ai = parseInt(a.replace('rules_part_', ''), 10);
+    const bi = parseInt(b.replace('rules_part_', ''), 10);
+    return ai - bi;
+  });
+
+  return keys.map(k => all[k]).join('');
 }
 
 async function setDynamicRules(value) {
-  await chrome.storage.sync.set({ rules: value });
+  // 先清理旧的规则分片
+  const all = await chrome.storage.sync.get(null);
+  const oldKeys = Object.keys(all).filter(k => k.startsWith('rules_part_'));
+  if (oldKeys.length > 0) {
+    await chrome.storage.sync.remove(oldKeys);
+  }
+
+  // 分片存储
+  const chunks = [];
+  for (let i = 0; i < value.length; i += CHUNK_SIZE) {
+    chunks.push(value.slice(i, i + CHUNK_SIZE));
+  }
+
+  const obj = {};
+  chunks.forEach((chunk, idx) => {
+    obj[`rules_part_${idx}`] = chunk;
+  });
+
+  await chrome.storage.sync.set(obj);
 }
