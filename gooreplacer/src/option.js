@@ -61,8 +61,12 @@ async function onload() {
   };
 }
 
-const MAX_KEYS = 5; // 最多用 5 个 key
-const CHUNK_SIZE = 7000; // 每个 key 存 7KB 左右，避免超限
+// Chrome storage.sync has a per-item quota of 8KB (8192 bytes) and a total quota per extension.
+// See: https://developer.chrome.com/docs/extensions/reference/storage/#property-sync
+// To avoid exceeding the per-item limit, we store rules in up to 5 separate keys, each holding up to 7KB (7000 characters).
+// This provides a safety margin below the 8KB limit and helps prevent quota errors.
+const MAX_KEYS = 5; // Use up to 5 keys for storing rules (rules, rules2, ..., rules5)
+const CHUNK_SIZE = 7000; // Each key stores up to 7KB (~7000 characters) to stay under the 8KB per-item limit
 
 async function getDynamicRules() {
   // 一次性取多个 key
