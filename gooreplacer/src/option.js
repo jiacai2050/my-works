@@ -70,17 +70,13 @@ const CHUNK_SIZE = 7000; // Each key stores up to 7KB (~7000 characters) to stay
 
 async function getDynamicRules() {
   // 一次性取多个 key
-  const defaults = {
-    rules: '',
-    rules2: '',
-    rules3: '',
-    rules4: '',
-    rules5: '',
-  };
-  const data = await chrome.storage.sync.get(defaults);
-  return [data.rules, data.rules2, data.rules3, data.rules4, data.rules5].join(
-    '',
+  const ruleKeys = Array.from(
+    { length: MAX_KEYS },
+    (_, i) => (i === 0 ? 'rules' : `rules${i + 1}`),
   );
+  const defaults = Object.fromEntries(ruleKeys.map((key) => [key, '']));
+  const data = await chrome.storage.sync.get(defaults);
+  return ruleKeys.map((key) => data[key]).join('');
 }
 
 async function setDynamicRules(value) {
