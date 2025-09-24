@@ -48,8 +48,7 @@ chrome.action.onClicked.addListener(function () {
 (async () => {
   const input = await getDynamicRules();
   const rules = await updateDynamicRules(input);
-  console.log(`Install success`);
-  console.table(rules);
+  console.log(`Install success, rules: ${rules.length}`);
 })();
 
 async function updateDynamicRules(input) {
@@ -138,7 +137,7 @@ function parseRules(input) {
   let prevAction = {};
   let prevCondition = {};
   for (const row of lines) {
-    console.log(state, row);
+    // console.log(state, row);
     id += 1;
     if (state === 'init') {
       if (isRuleSeparator(row)) {
