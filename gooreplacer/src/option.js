@@ -61,11 +61,50 @@ async function onload() {
   };
 }
 
+const MAX_KEYS = 5; // 最多用 5 个 key
+const CHUNK_SIZE = 7000; // 每个 key 存 7KB 左右，避免超限
+
 async function getDynamicRules() {
-  const opt = await chrome.storage.sync.get({ rules: '' });
-  return opt['rules'];
+  // 一次性取多个 key
+  const defaults = {
+    rules: '',
+    rules2: '',
+    rules3: '',
+    rules4: '',
+    rules5: '',
+  };
+  const data = await chrome.storage.sync.get(defaults);
+  return [data.rules, data.rules2, data.rules3, data.rules4, data.rules5].join(
+    '',
+  );
 }
 
 async function setDynamicRules(value) {
-  await chrome.storage.sync.set({ rules: value });
+  // 先检测长度
+  if (value.length > MAX_KEYS * CHUNK_SIZE) {
+    throw new Error(
+      `Rule length is too large, max: ${MAX_KEYS * CHUNK_SIZE}, current: ${value.length}`,
+    );
+  }
+
+  // 切分为多个 key
+  const parts = [];
+  for (
+    let i = 0;
+    i < value.length && parts.length < MAX_KEYS;
+    i += CHUNK_SIZE
+  ) {
+    parts.push(value.slice(i, i + CHUNK_SIZE));
+  }
+
+  // 构造存储对象，未用到的 key 清空
+  const obj = {
+    rules: parts[0] || '',
+    rules2: parts[1] || '',
+    rules3: parts[2] || '',
+    rules4: parts[3] || '',
+    rules5: parts[4] || '',
+  };
+
+  await chrome.storage.sync.set(obj);
 }
