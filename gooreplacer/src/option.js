@@ -69,7 +69,6 @@ const MAX_KEYS = 5; // Use up to 5 keys for storing rules (rules, rules2, ..., r
 const CHUNK_SIZE = 7000; // Each key stores up to 7KB (~7000 characters) to stay under the 8KB per-item limit
 
 async function getDynamicRules() {
-  // 一次性取多个 key
   const ruleKeys = Array.from(
     { length: MAX_KEYS },
     (_, i) => (i === 0 ? 'rules' : `rules${i + 1}`),
@@ -80,31 +79,27 @@ async function getDynamicRules() {
 }
 
 async function setDynamicRules(value) {
-  // 先检测长度
   if (value.length > MAX_KEYS * CHUNK_SIZE) {
     throw new Error(
       `Rule length is too large, max: ${MAX_KEYS * CHUNK_SIZE}, current: ${value.length}`,
     );
   }
 
-  // 切分为多个 key
   const parts = [];
   for (
     let i = 0;
-    i < value.length && parts.length < MAX_KEYS;
+    i < value.length;
     i += CHUNK_SIZE
   ) {
     parts.push(value.slice(i, i + CHUNK_SIZE));
   }
 
-  // 构造存储对象，未用到的 key 清空
-  const obj = {
-    rules: parts[0] || '',
-    rules2: parts[1] || '',
-    rules3: parts[2] || '',
-    rules4: parts[3] || '',
-    rules5: parts[4] || '',
-  };
+  // Construct new key-value pairs, reset to empty string when parts[i] is null.
+ const obj = Array.from({ length: MAX_KEYS }).reduce((acc, _, i) => {
+    const key = i === 0 ? 'rules' : `rules${i + 1}`;
+    acc[key] = parts[i] || '';
+    return acc;
+  }, {});
 
   await chrome.storage.sync.set(obj);
 }
