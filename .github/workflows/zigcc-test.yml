@@ -10,6 +10,7 @@ on:
       - master
     paths:
       - 'zigcc/**'
+      - '.github/workflows/zigcc-test.yml'
 
 env:
   OUTPUT: /tmp/cc.md
@@ -42,11 +43,6 @@ jobs:
           cp "${GITHUB_WORKSPACE}/zigcc/zigcc/__init__.py" "${HOME}/bin/zigcc"
           ln -s "${HOME}/bin/zigcc" "${HOME}/bin/zigcxx"
           ln -s "${HOME}/bin/zigcc" "${HOME}/bin/zigcargo"
-      - name: Install Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: 'stable'
-          cache: false
       - name: Prepare
         run: |
           echo "| GOOS | GOARCH | Status |" >> $OUTPUT

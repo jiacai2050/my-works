@@ -1,5 +1,6 @@
 'use strict';
 
+import { getDynamicRules } from './common.js';
 const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 
 if (!isFirefox) {
@@ -60,10 +61,6 @@ async function updateDynamicRules(input) {
     addRules: newRules,
   });
   return newRules;
-}
-async function getDynamicRules() {
-  const opt = await chrome.storage.sync.get({ rules: '' });
-  return opt['rules'];
 }
 
 function splitN(str, delimiter, n) {
