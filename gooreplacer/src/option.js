@@ -72,6 +72,13 @@ async function getDynamicRules() {
 }
 
 async function setDynamicRules(value) {
+  // 先检测长度
+  if (value.length > MAX_KEYS * CHUNK_SIZE) {
+    throw new Error(
+      `Rule length is too large, max: ${MAX_KEYS * CHUNK_SIZE}, current: ${value.length}`
+    );
+  }
+
   // 切分为多个 key
   const parts = [];
   for (let i = 0; i < value.length && parts.length < MAX_KEYS; i += CHUNK_SIZE) {
