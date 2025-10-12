@@ -28,7 +28,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       sendResponse({ success: false, error: error.message });
     }
   } else if (request.action === 'updateGlobalSwitch') {
-    updateDynamicRules(request.enabled ? parseRules(request.input) : [])
+    updateDynamicRules(request.value ? parseRules(request.input) : [])
       .then((ret) => {
         sendResponse({ success: true, preview: ret });
       })
