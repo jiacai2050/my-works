@@ -47,6 +47,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 (async () => {
   const input = await getDynamicRules();
   const globalSwitch = await getGlobalSwitch();
+  if (globalSwitch) {
+    await chrome.action.setIcon({ path: 'img/48.png' });
+  } else {
+    await chrome.action.setIcon({ path: 'img/off.png' });
+  }
   const newRules = globalSwitch ? parseRules(input) : [];
   const rules = await updateDynamicRules(newRules);
   console.log(`Install success, rules: ${rules.length}`);
