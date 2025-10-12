@@ -5,12 +5,12 @@
   "version": "4.2.0",
   "manifest_version": 3,
   "action": {
-    "default_icon": "img/32.png"
-  },
-  "icons": {
-    "32": "img/32.png",
-    "16": "img/16.png",
-    "48": "img/48.png"
+    "default_icon": {
+      "32": "img/32.png",
+      "16": "img/16.png",
+      "48": "img/48.png"
+    },
+    "default_popup": "popup.html"
   },
   "permissions": [
     "declarativeNetRequest",

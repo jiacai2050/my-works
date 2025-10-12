@@ -1,6 +1,6 @@
 'use strict';
 
-import { getDynamicRules } from './common.js';
+import { getDynamicRules, getGlobalSwitch } from './common.js';
 const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 
 if (!isFirefox) {
@@ -12,7 +12,7 @@ if (!isFirefox) {
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'updateDynamicRules') {
-    updateDynamicRules(request.input)
+    updateDynamicRules(parseRules(request.input))
       .then((ret) => {
         sendResponse({ success: true, preview: ret });
       })
@@ -27,6 +27,15 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     } catch (error) {
       sendResponse({ success: false, error: error.message });
     }
+  } else if (request.action === 'updateGlobalSwitch') {
+    updateDynamicRules(request.enabled ? parseRules(request.input) : [])
+      .then((ret) => {
+        sendResponse({ success: true, preview: ret });
+      })
+      .catch((error) => {
+        sendResponse({ success: false, error: error.message });
+      });
+    return true;
   }
 });
 
@@ -47,14 +56,18 @@ chrome.action.onClicked.addListener(function () {
 
 (async () => {
   const input = await getDynamicRules();
-  const rules = await updateDynamicRules(input);
+  const globalSwitch = await getGlobalSwitch();
+  const newRules = globalSwitch ? parseRules(input) : [];
+  const rules = await updateDynamicRules(newRules);
   console.log(`Install success, rules: ${rules.length}`);
 })();
 
-async function updateDynamicRules(input) {
+async function updateDynamicRules(newRules) {
   const oldRules = await chrome.declarativeNetRequest.getDynamicRules();
   const oldRuleIds = oldRules.map((rule) => rule.id);
-  const newRules = parseRules(input);
+  console.log(
+    `Updating rules, old: ${JSON.stringify(oldRuleIds)}, new: ${newRules.length}`,
+  );
   await chrome.declarativeNetRequest.updateDynamicRules({
     removeRuleIds: oldRuleIds,
     addRules: newRules,
