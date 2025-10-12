@@ -30,27 +30,17 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   } else if (request.action === 'updateGlobalSwitch') {
     updateDynamicRules(request.value ? parseRules(request.input) : [])
       .then((ret) => {
+        if (request.value) {
+          chrome.action.setIcon({ path: 'img/48.png' });
+        } else {
+          chrome.action.setIcon({ path: 'img/off.png' });
+        }
         sendResponse({ success: true, preview: ret });
       })
       .catch((error) => {
         sendResponse({ success: false, error: error.message });
       });
     return true;
-  }
-});
-
-chrome.action.onClicked.addListener(function () {
-  if (isFirefox) {
-    (async () => {
-      const perm = { origins: ['https://*/*', 'http://*/*'] };
-      if (await chrome.permissions.contains(perm)) {
-        await chrome.runtime.openOptionsPage();
-      } else {
-        await chrome.permissions.request(perm);
-      }
-    })();
-  } else {
-    chrome.runtime.openOptionsPage();
   }
 });
 

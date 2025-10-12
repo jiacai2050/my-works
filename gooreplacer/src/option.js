@@ -20,8 +20,8 @@ async function onload() {
 
   const globalSwitch = await getGlobalSwitch();
   const previewPre = document.getElementById('preview');
+  const ruleNumSpan = document.getElementById('rule-num');
   if (globalSwitch) {
-    const ruleNumSpan = document.getElementById('rule-num');
     const { success, preview, error } = await chrome.runtime.sendMessage({
       action: 'preview',
       input: rules.value,
