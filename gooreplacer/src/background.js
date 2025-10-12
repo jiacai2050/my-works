@@ -1,6 +1,6 @@
 'use strict';
 
-import { getDynamicRules } from './common.js';
+import { getDynamicRules, getGlobalSwitch } from './common.js';
 const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 
 if (!isFirefox) {
@@ -12,7 +12,7 @@ if (!isFirefox) {
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'updateDynamicRules') {
-    updateDynamicRules(request.input)
+    updateDynamicRules(parseRules(request.input))
       .then((ret) => {
         sendResponse({ success: true, preview: ret });
       })
@@ -27,34 +27,39 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     } catch (error) {
       sendResponse({ success: false, error: error.message });
     }
-  }
-});
-
-chrome.action.onClicked.addListener(function () {
-  if (isFirefox) {
-    (async () => {
-      const perm = { origins: ['https://*/*', 'http://*/*'] };
-      if (await chrome.permissions.contains(perm)) {
-        await chrome.runtime.openOptionsPage();
-      } else {
-        await chrome.permissions.request(perm);
-      }
-    })();
-  } else {
-    chrome.runtime.openOptionsPage();
+  } else if (request.action === 'updateGlobalSwitch') {
+    updateDynamicRules(request.value ? parseRules(request.input) : [])
+      .then((ret) => {
+        if (request.value) {
+          chrome.action.setIcon({ path: 'img/48.png' });
+        } else {
+          chrome.action.setIcon({ path: 'img/off.png' });
+        }
+        sendResponse({ success: true, preview: ret });
+      })
+      .catch((error) => {
+        sendResponse({ success: false, error: error.message });
+      });
+    return true;
   }
 });
 
 (async () => {
   const input = await getDynamicRules();
-  const rules = await updateDynamicRules(input);
+  const globalSwitch = await getGlobalSwitch();
+  if (globalSwitch) {
+    await chrome.action.setIcon({ path: 'img/48.png' });
+  } else {
+    await chrome.action.setIcon({ path: 'img/off.png' });
+  }
+  const newRules = globalSwitch ? parseRules(input) : [];
+  const rules = await updateDynamicRules(newRules);
   console.log(`Install success, rules: ${rules.length}`);
 })();
 
-async function updateDynamicRules(input) {
+async function updateDynamicRules(newRules) {
   const oldRules = await chrome.declarativeNetRequest.getDynamicRules();
   const oldRuleIds = oldRules.map((rule) => rule.id);
-  const newRules = parseRules(input);
   await chrome.declarativeNetRequest.updateDynamicRules({
     removeRuleIds: oldRuleIds,
     addRules: newRules,

@@ -37,3 +37,12 @@ export async function setDynamicRules(value) {
 
   await chrome.storage.sync.set(obj);
 }
+
+export async function getGlobalSwitch() {
+  const data = await chrome.storage.sync.get({ globalSwitch: true });
+  return data.globalSwitch;
+}
+
+export async function setGlobalSwitch(value) {
+  await chrome.storage.sync.set({ globalSwitch: value });
+}

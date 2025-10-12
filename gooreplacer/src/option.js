@@ -1,6 +1,6 @@
 'use strict';
 
-import { getDynamicRules, setDynamicRules } from './common.js';
+import { getDynamicRules, getGlobalSwitch, setDynamicRules } from './common.js';
 
 document.addEventListener('DOMContentLoaded', onload);
 
@@ -18,17 +18,22 @@ async function onload() {
     rules.setAttribute('rows', ruleRowNum + 1);
   }
 
+  const globalSwitch = await getGlobalSwitch();
   const previewPre = document.getElementById('preview');
   const ruleNumSpan = document.getElementById('rule-num');
-  const { success, preview, error } = await chrome.runtime.sendMessage({
-    action: 'preview',
-    input: rules.value,
-  });
-  if (!success) {
-    previewPre.textContent = `Invalid rules: error:${error}`;
+  if (globalSwitch) {
+    const { success, preview, error } = await chrome.runtime.sendMessage({
+      action: 'preview',
+      input: rules.value,
+    });
+    if (!success) {
+      previewPre.textContent = `Invalid rules: error:${error}`;
+    } else {
+      previewPre.textContent = JSON.stringify(preview, null, 2);
+      ruleNumSpan.textContent = preview.length;
+    }
   } else {
-    previewPre.textContent = JSON.stringify(preview, null, 2);
-    ruleNumSpan.textContent = preview.length;
+    previewPre.textContent = 'Rules are globally disabled';
   }
 
   const btnRule = document.getElementById('btn-rule');
