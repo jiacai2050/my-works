@@ -55,9 +55,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 async function updateDynamicRules(newRules) {
   const oldRules = await chrome.declarativeNetRequest.getDynamicRules();
   const oldRuleIds = oldRules.map((rule) => rule.id);
-  console.log(
-    `Updating rules, old: ${JSON.stringify(oldRuleIds)}, new: ${newRules.length}`,
-  );
   await chrome.declarativeNetRequest.updateDynamicRules({
     removeRuleIds: oldRuleIds,
     addRules: newRules,
