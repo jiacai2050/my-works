@@ -20,7 +20,7 @@ async function onload() {
     if (success) {
       await setGlobalSwitch(this.checked);
     } else {
-      alert(`Update failed, error:${error}`);
+      alert(`Update failed, error: ${error}`);
     }
   });
 
