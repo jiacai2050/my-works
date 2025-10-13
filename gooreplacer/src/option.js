@@ -34,6 +34,7 @@ async function onload() {
     }
   } else {
     previewPre.textContent = 'Rules are globally disabled';
+    ruleNumSpan.textContent = 0;
   }
 
   const btnRule = document.getElementById('btn-rule');

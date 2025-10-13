@@ -12,7 +12,7 @@ if (!isFirefox) {
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'updateDynamicRules') {
-    updateDynamicRules(parseRules(request.input))
+    updateDynamicRules(request.input)
       .then((ret) => {
         sendResponse({ success: true, preview: ret });
       })
@@ -28,13 +28,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       sendResponse({ success: false, error: error.message });
     }
   } else if (request.action === 'updateGlobalSwitch') {
-    updateDynamicRules(request.value ? parseRules(request.input) : [])
+    updateDynamicRules(request.value ? request.input : null)
       .then((ret) => {
-        if (request.value) {
-          chrome.action.setIcon({ path: 'img/48.png' });
-        } else {
-          chrome.action.setIcon({ path: 'img/off.png' });
-        }
+        const iconPath = request.value ? 'img/48.png' : 'img/off.png';
+        chrome.action.setIcon({ path: iconPath });
         sendResponse({ success: true, preview: ret });
       })
       .catch((error) => {
@@ -45,25 +42,27 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 (async () => {
-  const input = await getDynamicRules();
-  const globalSwitch = await getGlobalSwitch();
-  if (globalSwitch) {
-    await chrome.action.setIcon({ path: 'img/48.png' });
-  } else {
-    await chrome.action.setIcon({ path: 'img/off.png' });
+  try {
+    const globalSwitch = await getGlobalSwitch();
+    const iconPath = globalSwitch ? 'img/48.png' : 'img/off.png';
+    await chrome.action.setIcon({ path: iconPath });
+    await updateDynamicRules(globalSwitch ? await getDynamicRules() : null);
+  } catch (error) {
+    console.error('Error during initialization:', error);
   }
-  const newRules = globalSwitch ? parseRules(input) : [];
-  const rules = await updateDynamicRules(newRules);
-  console.log(`Install success, rules: ${rules.length}`);
 })();
 
-async function updateDynamicRules(newRules) {
+async function updateDynamicRules(input) {
   const oldRules = await chrome.declarativeNetRequest.getDynamicRules();
   const oldRuleIds = oldRules.map((rule) => rule.id);
+  const newRules = parseRules(input);
   await chrome.declarativeNetRequest.updateDynamicRules({
     removeRuleIds: oldRuleIds,
     addRules: newRules,
   });
+  console.log(
+    `Install success: removed: ${oldRuleIds.length}, added: ${newRules.length}`,
+  );
   return newRules;
 }
 
@@ -133,6 +132,9 @@ function isRuleSeparator(line) {
 }
 
 function parseRules(input) {
+  if (!input) {
+    return [];
+  }
   const lines = input.split('\n');
   // push one more empty line if case of missing the last line when parsing
   lines.push('');
