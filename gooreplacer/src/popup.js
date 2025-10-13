@@ -12,13 +12,14 @@ async function onload() {
   // Listen for changes
   enableSwitch.addEventListener('change', async function () {
     const rawRules = this.checked ? await getDynamicRules() : '';
-    const { success, error } = await chrome.runtime.sendMessage({
+    const { success, error, preview } = await chrome.runtime.sendMessage({
       action: 'updateGlobalSwitch',
       value: this.checked,
       input: rawRules,
     });
     if (success) {
       await setGlobalSwitch(this.checked);
+      console.log(`Rule: ${preview.length}`);
     } else {
       alert(`Update failed, error: ${error}`);
     }
