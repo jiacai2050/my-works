@@ -28,7 +28,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       sendResponse({ success: false, error: error.message });
     }
   } else if (request.action === 'updateGlobalSwitch') {
-    updateDynamicRules(request.value ? request.input : '')
+    updateDynamicRules(request.value ? request.input : null)
       .then((ret) => {
         const iconPath = request.value ? 'img/48.png' : 'img/off.png';
         chrome.action.setIcon({ path: iconPath });
@@ -42,16 +42,20 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 (async () => {
-  const globalSwitch = await getGlobalSwitch();
-  const iconPath = globalSwitch ? 'img/48.png' : 'img/off.png';
-  await chrome.action.setIcon({ path: iconPath });
-  await updateDynamicRules(globalSwitch ? await getDynamicRules() : '');
+  try {
+    const globalSwitch = await getGlobalSwitch();
+    const iconPath = globalSwitch ? 'img/48.png' : 'img/off.png';
+    await chrome.action.setIcon({ path: iconPath });
+    await updateDynamicRules(globalSwitch ? await getDynamicRules() : null);
+  } catch (error) {
+    console.error('Error during initialization:', error);
+  }
 })();
 
 async function updateDynamicRules(input) {
   const oldRules = await chrome.declarativeNetRequest.getDynamicRules();
   const oldRuleIds = oldRules.map((rule) => rule.id);
-  const newRules = input ? parseRules(input) : [];
+  const newRules = parseRules(input);
   await chrome.declarativeNetRequest.updateDynamicRules({
     removeRuleIds: oldRuleIds,
     addRules: newRules,
@@ -128,6 +132,9 @@ function isRuleSeparator(line) {
 }
 
 function parseRules(input) {
+  if (!input) {
+    return [];
+  }
   const lines = input.split('\n');
   // push one more empty line if case of missing the last line when parsing
   lines.push('');
