@@ -1,10 +1,9 @@
 import json
+from enum import Enum
 
-from ..utils.http import TimeoutSession
 from ..utils.common import base64_image, debug_print, prepare_prompt
 from ..utils.conf import IMAGE_MODEL, SYSTEM_CONTENT
-from urllib.parse import urljoin
-from enum import Enum
+from ..utils.http import TimeoutSession
 
 
 def get_system_content(sc):
@@ -52,12 +51,7 @@ class LLM(object):
         )
 
     def chat_openai(self, prompt, stream, add_system_message):
-        # https://docs.github.com/en/rest/models/inference?apiVersion=2022-11-28#run-an-inference-request
-        url = (
-            urljoin(self.base_url, '/v1/chat/completions')
-            if self.backend == Backend.OpenAI
-            else urljoin(self.base_url, '/inference/chat/completions')
-        )
+        url = self.get_infer_url()
         messages, model = self.make_messages(
             prompt,
             False,
@@ -117,6 +111,20 @@ class LLM(object):
                         current = msg
                         continue
 
+    def get_infer_url(self):
+        base_url = self.base_url if self.base_url.endswith('/') else self.base_url + '/'
+        if self.backend == Backend.OpenAI:
+            return base_url + 'v1/chat/completions'
+        elif self.backend == Backend.GitHub:
+            # https://docs.github.com/en/rest/models/inference?apiVersion=2022-11-28#run-an-inference-request
+            return base_url + 'inference/chat/completions'
+        elif self.backend == Backend.Ollama:
+            return base_url + 'api/chat'
+        else:
+            raise Exception(
+                f'Unsupported backend: {self.backend}, please check your configuration.'
+            )
+
     def make_messages(self, prompt, support_image, add_system_message):
         model = self.model
         if add_system_message is False:
@@ -148,7 +156,7 @@ class LLM(object):
     # https://github.com/ollama/ollama/blob/main/docs/api.md#generate-a-completion
     def chat_ollama(self, prompt, stream, add_system_message):
         model = self.model
-        url = urljoin(self.base_url, '/api/chat')
+        url = self.get_infer_url()
         messages, model = self.make_messages(prompt, True, add_system_message)
         debug_print(
             f'chat: {prompt} to {url} with model {self.model} system_content {self.system_content} and stream {stream}, messages: \n{messages}'

@@ -1,6 +1,6 @@
-from shellgpt.api.llm import LLM
 import unittest
 
+from shellgpt.api.llm import LLM
 from shellgpt.utils.conf import SYSTEM_CONTENT
 
 
@@ -62,3 +62,34 @@ class TestLLM(unittest.TestCase):
                 {'content': 'hi', 'role': 'user'},
             ],
         )
+
+    def test_get_infer_url(self):
+        def mock_llm(base_url):
+            return LLM(base_url, 'key', 'llama3', 'default', 0.8, 10, 2)
+
+        for base_url in ['https://api.openai.com', 'https://api.openai.com/']:
+            llm = mock_llm(base_url)
+            self.assertEqual(
+                llm.get_infer_url(), 'https://api.openai.com/v1/chat/completions'
+            )
+
+        for base_url in ['https://models.github.ai', 'https://models.github.ai/']:
+            llm = mock_llm(base_url)
+            self.assertEqual(
+                llm.get_infer_url(),
+                'https://models.github.ai/inference/chat/completions',
+            )
+
+        for base_url in [
+            'https://api.cloudflare.com/client/v4/accounts/xx/ai/',
+            'https://api.cloudflare.com/client/v4/accounts/xx/ai',
+        ]:
+            llm = mock_llm(base_url)
+            self.assertEqual(
+                llm.get_infer_url(),
+                'https://api.cloudflare.com/client/v4/accounts/xx/ai/v1/chat/completions',
+            )
+
+        for base_url in ['http://localhost:11434', 'http://localhost:11434/']:
+            llm = LLM(base_url, '', 'llama3', 'default', 0.8, 10, 2)
+            self.assertEqual(llm.get_infer_url(), 'http://localhost:11434/api/chat')
