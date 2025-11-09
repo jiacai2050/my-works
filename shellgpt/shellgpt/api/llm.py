@@ -118,6 +118,8 @@ class LLM(object):
         elif self.backend == Backend.GitHub:
             # https://docs.github.com/en/rest/models/inference?apiVersion=2022-11-28#run-an-inference-request
             return base_url + 'inference/chat/completions'
+        elif self.backend == Backend.Ollama:
+            return base_url + 'api/chat'
         else:
             raise Exception(
                 f'Unsupported backend: {self.backend}, please check your configuration.'
