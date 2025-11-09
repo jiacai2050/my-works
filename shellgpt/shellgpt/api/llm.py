@@ -156,8 +156,7 @@ class LLM(object):
     # https://github.com/ollama/ollama/blob/main/docs/api.md#generate-a-completion
     def chat_ollama(self, prompt, stream, add_system_message):
         model = self.model
-        base_url = self.base_url if self.base_url.endswith('/') else self.base_url + '/'
-        url = base_url + 'api/chat'
+        url = self.get_infer_url()
         messages, model = self.make_messages(prompt, True, add_system_message)
         debug_print(
             f'chat: {prompt} to {url} with model {self.model} system_content {self.system_content} and stream {stream}, messages: \n{messages}'
