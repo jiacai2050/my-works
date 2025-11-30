@@ -1,16 +1,16 @@
 # coding: utf-8
 
 import argparse
-import os
-import logging
-import sys
-import subprocess
 import concurrent.futures
+import logging
+import os
+import subprocess
+import sys
 import threading
+
 from .util import file_size, humanize_bytes, is_video, make_cmd
 
-
-__version__ = '0.3.1-dev'
+__version__ = '0.3.1'
 COMPRESS_SUFFIX = '-compressed.mp4'
 FFMPEG_LOG = '/tmp/video-compress-ffmpeg.log'
 
@@ -72,21 +72,22 @@ class VideoCompressor(object):
             self.iter(input)
 
     def call_ffmpeg(self, fi, fo):
-        tmp = fo + '.tmp.mp4'
-        cmd = make_cmd(fi, tmp, str(self.crf))
-        logging.debug(f'Running: {cmd}')
-        self.ffmpeg_log.write(f'Running: {cmd}\n')
-        self.ffmpeg_log.flush()
-        ret = subprocess.run(cmd, stdout=self.ffmpeg_log, stderr=subprocess.STDOUT)
-        if ret.returncode != 0:
-            logging.error(f'Run ffmpeg failed, exitcode: {ret.returncode}')
-            return False
-
         try:
+            tmp = fo + '.tmp.mp4'
+            cmd = make_cmd(fi, tmp, str(self.crf))
+            logging.debug(f'Running: {cmd}')
+            self.ffmpeg_log.write(f'Running: {cmd}\n')
+            self.ffmpeg_log.flush()
+            ret = subprocess.run(cmd, stdout=self.ffmpeg_log, stderr=subprocess.STDOUT)
+            logging.debug(f'ffmpeg exit code: {ret.returncode}')
+            if ret.returncode != 0:
+                logging.error(f'Run ffmpeg failed, exitcode: {ret.returncode}')
+                return False
+
             os.rename(tmp, fo)
             return True
         except Exception as e:
-            logging.error(f'Rename {tmp} failed, err: {e}')
+            logging.error(f'Convert {fi} failed, err: {e}')
             return False
 
     def compress(self, fi):
@@ -110,7 +111,7 @@ class VideoCompressor(object):
         is_success = self.call_ffmpeg(fi, fo)
         if is_success is True:
             if self.on_success(fi, fo) and self.delete_after_success:
-                logging.warn(f'Delete {fi}')
+                logging.warning(f'Delete {fi}')
                 os.remove(fi)
         else:
             self.on_failure(fi)
@@ -129,7 +130,7 @@ class VideoCompressor(object):
         si = file_size(fi)
         so = file_size(fo)
         if so > si:
-            logging.warn(
+            logging.warning(
                 f'No need to compress!, in:{humanize_bytes(si)}, out:{humanize_bytes(so)}'
             )
             os.rename(fi, fo)

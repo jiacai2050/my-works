@@ -11,8 +11,7 @@ readme = "README.md"
 keywords = ["videos", "compress", "ffmpeg"]
 license = "GPL-3.0"
 requires-python = ">=3.6.0"
-dependencies = [
-]
+dependencies = [ ]
 classifiers = [
     "Operating System :: OS Independent",
     "Topic :: Software Development",
@@ -27,6 +26,9 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
 ]
+
+[project.optional-dependencies]
+dev = [ "hatch" ]
 
 [project.urls]
 Repository = "https://github.com/jiacai2050/my-works/tree/main/video-compress"
