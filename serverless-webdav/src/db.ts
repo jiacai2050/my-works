@@ -232,7 +232,7 @@ export async function copyFile(db: D1Database, oldPath: string, newPath: string)
 
 	const existingDest = await getFileByPath(db, newPath);
 	if (existingDest && existingDest.is_directory) {
-		throw new Error('Cannot overwrite a directory with a file');
+		throw new Error(`Cannot overwrite directory '${newPath}' with file '${oldPath}'`);
 	}
 
 	const newParentPath = getParentPath(newPath);
