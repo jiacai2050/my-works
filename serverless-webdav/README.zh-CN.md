@@ -9,7 +9,7 @@
 - **完善的 WebDAV 支持**: 实现了核心方法，包括 `OPTIONS`, `PROPFIND`, `GET`, `HEAD`, `PUT`, `MKCOL`, `DELETE`, `MOVE` 和 `COPY`。
 - **无服务器架构**: 完全运行在 Cloudflare Workers 边缘网络，无需维护永久服务器。
 - **数据库驱动**: 文件元数据和内容（作为 BLOB 存储）由 Cloudflare D1 (SQLite) 管理。
-- **安全可靠**: 支持通过环境变量配置 Basic 认证。
+- **安全可靠**: 支持通过 Cloudflare Secrets Store 配置 Basic 认证。
 - **易于部署**: 使用 Wrangler 进行快速部署。
 
 ## 相关文档

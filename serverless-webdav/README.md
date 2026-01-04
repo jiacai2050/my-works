@@ -9,7 +9,7 @@ A lightweight, scalable WebDAV server implementation built on **Cloudflare Worke
 - **Full WebDAV Support**: Implements core methods including `OPTIONS`, `PROPFIND`, `GET`, `HEAD`, `PUT`, `MKCOL`, `DELETE`, `MOVE`, and `COPY`.
 - **Serverless Architecture**: Runs entirely on the edge via Cloudflare Workers with no permanent server maintenance.
 - **Database Backed**: File metadata and content (stored as BLOBs) are managed in Cloudflare D1 (SQLite).
-- **Secure**: Basic Authentication support via environment variables.
+- **Secure**: Basic Authentication support via Cloudflare Secrets Store.
 - **Easy Deployment**: Managed with Wrangler.
 
 ## Documentation
