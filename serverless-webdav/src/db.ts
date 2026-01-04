@@ -181,7 +181,7 @@ export async function moveFile(db: D1Database, oldPath: string, newPath: string)
 		throw new Error('Destination parent not found');
 	}
 
-	const statements: any[] = [];
+	const statements: D1PreparedStatement[] = [];
 
 	// Check destination and overwrite if exists (Atomic delete)
 	// We use the same logic as deleteFile to ensure children are gone too.
