@@ -155,17 +155,9 @@ export async function updateFile(db: D1Database, path: string, content: ArrayBuf
 }
 
 export async function deleteFile(db: D1Database, path: string): Promise<void> {
-	// If it's a directory, we need to delete children too (CASCADE handles this if we delete the parent, but we need to find it first)
-    // However, D1/SQLite CASCADE works on foreign keys. We need to ensure we delete the record itself.
-    // If we rely on ON DELETE CASCADE in the schema:
-    // FOREIGN KEY (parent_id) REFERENCES files(id) ON DELETE CASCADE
-    // Then deleting the parent folder should delete all children recursively IF the foreign keys are set up correctly.
-
-    // Let's verify if the file exists first
-    const file = await getFileByPath(db, path);
-    if (!file) return;
-
-	await db.prepare('DELETE FROM files WHERE path = ?').bind(path).run();
+	// Atomic delete of file and all children (if it's a directory)
+	// This does not rely on foreign keys being enabled.
+	await db.prepare('DELETE FROM files WHERE path = ? OR path LIKE ?').bind(path, `${path}/%`).run();
 }
 
 export async function moveFile(db: D1Database, oldPath: string, newPath: string): Promise<void> {
@@ -187,7 +179,7 @@ export async function moveFile(db: D1Database, oldPath: string, newPath: string)
 	// Check destination
 	const existing = await getFileByPath(db, newPath);
 	if (existing) {
-		statements.push(db.prepare('DELETE FROM files WHERE path = ?').bind(newPath));
+		statements.push(db.prepare('DELETE FROM files WHERE path = ? OR path LIKE ?').bind(newPath, `${newPath}/%`));
 	}
 
 	// Update paths for children if it is a directory
@@ -214,41 +206,68 @@ export async function moveFile(db: D1Database, oldPath: string, newPath: string)
 }
 
 export async function copyFile(db: D1Database, oldPath: string, newPath: string): Promise<void> {
-    const file = await getFileByPath(db, oldPath);
-    if (!file) {
-        throw new Error('Source not found');
-    }
+	// 1. Get all source files (ordered by path length to ensure parents come before children)
+	const sourceFiles = await db
+		.prepare('SELECT * FROM files WHERE path = ? OR path LIKE ? ORDER BY length(path) ASC')
+		.bind(oldPath, `${oldPath}/%`)
+		.all<FileRecord>();
 
-    const newParentPath = getParentPath(newPath);
-    const newName = getFileName(newPath);
-    
-    // Check if destination exists
-    const existing = await getFileByPath(db, newPath);
-    if (existing) {
-        // WebDAV usually handles overwrite via header, but here we assume logic in handler handles "Overwrite: F"
-        // If we are here, we overwrite.
-        await deleteFile(db, newPath);
-    }
+	if (!sourceFiles.results || sourceFiles.results.length === 0) {
+		throw new Error('Source not found');
+	}
 
-    const newParent = await getFileByPath(db, newParentPath);
-    if (!newParent) {
-        throw new Error('Destination parent not found');
-    }
-    
-    // Create the copy
-    if (!file.is_directory) {
-        // It is a file
-        await createFile(db, newPath, false, file.content || undefined);
-        // Note: createFile generates new etag/dates, which is correct for a copy.
-    } else {
-        // It is a directory
-        await createFile(db, newPath, true);
-        
-        // Recursively copy children
-        const children = await db.prepare(`SELECT * FROM files WHERE parent_id = ?`).bind(file.id).all<FileRecord>();
-        for (const child of children.results || []) {
-            const childNewPath = child.path.replace(oldPath, newPath);
-            await copyFile(db, child.path, childNewPath);
-        }
-    }
+	const statements: any[] = [];
+
+	// 2. Handle Overwrite (Atomic delete of destination if exists)
+	statements.push(db.prepare('DELETE FROM files WHERE path = ? OR path LIKE ?').bind(newPath, `${newPath}/%`));
+
+	// 3. Prepare insertion
+	const newParentPath = getParentPath(newPath);
+	const destParent = await getFileByPath(db, newParentPath);
+	if (!destParent) {
+		throw new Error('Destination parent not found');
+	}
+
+	for (const file of sourceFiles.results) {
+		const suffix = file.path.substring(oldPath.length);
+		const targetPath = newPath + suffix;
+		const targetName = getFileName(targetPath);
+		const targetParentPath = getParentPath(targetPath);
+
+		const isDirectory = file.is_directory;
+		const content = file.content;
+		const size = file.size;
+		const mimeType = file.mime_type;
+		const etag = generateETag(); // Generate new ETag for the copy
+
+		// Logic for parent_id:
+		// If it's the root of the copy (targetPath === newPath), parent is destParent.id
+		// If it's a child, its parent is already inserted in this batch (because of sorting),
+		// so we can resolve its ID using a subquery on the *target* path.
+
+		let parentIdSql = '?';
+		const args = [targetName];
+
+		if (targetPath === newPath) {
+			// Root item
+			args.push(destParent.id);
+		} else {
+			// Child item: find the parent we just inserted (or will insert)
+			parentIdSql = `(SELECT id FROM files WHERE path = ?)`;
+			args.push(targetParentPath);
+		}
+
+		args.push(targetPath, isDirectory, content, size, mimeType, etag);
+
+		statements.push(
+			db
+				.prepare(
+					`INSERT INTO files (name, parent_id, path, is_directory, content, size, mime_type, etag)
+             VALUES (?, ${parentIdSql}, ?, ?, ?, ?, ?, ?)`,
+				)
+				.bind(...args),
+		);
+	}
+
+	await db.batch(statements);
 }
