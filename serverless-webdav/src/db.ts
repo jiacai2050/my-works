@@ -174,7 +174,7 @@ export async function moveFile(db: D1Database, oldPath: string, newPath: string)
 		throw new Error('Destination parent not found');
 	}
 
-	const statements: any[] = [];
+	const statements: D1PreparedStatement[] = [];
 
 	// Check destination
 	const existing = await getFileByPath(db, newPath);
