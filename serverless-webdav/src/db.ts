@@ -190,12 +190,12 @@ export async function moveFile(db: D1Database, oldPath: string, newPath: string)
 		const children = await db
 			.prepare(
 				`WITH RECURSIVE subtree AS (
-        SELECT * FROM files WHERE parent_id = ?
-        UNION ALL
-        SELECT f.* FROM files f
-        JOIN subtree s ON f.parent_id = s.id
-      )
-      SELECT * FROM subtree`,
+					SELECT * FROM files WHERE parent_id = ?
+					UNION ALL
+					SELECT f.* FROM files f
+					JOIN subtree s ON f.parent_id = s.id
+				)
+				SELECT * FROM subtree`,
 			)
 			.bind(file.id)
 			.all<FileRecord>();
