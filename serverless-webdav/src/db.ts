@@ -68,10 +68,6 @@ function getFileName(path: string): string {
 	return parts[parts.length - 1] || '';
 }
 
-function escapeLike(path: string): string {
-	return path.replace(/[\\%_]/g, '\\$&');
-}
-
 function guessMimeType(filename: string): string {
 	const ext = filename.split('.').pop()?.toLowerCase();
 	const mimeTypes: Record<string, string> = {
@@ -159,11 +155,21 @@ export async function updateFile(db: D1Database, path: string, content: ArrayBuf
 }
 
 export async function deleteFile(db: D1Database, path: string): Promise<void> {
-	// Atomic delete of file and all children (if it's a directory)
-	// This does not rely on foreign keys being enabled.
+	const file = await getFileByPath(db, path);
+	if (!file) return;
+
+	// Atomic delete using Recursive CTE based on parent_id relationship
 	await db
-		.prepare("DELETE FROM files WHERE path = ? OR path LIKE ? ESCAPE '\\'")
-		.bind(path, `${escapeLike(path)}/%`)
+		.prepare(
+			`WITH RECURSIVE subtree AS (
+        SELECT id FROM files WHERE id = ?
+        UNION ALL
+        SELECT f.id FROM files f
+        JOIN subtree s ON f.parent_id = s.id
+      )
+      DELETE FROM files WHERE id IN (SELECT id FROM subtree)`,
+		)
+		.bind(file.id)
 		.run();
 }
 
@@ -184,14 +190,37 @@ export async function moveFile(db: D1Database, oldPath: string, newPath: string)
 	const statements: D1PreparedStatement[] = [];
 
 	// Check destination and overwrite if exists (Atomic delete)
-	// We use the same logic as deleteFile to ensure children are gone too.
-	statements.push(db.prepare("DELETE FROM files WHERE path = ? OR path LIKE ? ESCAPE '\\'").bind(newPath, `${escapeLike(newPath)}/%`));
+	// We use Recursive CTE to ensure the entire existing tree at destination is removed
+	const existing = await getFileByPath(db, newPath);
+	if (existing) {
+		statements.push(
+			db
+				.prepare(
+					`WITH RECURSIVE subtree AS (
+          SELECT id FROM files WHERE id = ?
+          UNION ALL
+          SELECT f.id FROM files f
+          JOIN subtree s ON f.parent_id = s.id
+        )
+        DELETE FROM files WHERE id IN (SELECT id FROM subtree)`,
+				)
+				.bind(existing.id),
+		);
+	}
 
 	// Update paths for children if it is a directory
 	if (file.is_directory) {
 		const children = await db
-			.prepare("SELECT * FROM files WHERE path LIKE ? ESCAPE '\\'")
-			.bind(`${escapeLike(oldPath)}/%`)
+			.prepare(
+				`WITH RECURSIVE subtree AS (
+        SELECT * FROM files WHERE parent_id = ?
+        UNION ALL
+        SELECT f.* FROM files f
+        JOIN subtree s ON f.parent_id = s.id
+      )
+      SELECT * FROM subtree`,
+			)
+			.bind(file.id)
 			.all<FileRecord>();
 
 		for (const child of children.results || []) {
