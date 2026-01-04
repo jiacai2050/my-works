@@ -227,7 +227,7 @@ export async function copyFile(db: D1Database, oldPath: string, newPath: string)
 	}
 
 	if (file.is_directory) {
-		throw new Error('Copying directories is not supported');
+		throw new Error(`Copying directories is not supported: ${oldPath}`);
 	}
 
 	const existingDest = await getFileByPath(db, newPath);
