@@ -14,8 +14,8 @@ interface Env {
 
 export default {
 	async fetch(request: Request, env: Env): Promise<Response> {
-		// 初始化数据库
-		await initDatabase(env.DB);
+		// 初始化数据库，只需执行一次
+		// await initDatabase(env.DB);
 
 		// 认证检查
 		const admin_user = await env.AUTH_USER.get();

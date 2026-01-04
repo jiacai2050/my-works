@@ -1,5 +1,7 @@
 # Serverless WebDAV
 
+> [中文版](./README.zh-CN.md) | [English](./README.md)
+
 基于 **Cloudflare Workers** 和 **Cloudflare D1 数据库** 构建的轻量级、可扩展的 WebDAV 服务器实现。
 
 ## 特性
