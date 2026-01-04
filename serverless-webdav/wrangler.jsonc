@@ -1,0 +1,61 @@
+/**
+ * For more details on how to configure Wrangler, refer to:
+ * https://developers.cloudflare.com/workers/wrangler/configuration/
+ */
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "webdav",
+	"main": "src/index.ts",
+	"compatibility_date": "2026-01-03",
+	"observability": {
+		"enabled": false,
+	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "webdav-db",
+			"database_id": "e94e5636-4a8e-41d9-925c-eb8925e3fe41",
+		},
+	],
+	"secrets_store_secrets": [
+		{
+			"store_id": "1f9c517029c347819072fcb45994c5ae",
+			"binding": "AUTH_USER",
+			"secret_name": "WEBDAV_AUTH_USER",
+		},
+		{
+			"store_id": "1f9c517029c347819072fcb45994c5ae",
+			"binding": "AUTH_PASS",
+			"secret_name": "WEBDAV_AUTH_PASS",
+		},
+	],
+
+	/**
+	 * Smart Placement
+	 * https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement
+	 */
+	// "placement": {  "mode": "smart" }
+	/**
+	 * Bindings
+	 * Bindings allow your Worker to interact with resources on the Cloudflare Developer Platform, including
+	 * databases, object storage, AI inference, real-time communication and more.
+	 * https://developers.cloudflare.com/workers/runtime-apis/bindings/
+	 */
+	/**
+	 * Environment Variables
+	 * https://developers.cloudflare.com/workers/wrangler/configuration/#environment-variables
+	 * Note: Use secrets to store sensitive data.
+	 * https://developers.cloudflare.com/workers/configuration/secrets/
+	 */
+	// "vars": {  "MY_VARIABLE": "production_value" }
+	/**
+	 * Static Assets
+	 * https://developers.cloudflare.com/workers/static-assets/binding/
+	 */
+	// "assets": {  "directory": "./public/",  "binding": "ASSETS" }
+	/**
+	 * Service Bindings (communicate between multiple Workers)
+	 * https://developers.cloudflare.com/workers/wrangler/configuration/#service-bindings
+	 */
+	// "services": [  {   "binding": "MY_SERVICE",   "service": "my-service"  } ]
+}

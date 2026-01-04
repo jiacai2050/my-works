@@ -1,0 +1,29 @@
+name: Serverless webdav Deployment
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'serverless-webdav/**'
+
+# Allow one concurrent deployment
+concurrency:
+  group: "webdav"
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    name: Deploy
+    steps:
+      - uses: actions/checkout@v4
+      - name: Publish
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          wranglerVersion: '4.34.0'
+          workingDirectory: 'serverless-webdav'

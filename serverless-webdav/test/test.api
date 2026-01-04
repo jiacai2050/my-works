@@ -1,0 +1,36 @@
+
+:root = http://localhost:8787
+:header = <<
+Authorization:  Basic YWRtaW46MTIz
+#
+GET :root
+:header
+Accept: application/json
+
+#
+curl -X PROPFIND http://localhost:8787 \
+  -u admin:123 \
+  -H "Depth: 1"
+
+
+# 列出根目录
+curl -X PROPFIND http://localhost:8787/ \
+  -u admin:123 \
+  -H "Depth: 1"
+
+# 创建目录
+curl -X MKCOL http://localhost:8787/documents \
+  -u admin:123
+
+# 上传文件
+curl -X PUT http://localhost:8787/documents/test.txt \
+  -u admin:123 \
+  -d "Hello WebDAV"
+
+# 下载文件
+curl http://localhost:8787/documents/test.txt \
+  -u admin:123
+
+# 删除文件
+curl -X DELETE http://localhost:8787/documents/test.txt \
+  -u admin:123
