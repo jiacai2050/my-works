@@ -224,58 +224,91 @@ export async function copyFile(db: D1Database, oldPath: string, newPath: string)
 		throw new Error('Source not found');
 	}
 
-	const statements: any[] = [];
-
 	// 2. Handle Overwrite (Atomic delete of destination if exists)
-	statements.push(db.prepare("DELETE FROM files WHERE path = ? OR path LIKE ? ESCAPE '\\'").bind(newPath, `${escapeLike(newPath)}/%`));
+	await db
+		.prepare("DELETE FROM files WHERE path = ? OR path LIKE ? ESCAPE '\\'")
+		.bind(newPath, `${escapeLike(newPath)}/%`)
+		.run();
 
-	// 3. Prepare insertion
+	// 3. Prepare for level-by-level insertion
 	const newParentPath = getParentPath(newPath);
 	const destParent = await getFileByPath(db, newParentPath);
 	if (!destParent) {
 		throw new Error('Destination parent not found');
 	}
 
+	const idMap = new Map<number, number>();
+	const filesByDepth = new Map<number, FileRecord[]>();
+
+	// Group files by depth
 	for (const file of sourceFiles.results) {
-		const suffix = file.path.substring(oldPath.length);
-		const targetPath = newPath + suffix;
-		const targetName = getFileName(targetPath);
-		const targetParentPath = getParentPath(targetPath);
-
-		const isDirectory = file.is_directory;
-		const content = file.content;
-		const size = file.size;
-		const mimeType = file.mime_type;
-		const etag = generateETag(); // Generate new ETag for the copy
-
-		// Logic for parent_id:
-		// If it's the root of the copy (targetPath === newPath), parent is destParent.id
-		// If it's a child, its parent is already inserted in this batch (because of sorting),
-		// so we can resolve its ID using a subquery on the *target* path.
-
-		let parentIdSql = '?';
-		const args = [targetName];
-
-		if (targetPath === newPath) {
-			// Root item
-			args.push(destParent.id);
-		} else {
-			// Child item: find the parent we just inserted (or will insert)
-			parentIdSql = `(SELECT id FROM files WHERE path = ?)`;
-			args.push(targetParentPath);
+		const depth = file.path.split('/').length;
+		if (!filesByDepth.has(depth)) {
+			filesByDepth.set(depth, []);
 		}
-
-		args.push(targetPath, isDirectory, content, size, mimeType, etag);
-
-		statements.push(
-			db
-				.prepare(
-					`INSERT INTO files (name, parent_id, path, is_directory, content, size, mime_type, etag)
-             VALUES (?, ${parentIdSql}, ?, ?, ?, ?, ?, ?)`,
-				)
-				.bind(...args),
-		);
+		filesByDepth.get(depth)!.push(file);
 	}
 
-	await db.batch(statements);
+	// Sort depths to process parents before children
+	const sortedDepths = Array.from(filesByDepth.keys()).sort((a, b) => a - b);
+
+	for (const depth of sortedDepths) {
+		const files = filesByDepth.get(depth)!;
+		
+		// Process in chunks to avoid hitting D1 batch limits (e.g. 100 statements)
+		const CHUNK_SIZE = 50;
+		for (let i = 0; i < files.length; i += CHUNK_SIZE) {
+			const chunk = files.slice(i, i + CHUNK_SIZE);
+			const statements: any[] = [];
+			const chunkFileIds: number[] = [];
+
+			for (const file of chunk) {
+				const suffix = file.path.substring(oldPath.length);
+				const targetPath = newPath + suffix;
+				const targetName = getFileName(targetPath);
+				
+				const isDirectory = file.is_directory;
+				const content = file.content;
+				const size = file.size;
+				const mimeType = file.mime_type;
+				const etag = generateETag();
+
+				let parentId: number;
+
+				if (targetPath === newPath) {
+					// Root of the copy
+					parentId = destParent.id;
+				} else {
+					// Child: parent must have been processed in previous levels
+					// because we sorted by depth
+					const mappedParentId = idMap.get(file.parent_id!);
+					if (mappedParentId === undefined) {
+						throw new Error(`Parent ID not found for file: ${file.path}`);
+					}
+					parentId = mappedParentId;
+				}
+
+				statements.push(
+					db
+						.prepare(
+							`INSERT INTO files (name, parent_id, path, is_directory, content, size, mime_type, etag)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+               RETURNING id`,
+						)
+						.bind(targetName, parentId, targetPath, isDirectory, content, size, mimeType, etag),
+				);
+				chunkFileIds.push(file.id);
+			}
+
+			if (statements.length > 0) {
+				const results = await db.batch<FileRecord>(statements);
+				for (let j = 0; j < results.length; j++) {
+					const newId = results[j].results?.[0]?.id;
+					if (newId) {
+						idMap.set(chunkFileIds[j], newId);
+					}
+				}
+			}
+		}
+	}
 }
