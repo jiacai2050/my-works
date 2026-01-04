@@ -247,7 +247,9 @@ export async function copyFile(db: D1Database, oldPath: string, newPath: string)
 	const statements: any[] = [];
 
 	// Atomic delete of destination if exists
-	statements.push(db.prepare('DELETE FROM files WHERE path = ?').bind(newPath));
+	if (existingDest) {
+		statements.push(db.prepare('DELETE FROM files WHERE id = ?').bind(existingDest.id));
+	}
 
 	// Insert the copy
 	statements.push(
