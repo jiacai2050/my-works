@@ -158,19 +158,8 @@ export async function deleteFile(db: D1Database, path: string): Promise<void> {
 	const file = await getFileByPath(db, path);
 	if (!file) return;
 
-	// Atomic delete using Recursive CTE based on parent_id relationship
-	await db
-		.prepare(
-			`WITH RECURSIVE subtree AS (
-        SELECT id FROM files WHERE id = ?
-        UNION ALL
-        SELECT f.id FROM files f
-        JOIN subtree s ON f.parent_id = s.id
-      )
-      DELETE FROM files WHERE id IN (SELECT id FROM subtree)`,
-		)
-		.bind(file.id)
-		.run();
+	// Relies on ON DELETE CASCADE defined in schema to remove children
+	await db.prepare('DELETE FROM files WHERE id = ?').bind(file.id).run();
 }
 
 export async function moveFile(db: D1Database, oldPath: string, newPath: string): Promise<void> {
@@ -187,25 +176,13 @@ export async function moveFile(db: D1Database, oldPath: string, newPath: string)
 		throw new Error('Destination parent not found');
 	}
 
-	const statements: D1PreparedStatement[] = [];
+	const statements: any[] = [];
 
 	// Check destination and overwrite if exists (Atomic delete)
-	// We use Recursive CTE to ensure the entire existing tree at destination is removed
+	// Relies on ON DELETE CASCADE
 	const existing = await getFileByPath(db, newPath);
 	if (existing) {
-		statements.push(
-			db
-				.prepare(
-					`WITH RECURSIVE subtree AS (
-          SELECT id FROM files WHERE id = ?
-          UNION ALL
-          SELECT f.id FROM files f
-          JOIN subtree s ON f.parent_id = s.id
-        )
-        DELETE FROM files WHERE id IN (SELECT id FROM subtree)`,
-				)
-				.bind(existing.id),
-		);
+		statements.push(db.prepare('DELETE FROM files WHERE id = ?').bind(existing.id));
 	}
 
 	// Update paths for children if it is a directory
@@ -250,6 +227,11 @@ export async function copyFile(db: D1Database, oldPath: string, newPath: string)
 
 	if (file.is_directory) {
 		throw new Error('Copying directories is not supported');
+	}
+
+	const existingDest = await getFileByPath(db, newPath);
+	if (existingDest && existingDest.is_directory) {
+		throw new Error('Cannot overwrite a directory with a file');
 	}
 
 	const newParentPath = getParentPath(newPath);
