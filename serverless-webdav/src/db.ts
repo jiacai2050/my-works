@@ -214,101 +214,38 @@ export async function moveFile(db: D1Database, oldPath: string, newPath: string)
 }
 
 export async function copyFile(db: D1Database, oldPath: string, newPath: string): Promise<void> {
-	// 1. Get all source files (ordered by path length to ensure parents come before children)
-	const sourceFiles = await db
-		.prepare("SELECT * FROM files WHERE path = ? OR path LIKE ? ESCAPE '\\' ORDER BY length(path) ASC")
-		.bind(oldPath, `${escapeLike(oldPath)}/%`)
-		.all<FileRecord>();
-
-	if (!sourceFiles.results || sourceFiles.results.length === 0) {
+	const file = await getFileByPath(db, oldPath);
+	if (!file) {
 		throw new Error('Source not found');
 	}
 
-	// 2. Handle Overwrite (Atomic delete of destination if exists)
-	await db
-		.prepare("DELETE FROM files WHERE path = ? OR path LIKE ? ESCAPE '\\'")
-		.bind(newPath, `${escapeLike(newPath)}/%`)
-		.run();
+	if (file.is_directory) {
+		throw new Error('Copying directories is not supported');
+	}
 
-	// 3. Prepare for level-by-level insertion
 	const newParentPath = getParentPath(newPath);
 	const destParent = await getFileByPath(db, newParentPath);
 	if (!destParent) {
 		throw new Error('Destination parent not found');
 	}
 
-	const idMap = new Map<number, number>();
-	const filesByDepth = new Map<number, FileRecord[]>();
+	const targetName = getFileName(newPath);
+	const etag = generateETag();
 
-	// Group files by depth
-	for (const file of sourceFiles.results) {
-		const depth = file.path.split('/').length;
-		if (!filesByDepth.has(depth)) {
-			filesByDepth.set(depth, []);
-		}
-		filesByDepth.get(depth)!.push(file);
-	}
+	const statements: any[] = [];
 
-	// Sort depths to process parents before children
-	const sortedDepths = Array.from(filesByDepth.keys()).sort((a, b) => a - b);
+	// Atomic delete of destination if exists
+	statements.push(db.prepare('DELETE FROM files WHERE path = ?').bind(newPath));
 
-	for (const depth of sortedDepths) {
-		const files = filesByDepth.get(depth)!;
-		
-		// Process in chunks to avoid hitting D1 batch limits (e.g. 100 statements)
-		const CHUNK_SIZE = 50;
-		for (let i = 0; i < files.length; i += CHUNK_SIZE) {
-			const chunk = files.slice(i, i + CHUNK_SIZE);
-			const statements: any[] = [];
-			const chunkFileIds: number[] = [];
+	// Insert the copy
+	statements.push(
+		db
+			.prepare(
+				`INSERT INTO files (name, parent_id, path, is_directory, content, size, mime_type, etag)
+         VALUES (?, ?, ?, 0, ?, ?, ?, ?)`,
+			)
+			.bind(targetName, destParent.id, newPath, file.content, file.size, file.mime_type, etag),
+	);
 
-			for (const file of chunk) {
-				const suffix = file.path.substring(oldPath.length);
-				const targetPath = newPath + suffix;
-				const targetName = getFileName(targetPath);
-				
-				const isDirectory = file.is_directory;
-				const content = file.content;
-				const size = file.size;
-				const mimeType = file.mime_type;
-				const etag = generateETag();
-
-				let parentId: number;
-
-				if (targetPath === newPath) {
-					// Root of the copy
-					parentId = destParent.id;
-				} else {
-					// Child: parent must have been processed in previous levels
-					// because we sorted by depth
-					const mappedParentId = idMap.get(file.parent_id!);
-					if (mappedParentId === undefined) {
-						throw new Error(`Parent ID not found for file: ${file.path}`);
-					}
-					parentId = mappedParentId;
-				}
-
-				statements.push(
-					db
-						.prepare(
-							`INSERT INTO files (name, parent_id, path, is_directory, content, size, mime_type, etag)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-               RETURNING id`,
-						)
-						.bind(targetName, parentId, targetPath, isDirectory, content, size, mimeType, etag),
-				);
-				chunkFileIds.push(file.id);
-			}
-
-			if (statements.length > 0) {
-				const results = await db.batch<FileRecord>(statements);
-				for (let j = 0; j < results.length; j++) {
-					const newId = results[j].results?.[0]?.id;
-					if (newId) {
-						idMap.set(chunkFileIds[j], newId);
-					}
-				}
-			}
-		}
-	}
+	await db.batch(statements);
 }
