@@ -177,15 +177,17 @@ export async function moveFile(db: D1Database, oldPath: string, newPath: string)
 	const newParentPath = getParentPath(newPath);
 	const newName = getFileName(newPath);
 
-	// Check destination
-	const existing = await getFileByPath(db, newPath);
-	if (existing) {
-		await deleteFile(db, newPath);
-	}
-
 	const newParent = await getFileByPath(db, newParentPath);
 	if (!newParent) {
 		throw new Error('Destination parent not found');
+	}
+
+	const statements: any[] = [];
+
+	// Check destination
+	const existing = await getFileByPath(db, newPath);
+	if (existing) {
+		statements.push(db.prepare('DELETE FROM files WHERE path = ?').bind(newPath));
 	}
 
 	// Update paths for children if it is a directory
@@ -194,18 +196,21 @@ export async function moveFile(db: D1Database, oldPath: string, newPath: string)
 
 		for (const child of children.results || []) {
 			const newChildPath = child.path.replace(oldPath, newPath);
-			await db.prepare('UPDATE files SET path = ? WHERE id = ?').bind(newChildPath, child.id).run();
+			statements.push(db.prepare('UPDATE files SET path = ? WHERE id = ?').bind(newChildPath, child.id));
 		}
 	}
 
-	await db
-		.prepare(
-			`UPDATE files
+	statements.push(
+		db
+			.prepare(
+				`UPDATE files
       SET name = ?, parent_id = ?, path = ?, modified_at = CURRENT_TIMESTAMP
       WHERE id = ?`,
-		)
-		.bind(newName, newParent.id, newPath, file.id)
-		.run();
+			)
+			.bind(newName, newParent.id, newPath, file.id),
+	);
+
+	await db.batch(statements);
 }
 
 export async function copyFile(db: D1Database, oldPath: string, newPath: string): Promise<void> {
