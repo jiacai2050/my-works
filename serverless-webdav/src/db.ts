@@ -201,7 +201,8 @@ export async function moveFile(db: D1Database, oldPath: string, newPath: string)
 			.all<FileRecord>();
 
 		for (const child of children.results || []) {
-			const newChildPath = child.path.replace(oldPath, newPath);
+			const suffix = child.path.substring(oldPath.length);
+			const newChildPath = newPath + suffix;
 			statements.push(db.prepare('UPDATE files SET path = ? WHERE id = ?').bind(newChildPath, child.id));
 		}
 	}
