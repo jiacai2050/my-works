@@ -68,6 +68,10 @@ function getFileName(path: string): string {
 	return parts[parts.length - 1] || '';
 }
 
+function escapeLike(path: string): string {
+	return path.replace(/[\\%_]/g, '\\$&');
+}
+
 function guessMimeType(filename: string): string {
 	const ext = filename.split('.').pop()?.toLowerCase();
 	const mimeTypes: Record<string, string> = {
@@ -157,7 +161,10 @@ export async function updateFile(db: D1Database, path: string, content: ArrayBuf
 export async function deleteFile(db: D1Database, path: string): Promise<void> {
 	// Atomic delete of file and all children (if it's a directory)
 	// This does not rely on foreign keys being enabled.
-	await db.prepare('DELETE FROM files WHERE path = ? OR path LIKE ?').bind(path, `${path}/%`).run();
+	await db
+		.prepare("DELETE FROM files WHERE path = ? OR path LIKE ? ESCAPE '\\'")
+		.bind(path, `${escapeLike(path)}/%`)
+		.run();
 }
 
 export async function moveFile(db: D1Database, oldPath: string, newPath: string): Promise<void> {
@@ -174,17 +181,18 @@ export async function moveFile(db: D1Database, oldPath: string, newPath: string)
 		throw new Error('Destination parent not found');
 	}
 
-	const statements: D1PreparedStatement[] = [];
+	const statements: any[] = [];
 
-	// Check destination
-	const existing = await getFileByPath(db, newPath);
-	if (existing) {
-		statements.push(db.prepare('DELETE FROM files WHERE path = ? OR path LIKE ?').bind(newPath, `${newPath}/%`));
-	}
+	// Check destination and overwrite if exists (Atomic delete)
+	// We use the same logic as deleteFile to ensure children are gone too.
+	statements.push(db.prepare("DELETE FROM files WHERE path = ? OR path LIKE ? ESCAPE '\\'").bind(newPath, `${escapeLike(newPath)}/%`));
 
 	// Update paths for children if it is a directory
 	if (file.is_directory) {
-		const children = await db.prepare(`SELECT * FROM files WHERE path LIKE ?`).bind(`${oldPath}/%`).all<FileRecord>();
+		const children = await db
+			.prepare("SELECT * FROM files WHERE path LIKE ? ESCAPE '\\'")
+			.bind(`${escapeLike(oldPath)}/%`)
+			.all<FileRecord>();
 
 		for (const child of children.results || []) {
 			const newChildPath = child.path.replace(oldPath, newPath);
@@ -208,8 +216,8 @@ export async function moveFile(db: D1Database, oldPath: string, newPath: string)
 export async function copyFile(db: D1Database, oldPath: string, newPath: string): Promise<void> {
 	// 1. Get all source files (ordered by path length to ensure parents come before children)
 	const sourceFiles = await db
-		.prepare('SELECT * FROM files WHERE path = ? OR path LIKE ? ORDER BY length(path) ASC')
-		.bind(oldPath, `${oldPath}/%`)
+		.prepare("SELECT * FROM files WHERE path = ? OR path LIKE ? ESCAPE '\\' ORDER BY length(path) ASC")
+		.bind(oldPath, `${escapeLike(oldPath)}/%`)
 		.all<FileRecord>();
 
 	if (!sourceFiles.results || sourceFiles.results.length === 0) {
@@ -219,7 +227,7 @@ export async function copyFile(db: D1Database, oldPath: string, newPath: string)
 	const statements: any[] = [];
 
 	// 2. Handle Overwrite (Atomic delete of destination if exists)
-	statements.push(db.prepare('DELETE FROM files WHERE path = ? OR path LIKE ?').bind(newPath, `${newPath}/%`));
+	statements.push(db.prepare("DELETE FROM files WHERE path = ? OR path LIKE ? ESCAPE '\\'").bind(newPath, `${escapeLike(newPath)}/%`));
 
 	// 3. Prepare insertion
 	const newParentPath = getParentPath(newPath);
