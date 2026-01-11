@@ -12,13 +12,24 @@ if (!isFirefox) {
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'updateDynamicRules') {
-    updateDynamicRules(request.input)
-      .then((ret) => {
-        sendResponse({ success: true, preview: ret });
-      })
-      .catch((error) => {
-        sendResponse({ success: false, error: error.message });
-      });
+    getGlobalSwitch().then((globalSwitch) => {
+      if (globalSwitch) {
+        updateDynamicRules(request.input)
+          .then((ret) => {
+            sendResponse({ success: true, preview: ret });
+          })
+          .catch((error) => {
+            sendResponse({ success: false, error: error.message });
+          });
+      } else {
+        try {
+          const rules = parseRules(request.input);
+          sendResponse({ success: true, preview: rules });
+        } catch (error) {
+          sendResponse({ success: false, error: error.message });
+        }
+      }
+    });
     return true;
   } else if (request.action === 'preview') {
     try {
