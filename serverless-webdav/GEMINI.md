@@ -18,6 +18,9 @@ This project is a Serverless WebDAV server implementation built on **Cloudflare 
 - **Serverless:** Runs entirely on the edge with no permanent servers.
 - **Database Backed:** File metadata and content are stored in D1 (content stored as BLOBs).
 
+## Limitations
+- **File Size:** Due to Cloudflare D1's row size limit, individual files (BLOBs) cannot exceed **2 MB**. For larger file support, integration with Cloudflare R2 is recommended.
+
 ## Building and Running
 
 ### Prerequisites

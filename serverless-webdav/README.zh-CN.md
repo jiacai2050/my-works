@@ -12,6 +12,10 @@
 - **安全可靠**: 支持通过 Cloudflare Secrets Store 配置 Basic 认证。
 - **易于部署**: 使用 Wrangler 进行快速部署。
 
+## 限制
+
+- **文件大小**: 由于 [Cloudflare D1 的行大小限制](https://developers.cloudflare.com/d1/platform/limits/)，单个文件（BLOB）不能超过 **2 MB**。如需支持更大文件，建议集成 Cloudflare R2。
+
 ## 相关文档
 
 - [架构设计](docs/arch.zh-CN.md): 数据库 Schema 及 WebDAV 实现的详细说明。

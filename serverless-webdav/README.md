@@ -12,6 +12,10 @@ A lightweight, scalable WebDAV server implementation built on **Cloudflare Worke
 - **Secure**: Basic Authentication support via Cloudflare Secrets Store.
 - **Easy Deployment**: Managed with Wrangler.
 
+## Limitations
+
+- **File Size**: Due to [Cloudflare D1's row size limit](https://developers.cloudflare.com/d1/platform/limits/), individual files (BLOBs) cannot exceed **2 MB**. For larger file support, integration with Cloudflare R2 is recommended.
+
 ## Documentation
 
 - [Architecture Design](docs/arch.md): Detailed information about database schema and WebDAV implementation.
