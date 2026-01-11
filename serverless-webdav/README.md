@@ -47,6 +47,7 @@ Update the `database_id` in `wrangler.jsonc` with the ID provided by the command
 #### Local Development
 
 Use **Wrangler Secrets Store** for local development. Create the secrets as follows:
+
 ```bash
 # Set a secret in your store
 npx wrangler secrets-store secret create 1f9c517029c347819072fcb45994c5ae --name WEBDAV_AUTH_PASS --value 123 --scopes workers
@@ -58,6 +59,7 @@ This sets the username to `admin` and password to `123` for Basic Authentication
 #### Production (Cloudflare Secrets Store)
 
 In the Cloudflare dashboard, go to the [Secrets Store page](https://developers.cloudflare.com/secrets-store/manage-secrets/how-to/) and create the following secrets:
+
 - `WEBDAV_AUTH_USER`: Your desired username.
 - `WEBDAV_AUTH_PASS`: Your desired password.
 
@@ -84,6 +86,7 @@ npm run deploy
 ## Supported Clients
 
 Since this follows standard WebDAV protocols, it works with:
+
 - macOS Finder (`Go` -> `Connect to Server...`)
 - Windows File Explorer (`Add a network location`)
 - Cyberduck

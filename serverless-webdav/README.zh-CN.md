@@ -47,6 +47,7 @@ npx wrangler d1 create webdav-db
 #### 本地开发
 
 在本地开发中使用 **Wrangler Secrets Store**。请按如下方式创建密钥：
+
 ```bash
 # 在您的 Store 中设置密钥
 npx wrangler secrets-store secret create 1f9c517029c347819072fcb45994c5ae --name WEBDAV_AUTH_PASS --value 123 --scopes workers
@@ -58,6 +59,7 @@ npx wrangler secrets-store secret create 1f9c517029c347819072fcb45994c5ae --name
 #### 生产环境 (Cloudflare Secrets Store)
 
 在 Cloudflare 仪表板中，前往 [Secrets Store 页面](https://developers.cloudflare.com/secrets-store/manage-secrets/how-to/) 并创建以下密钥：
+
 - `WEBDAV_AUTH_USER`: 您期望的用户名。
 - `WEBDAV_AUTH_PASS`: 您期望的密码。
 
@@ -84,6 +86,7 @@ npm run deploy
 ## 支持的客户端
 
 由于遵循标准 WebDAV 协议，它可以与以下客户端协作：
+
 - macOS Finder (`前往` -> `连接服务器...`)
 - Windows 文件资源管理器 (`添加一个网络位置`)
 - Cyberduck

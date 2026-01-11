@@ -63,7 +63,7 @@ curl -X MOVE -u user:pass "https://your-worker.workers.dev/file.txt" \
      -H "Destination: /archive/file.txt"
 ```
 
-*注意：`Destination` 头部支持绝对 URL 和绝对路径（以 `/` 开头）。*
+_注意：`Destination` 头部支持绝对 URL 和绝对路径（以 `/` 开头）。_
 
 ## 6. 复制 (COPY)
 
@@ -95,16 +95,17 @@ curl -X GET -u user:pass "https://your-worker.workers.dev/docs/" -H "Accept: app
 ```
 
 **JSON 响应示例:**
+
 ```json
 [
-  {
-    "name": "notes.txt",
-    "path": "/docs/notes.txt",
-    "is_directory": false,
-    "size": 12,
-    "mime_type": "text/plain",
-    "modified_at": "2023-10-27T10:00:00.000Z",
-    "created_at": "2023-10-27T10:00:00.000Z"
-  }
+	{
+		"name": "notes.txt",
+		"path": "/docs/notes.txt",
+		"is_directory": false,
+		"size": 12,
+		"mime_type": "text/plain",
+		"modified_at": "2023-10-27T10:00:00.000Z",
+		"created_at": "2023-10-27T10:00:00.000Z"
+	}
 ]
 ```

@@ -63,7 +63,7 @@ curl -X MOVE -u user:pass "https://your-worker.workers.dev/file.txt" \
      -H "Destination: /archive/file.txt"
 ```
 
-*Note: The `Destination` header supports both absolute URLs and absolute paths (starting with `/`).*
+_Note: The `Destination` header supports both absolute URLs and absolute paths (starting with `/`)._
 
 ## 6. Copy (COPY)
 
@@ -95,16 +95,17 @@ curl -X GET -u user:pass "https://your-worker.workers.dev/docs/" -H "Accept: app
 ```
 
 **JSON Response Example:**
+
 ```json
 [
-  {
-    "name": "notes.txt",
-    "path": "/docs/notes.txt",
-    "is_directory": false,
-    "size": 12,
-    "mime_type": "text/plain",
-    "modified_at": "2023-10-27T10:00:00.000Z",
-    "created_at": "2023-10-27T10:00:00.000Z"
-  }
+	{
+		"name": "notes.txt",
+		"path": "/docs/notes.txt",
+		"is_directory": false,
+		"size": 12,
+		"mime_type": "text/plain",
+		"modified_at": "2023-10-27T10:00:00.000Z",
+		"created_at": "2023-10-27T10:00:00.000Z"
+	}
 ]
 ```

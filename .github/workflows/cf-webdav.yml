@@ -10,7 +10,7 @@ on:
 
 # Allow one concurrent deployment
 concurrency:
-  group: "webdav"
+  group: 'webdav'
   cancel-in-progress: true
 
 jobs:
