@@ -2,46 +2,53 @@ import json
 from enum import Enum
 
 from ..utils.common import base64_image, debug_print, prepare_prompt
-from ..utils.conf import IMAGE_MODEL, SYSTEM_CONTENT
+from ..utils.conf import (
+    DEFAULT_TEMPERATURE,
+    DEFAULT_MAX_CHAT_MESSAGES,
+    DEFAULT_IMAGE_MODEL,
+    DEFAULT_TIMEOUT,
+)
 from ..utils.http import TimeoutSession
-
-
-def get_system_content(sc):
-    return SYSTEM_CONTENT.get(sc, sc)
 
 
 class Backend(Enum):
     OpenAI = 1
     Ollama = 2
-    GitHub = 3
 
 
 class LLM(object):
-    def __init__(
-        self, base_url, key, model, system_content, temperature, timeout, max_messages
-    ):
+    def __init__(self, base_url, key, model, **kwargs):
+        self.base_url = base_url
+        self.model = model
+        self.prompts = kwargs.get('prompts')
+        if self.prompts is None:
+            raise Exception('prompts is required for LLM')
+        role = kwargs.get('role')
+        if role is None:
+            raise Exception('role is required for LLM')
+        self.role = role
+        self.temperature = kwargs.get('temperature', DEFAULT_TEMPERATURE)
+        self.max_messages = kwargs.get('max_messages', DEFAULT_MAX_CHAT_MESSAGES)
+        self.image_model = kwargs.get('image_model', DEFAULT_IMAGE_MODEL)
+
+        timeout = kwargs.get('timeout', DEFAULT_TIMEOUT)
         session = TimeoutSession(timeout=timeout)
         if key is not None and key != '':
             session.headers = {'Authorization': f'Bearer {key}'}
-            if base_url.startswith('https://models.github.ai'):
-                self.backend = Backend.GitHub
-            else:
-                self.backend = Backend.OpenAI
+            self.backend = Backend.OpenAI
         else:
             self.backend = Backend.Ollama
-        self.base_url = base_url
-        self.model = model
+
         self.http_session = session
-        self.system_content = system_content
-        self.temperature = temperature
-        self.max_messages = max_messages
         self.messages = []
 
+    def get_role_content(self, sc):
+        if sc not in self.prompts:
+            raise Exception(f"Role '{sc}' not found in prompts.")
+        return self.prompts.get(sc).strip()
+
     def chat(self, prompt, stream=True, add_system_message=True):
-        if self.backend == Backend.GitHub:
-            # GitHub request format is the same as OpenAI, only with different url path
-            return self.chat_openai(prompt, stream, add_system_message)
-        elif self.backend == Backend.OpenAI:
+        if self.backend == Backend.OpenAI:
             return self.chat_openai(prompt, stream, add_system_message)
         elif self.backend == Backend.Ollama:
             return self.chat_ollama(prompt, stream, add_system_message)
@@ -52,13 +59,14 @@ class LLM(object):
 
     def chat_openai(self, prompt, stream, add_system_message):
         url = self.get_infer_url()
+        self.messages.append({'role': 'user', 'content': prompt})
         messages, model = self.make_messages(
             prompt,
             False,
             add_system_message,
         )
         debug_print(
-            f'chat: {prompt} to {url} with model {self.model}-{self.backend} system_content {self.system_content} and stream {stream}, messages: \n{messages}'
+            f'chat: {prompt[:50]!r}... to {url} with model {self.model}-{self.backend} role {self.role} and stream {stream}, messages: \n{str(messages)[:50]!r}...'
         )
         payload = {
             'messages': messages,
@@ -101,8 +109,7 @@ class LLM(object):
 
                 s = msg.decode('utf-8')
                 if s == '[DONE]':
-                    self.messages.append({'role': 'assistant', 'content': answer})
-                    return
+                    break
                 else:
                     try:
                         resp = json.loads(s)
@@ -118,13 +125,13 @@ class LLM(object):
                         current = msg
                         continue
 
+        if answer:
+            self.messages.append({'role': 'assistant', 'content': answer})
+
     def get_infer_url(self):
         base_url = self.base_url if self.base_url.endswith('/') else self.base_url + '/'
         if self.backend == Backend.OpenAI:
-            return base_url + 'v1/chat/completions'
-        elif self.backend == Backend.GitHub:
-            # https://docs.github.com/en/rest/models/inference?apiVersion=2022-11-28#run-an-inference-request
-            return base_url + 'inference/chat/completions'
+            return base_url + 'chat/completions'
         elif self.backend == Backend.Ollama:
             return base_url + 'api/chat'
         else:
@@ -139,20 +146,23 @@ class LLM(object):
 
         after, imgs = prepare_prompt(prompt) if support_image else (prompt, [])
         if len(imgs) > 0:
-            imgs = [base64_image(img) for img in imgs]
-            self.messages.append({'role': 'user', 'content': after, 'images': imgs})
-            model = IMAGE_MODEL
-        else:
-            self.messages.append({'role': 'user', 'content': prompt})
+            # update last message which is the user message just added
+            self.messages[-1]['content'] = after
+            self.messages[-1]['images'] = [base64_image(img) for img in imgs]
+            model = self.image_model
 
         if len(self.messages) > self.max_messages:
             self.messages = self.messages[-self.max_messages :]
 
+        role_content = self.get_role_content(self.role)
         msgs = (
             []
-            if self.system_content == 'default'
+            if role_content is None
             else [
-                {'role': 'system', 'content': get_system_content(self.system_content)}
+                {
+                    'role': 'system',
+                    'content': role_content,
+                }
             ]
         )
         for m in self.messages:
@@ -164,9 +174,10 @@ class LLM(object):
     def chat_ollama(self, prompt, stream, add_system_message):
         model = self.model
         url = self.get_infer_url()
+        self.messages.append({'role': 'user', 'content': prompt})
         messages, model = self.make_messages(prompt, True, add_system_message)
         debug_print(
-            f'chat: {prompt} to {url} with model {self.model} system_content {self.system_content} and stream {stream}, messages: \n{messages}'
+            f'chat: {prompt[:50]!r}... to {url} with model {self.model} role {self.role} and stream {stream}, messages: \n{str(messages)[:50]!r}...'
         )
 
         payload = {
@@ -191,8 +202,11 @@ class LLM(object):
         for item in r.iter_content(chunk_size=None):
             resp = json.loads(item)
             if resp['done']:
-                self.messages.append({'role': 'assistant', 'content': answer})
+                break
             else:
                 content = resp['message']['content']
                 answer += content
                 yield content
+
+        if answer:
+            self.messages.append({'role': 'assistant', 'content': answer})

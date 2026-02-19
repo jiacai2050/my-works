@@ -1,5 +1,7 @@
 # ShellGPT
 
+[中文](README_zh.md)
+
 [![](https://img.shields.io/pypi/v/shgpt)](https://pypi.org/project/shgpt/)
 [![](https://github.com/jiacai2050/my-works/actions/workflows/shellgpt-ci.yml/badge.svg)](https://github.com/jiacai2050/my-works/actions/workflows/shellgpt-ci.yml)
 [![](https://github.com/jiacai2050/my-works/actions/workflows/shellgpt-release.yml/badge.svg)](https://github.com/jiacai2050/my-works/actions/workflows/shellgpt-release.yml)
@@ -20,79 +22,116 @@ uv tool install shgpt
 
 This will install two commands: `sg` and `shellgpt`, which are identical.
 
-After install, use `sg --init` to create required directories(mainly `~/.shellgpt`).
+After install, use `sg --init` to create the required directory and a default configuration file (`~/.shellgpt/config.toml`).
 
 # Usage
 
-ShellGPT has three modes to use:
+ShellGPT has three modes:
 
-- Direct mode, `sg [question]` or pipeline like `echo question | sg`.
-- REPL mode, `sg -r`, chat with LLM.
-- TUI mode, `sg -t`, tailored for infer shell command.
+- **Direct mode**: `sg [question]` or via pipeline: `echo question | sg`.
+- **REPL mode**: `sg -r` for an interactive chat.
+- **TUI mode**: `sg -t` for a text user interface, tailored for shell command inference.
 
-## Model
+## Configuration
 
-By default, `shellgpt` uses [Ollama](https://ollama.com/) as its language model backend, requiring installation prior to usage.
+ShellGPT is configured via `~/.shellgpt/config.toml`. You can manage multiple API providers using **Profiles**.
 
-Alternatively, one can set up `shellgpt` to utilize [OpenAI compatible](https://developers.cloudflare.com/workers-ai/configuration/open-ai-compatibility/) API endpoints:
+### Multiple Profiles
 
-```bash
-export SHELLGPT_API_URL=https://api.openai.com
-export SHELLGPT_API_KEY=<token>
-export SHELLGPT_MODEL='gpt-3.5-turbo'
+Define your API settings in the `[profiles]` section and switch between them using the `-p / --profile` flag.
 
-# or Cloudflare Worker AI
-export SHELLGPT_API_URL=https://api.cloudflare.com/client/v4/accounts/<account-id>/ai
-export SHELLGPT_API_KEY=<token>
-export SHELLGPT_MODEL='@cf/meta/llama-3-8b-instruct'
+```toml
+# ~/.shellgpt/config.toml
+default_profile = "ollama"
 
-# or GitHub Models
+[profiles.ollama]
+url = "http://localhost:11434"
+model = "llama3"
+
+[profiles.openai]
+url = "https://api.openai.com/v1"
+key = "sk-xxxx"
+model = "gpt-4o"
+
 # https://docs.github.com/en/github-models/quickstart
-export SHELLGPT_API_URL=https://models.github.ai
-export SHELLGPT_MODEL=openai/gpt-4.1
-export SHELLGPT_API_KEY=$GITHUB_TOKEN
+[profiles.github]
+url = "https://models.github.ai/inference"
+key = "ghp_xxxx"
+model = "openai/gpt-4.1"
+
+# https://developers.cloudflare.com/workers-ai/configuration/open-ai-compatibility/
+[profiles.cloudflare]
+url = "https://api.cloudflare.com/client/v4/accounts/<account-id>/ai/v1"
+key = "<token>"
+model = "@cf/meta/llama-3-8b-instruct"
+
+# https://developers.cloudflare.com/ai-gateway/usage/chat-completion/
+[profiles.cloudflare-gateway]
+url = "https://gateway.ai.cloudflare.com/v1/<account-id>/<gateway-id>/compat"
+key = ""
+model = "openai/gpt-4.1"
 ```
 
-See [conf.py](shellgpt/utils/conf.py) for more configs.
+Usage:
+```bash
+# Uses default_profile (ollama)
+sg How to center a div?
+
+# Uses OpenAI profile
+sg -p openai Write a poem about rust
+```
+
+### Global Settings
+
+You can override global defaults at the top level of the config file:
+
+```toml
+timeout = 60
+stream = true
+temperature = 0.8
+```
+
+## Roles
+
+Roles allow you to define specific system prompts for different tasks. They are managed in the `[roles]` section of your config.
+
+Built-in examples (created during `sg --init`):
+- `shell`: Infer shell commands.
+- `typo`: Correct text typos.
+- `code`: Coding assistant.
+- `summary`: Summarize text in Markdown.
+- `polish`: Polish writing.
+
+Usage:
+```bash
+# List all available roles and their contents
+sg --list
+
+# Use a specific role
+sg -s typo I is a enginer
+git diff | sg -s commit
+```
+
+### Custom Roles
+
+Add your own roles to `config.toml`:
+
+```toml
+[roles]
+translator = "You are a professional translator. Translate everything to Japanese."
+```
+
+Then use it with `sg -s translator Hello world`.
 
 ## TUI
 
-There are 3 key bindings to use in TUI:
+Key bindings in TUI mode:
 
-- `ctrl+j`, Infer answer
-- `ctrl+r`, Run command
-- `ctrl+y`, Yank command
+- `ctrl+j`: Infer answer
+- `ctrl+r`: Run command
+- `ctrl+y`: Yank command
 
 ![TUI screenshot](https://github.com/jiacai2050/shellgpt/raw/main/assets/shellgpt-tui.jpg)
-
-## System contents
-
-There are some built-in [system contents](https://platform.openai.com/docs/guides/text-generation/chat-completions-api) in shellgpt:
-
-- `default`, used for ask general questions
-- `typo`, used for correct article typos.
-- `slug`, used for generate URL slug.
-- `code`, used for ask programming questions
-- `shell`, used for infer shell command
-- `commit`, used for generate git commit message, like `git diff --staged | sg -s commit`
-
-Users can define their own content in `~/.shellgpt/prompts.toml`
-
-- key being content name and
-- value being content body
-
-Or you can just copy [prompts.toml](https://github.com/jiacai2050/my-works/blob/main/shellgpt/prompts.toml) to play with, it's generated from [Awesome ChatGPT Prompts](https://github.com/f/awesome-chatgpt-prompts/blob/main/prompts.csv).
-
-```bash
-$ sg -s linux-terminal pwd
-/home/user
-
-$ sg -s javascript-console 0.1 + 0.2
-0.3
-
-```
-
-Users can share their customized contents in [discussions](https://github.com/jiacai2050/my-works/discussions/3).
 
 # License
 

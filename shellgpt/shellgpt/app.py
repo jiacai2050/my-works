@@ -1,22 +1,15 @@
 import argparse
 import sys
 import readline
-from os import makedirs
 from .api.llm import LLM
+from .init import init_app
 from .utils.conf import (
-    API_KEY,
-    MAX_CHAT_MESSAGES,
-    MODEL,
-    INFER_TIMEOUT,
-    API_URL,
-    TEMPERATURE,
-    SYSTEM_CONTENT,
-    CONF_PATH,
     IS_TTY,
+    load_config,
+    DEFAULT_IMAGE_DIR_VALUE,
 )
 from .utils.common import (
     is_verbose,
-    load_contents_from_config,
     execute_cmd,
     copy_text,
     read_stdin,
@@ -27,15 +20,11 @@ from .utils.common import (
 from .history import History
 
 
-def init_app():
-    print(f'Create {CONF_PATH}...')
-    makedirs(CONF_PATH, exist_ok=True)
-
-
-def list_content():
-    load_contents_from_config(True)
-    for n in SYSTEM_CONTENT:
-        print(n)
+def list_roles(roles):
+    for name, content in roles.items():
+        print(f'[{name}]')
+        print(content.strip())
+        print('-' * 20)
 
 
 # List of commands for autocompletion
@@ -63,26 +52,14 @@ def repl_setup():
 
 
 class ShellGPT(object):
-    def __init__(
-        self,
-        url,
-        key,
-        model,
-        system_content,
-        temperature,
-        timeout,
-        max_messages,
-        history,
-        stream=True,
-    ):
-        self.is_shell = system_content == 'shell'
+    def __init__(self, url, key, model, role, history, **kwargs):
+        self.is_shell = role == 'shell'
         self.answers = []
         self.history = history
         self.num_prompt = 0
-        self.stream = stream
-        self.llm = LLM(
-            url, key, model, system_content, temperature, timeout, max_messages
-        )
+        self.stream = kwargs.get('stream', True)
+        self.image_dir = kwargs.get('image_dir', DEFAULT_IMAGE_DIR_VALUE)
+        self.llm = LLM(url, key, model, role=role, **kwargs)
 
     def tui(self, history, initial_prompt):
         try:
@@ -171,10 +148,10 @@ class ShellGPT(object):
         if sub_cmd == 'model':
             self.llm.model = args[2]
             return True
-        elif sub_cmd == 'system':
+        elif sub_cmd == 'role':
             sc = args[2]
             self.is_shell = sc == 'shell'
-            self.llm.system_content = sc
+            self.llm.role = sc
             return True
 
         return False
@@ -202,17 +179,18 @@ When system content is shell, type "e" to explain, "r" to run last command.
             sys.exit(0)
 
     def repl_inner(self, initial_prompt):
+        prompt = initial_prompt
         while True:
             try:
-                self.infer(initial_prompt)
-                prompt = input(f'{self.llm.system_content}@{self.llm.model}> ')
+                self.infer(prompt)
+                prompt = input(f'{self.llm.role}@{self.llm.model}> ')
                 if IS_TTY and self.repl_action(prompt):
                     self.history.remove_last()
+                    prompt = ''  # Reset prompt after action
                     continue
-
-                self.infer(prompt)
             except KeyboardInterrupt:
                 print()
+                prompt = ''
 
     def infer(self, prompt):
         if prompt == '':
@@ -270,51 +248,28 @@ def main():
     )
 
     parser.add_argument(
-        '-r', '--repl', action='store_true', help='enter interactive REPL'
+        '-p',
+        '--profile',
+        help='profile to use (default: default_profile defined in config.toml)',
     )
+    parser.add_argument('--repl', action='store_true', help='enter interactive REPL')
     parser.add_argument('-t', '--tui', action='store_true', help='enter TUI mode')
     parser.add_argument(
-        '-S',
-        '--shell',
-        action='store_true',
-        help='system content set to `shell`',
-    )
-    parser.add_argument(
-        '-s',
-        '--system',
-        default='default',
-        help='content for system role (default: %(default)s)',
+        '-r',
+        '--role',
+        help='predefined role name (see [roles] in config.toml)',
     )
     parser.add_argument(
         '--timeout',
         type=int,
-        help='timeout in seconds for each inference (default: %(default)d)',
-        default=INFER_TIMEOUT,
+        help='timeout in seconds for each inference',
     )
-    parser.add_argument(
-        '--api-url', default=API_URL, help='base API URL (default: %(default)s)'
-    )
-    parser.add_argument(
-        '--api-key', default=API_KEY, help='API Key (default: %(default)s)'
-    )
+    parser.add_argument('--api-url', help='base API URL')
+    parser.add_argument('--api-key', help='API Key')
     parser.add_argument(
         '-m',
         '--model',
-        default=MODEL,
-        help='model (default: %(default)s)',
-    )
-    parser.add_argument(
-        '-M',
-        '--max-messages',
-        type=int,
-        default=MAX_CHAT_MESSAGES,
-        help='max history messages (default: %(default)s)',
-    )
-    parser.add_argument(
-        '--temperature',
-        default=TEMPERATURE,
-        type=float,
-        help='increasing the temperature will make the model answer more creatively. (default: %(default).2f)',
+        help='model',
     )
     parser.add_argument(
         '--init', action='store_true', help='create required directories'
@@ -327,8 +282,8 @@ def main():
     parser.add_argument(
         '--stream',
         action='store_true',
-        default=True,
-        help='stream response (default: %(default)s)',
+        default=None,
+        help='stream response',
     )
     parser.add_argument(
         '--no-stream',
@@ -340,11 +295,14 @@ def main():
     args = parser.parse_args()
     set_verbose(args.verbose)
 
+    # 这里的逻辑是：1. 命令行参数优先；2. 如果没传命令行参数，则看 -p 切换 profile；3. 最后使用默认配置
+    params = load_config(args.profile)
+
     if args.init:
         init_app()
         sys.exit(0)
     elif args.list:
-        list_content()
+        list_roles(params['roles'])
         sys.exit(0)
 
     sin = read_stdin()
@@ -359,23 +317,34 @@ def main():
     else:
         app_mode = AppMode.REPL if len(prompt) == 0 else AppMode.Direct
 
-    system_content = args.system
-    if args.shell or app_mode == AppMode.TUI:
-        system_content = 'shell'
+    role_name = args.role or params.get('role', 'default')
+    if app_mode == AppMode.TUI:
+        role_name = 'shell'
 
-    load_contents_from_config(False)
+    if role_name not in params['roles']:
+        print(f"Error: role '{role_name}' not found.")
+        sys.exit(1)
+
+    # 准备传给 ShellGPT 的参数
+    # 命令行显式传参拥有最高优先级
+    conf_kwargs = {
+        'temperature': params['temperature'],
+        'timeout': args.timeout or params['timeout'],
+        'max_messages': params['max_messages'],
+        'stream': params['stream'] if args.stream is None else args.stream,
+        'image_model': params['image_model'],
+        'image_dir': params['image_dir'],
+        'prompts': params['roles'],
+    }
 
     history = History()
     sg = ShellGPT(
-        args.api_url,
-        args.api_key,
-        args.model,
-        system_content,
-        args.temperature,
-        args.timeout,
-        args.max_messages,
+        args.api_url or params['api_url'],
+        args.api_key or params['api_key'],
+        args.model or params['model'],
+        role_name,
         history,
-        args.stream,
+        **conf_kwargs,
     )
     if prompt != '':
         history.add(prompt)
