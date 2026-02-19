@@ -50,11 +50,12 @@ class ShellGPTApp(App):
         Binding('ctrl+r', 'run', 'Run code block'),
     ]
 
-    def __init__(self, llm, history, initial_prompt):
+    def __init__(self, llm, history, initial_prompt, stream=True):
         self.llm = llm
         self.history = history
         self.has_inflight_req = False
         self.initial_prompt = initial_prompt
+        self.stream = stream
         super().__init__()
 
     def on_mount(self) -> None:
@@ -109,7 +110,7 @@ class ShellGPTApp(App):
 
         debug_print(f'infer {prompt}')
         self.history.add(prompt)
-        resp = self.llm.chat(prompt)
+        resp = self.llm.chat(prompt, stream=self.stream)
         buf = ''
         for item in resp:
             buf += item

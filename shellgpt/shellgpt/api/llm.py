@@ -71,6 +71,13 @@ class LLM(object):
             raise Exception('Error: ' + r.text)
 
         answer = ''
+        if not stream:
+            resp = r.json()
+            answer = resp['choices'][0]['message']['content']
+            self.messages.append({'role': 'assistant', 'content': answer})
+            yield answer
+            return
+
         current = b''
         # https://github.com/openai/openai-python#streaming-responses
         # The response is SSE, so we need to parse the response line by line.
@@ -174,6 +181,13 @@ class LLM(object):
             raise Exception('Error: ' + r.text)
 
         answer = ''
+        if not stream:
+            resp = r.json()
+            answer = resp['message']['content']
+            self.messages.append({'role': 'assistant', 'content': answer})
+            yield answer
+            return
+
         for item in r.iter_content(chunk_size=None):
             resp = json.loads(item)
             if resp['done']:

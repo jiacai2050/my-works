@@ -73,11 +73,13 @@ class ShellGPT(object):
         timeout,
         max_messages,
         history,
+        stream=True,
     ):
         self.is_shell = system_content == 'shell'
         self.answers = []
         self.history = history
         self.num_prompt = 0
+        self.stream = stream
         self.llm = LLM(
             url, key, model, system_content, temperature, timeout, max_messages
         )
@@ -86,7 +88,7 @@ class ShellGPT(object):
         try:
             from .tui.app import ShellGPTApp
 
-            app = ShellGPTApp(self.llm, history, initial_prompt)
+            app = ShellGPTApp(self.llm, history, initial_prompt, self.stream)
             app.run()
         except ImportError:
             print(
@@ -219,7 +221,7 @@ When system content is shell, type "e" to explain, "r" to run last command.
         self.num_prompt += 1
         resp = ''
         try:
-            for r in self.llm.chat(prompt):
+            for r in self.llm.chat(prompt, stream=self.stream):
                 resp += r
                 if self.is_shell is False:
                     print(r, end='', flush=True)
@@ -241,7 +243,9 @@ When system content is shell, type "e" to explain, "r" to run last command.
     def explain_cmd(self, cmd):
         resp = ''
         for r in self.llm.chat(
-            f'Explain this command: {cmd}', add_system_message=False
+            f'Explain this command: {cmd}',
+            add_system_message=False,
+            stream=self.stream,
         ):
             resp += r
             print(r, end='', flush=True)
@@ -320,6 +324,18 @@ def main():
     parser.add_argument(
         '-V', '--version', action='version', version='%(prog)s ' + get_version()
     )
+    parser.add_argument(
+        '--stream',
+        action='store_true',
+        default=True,
+        help='stream response (default: %(default)s)',
+    )
+    parser.add_argument(
+        '--no-stream',
+        action='store_false',
+        dest='stream',
+        help='do not stream response',
+    )
     parser.add_argument('prompt', metavar='<prompt>', nargs='*')
     args = parser.parse_args()
     set_verbose(args.verbose)
@@ -359,6 +375,7 @@ def main():
         args.timeout,
         args.max_messages,
         history,
+        args.stream,
     )
     if prompt != '':
         history.add(prompt)
