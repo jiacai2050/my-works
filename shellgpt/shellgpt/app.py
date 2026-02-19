@@ -247,49 +247,53 @@ def main():
         description='Chat with LLM in your terminal, be it shell generator, story teller, linux-terminal, etc.',
     )
 
+    parser.add_argument('--repl', action='store_true', help='Enter interactive REPL')
+    parser.add_argument('--tui', action='store_true', help='Enter TUI mode')
+    parser.add_argument(
+        '--init',
+        action='store_true',
+        help='Create required directories and default config.toml',
+    )
+    parser.add_argument('--list', action='store_true', help='List all available roles')
+
     parser.add_argument(
         '-p',
         '--profile',
-        help='profile to use (default: default_profile defined in config.toml)',
+        help='Profile to use (default: default_profile defined in config.toml)',
     )
-    parser.add_argument('--repl', action='store_true', help='enter interactive REPL')
-    parser.add_argument('-t', '--tui', action='store_true', help='enter TUI mode')
     parser.add_argument(
         '-r',
         '--role',
-        help='predefined role name (see [roles] in config.toml)',
+        help='Predefined role name (see [roles] in config.toml)',
     )
     parser.add_argument(
+        '-t',
         '--timeout',
         type=int,
-        help='timeout in seconds for each inference',
+        help='Timeout in seconds for each inference',
     )
-    parser.add_argument('--api-url', help='base API URL')
+    parser.add_argument('--api-url', help='Base API URL')
     parser.add_argument('--api-key', help='API Key')
     parser.add_argument(
         '-m',
         '--model',
-        help='model',
-    )
-    parser.add_argument(
-        '--init', action='store_true', help='create required directories'
-    )
-    parser.add_argument('--list', action='store_true', help='list known system content')
-    parser.add_argument('-v', '--verbose', action='store_true', help='verbose mode')
-    parser.add_argument(
-        '-V', '--version', action='version', version='%(prog)s ' + get_version()
+        help='Model name',
     )
     parser.add_argument(
         '--stream',
         action='store_true',
         default=None,
-        help='stream response',
+        help='Stream response',
     )
     parser.add_argument(
         '--no-stream',
         action='store_false',
         dest='stream',
-        help='do not stream response',
+        help='Do not stream response',
+    )
+    parser.add_argument('--verbose', action='store_true', help='Verbose mode')
+    parser.add_argument(
+        '-v', '--version', action='version', version='%(prog)s ' + get_version()
     )
     parser.add_argument('prompt', metavar='<prompt>', nargs='*')
     args = parser.parse_args()

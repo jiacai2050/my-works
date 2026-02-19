@@ -29,8 +29,8 @@ uv tool install shgpt
 ShellGPT 提供三种模式：
 
 - **直接模式 (Direct mode)**: `sg [问题]` 或通过管道：`echo 问题 | sg`。
-- **对话模式 (REPL mode)**: `sg -r` 进入交互式对话。
-- **界面模式 (TUI mode)**: `sg -t` 进入终端图形界面，专为生成和执行 Shell 命令设计。
+- **对话模式 (REPL mode)**: `sg --repl` 进入交互式对话。
+- **界面模式 (TUI mode)**: `sg --tui` 进入终端图形界面，专为生成和执行 Shell 命令设计。
 
 ## 配置
 

@@ -29,8 +29,8 @@ After install, use `sg --init` to create the required directory and a default co
 ShellGPT has three modes:
 
 - **Direct mode**: `sg [question]` or via pipeline: `echo question | sg`.
-- **REPL mode**: `sg -r` for an interactive chat.
-- **TUI mode**: `sg -t` for a text user interface, tailored for shell command inference.
+- **REPL mode**: `sg --repl` for an interactive chat.
+- **TUI mode**: `sg --tui` for a text user interface, tailored for shell command inference.
 
 ## Configuration
 
