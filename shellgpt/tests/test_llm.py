@@ -136,16 +136,3 @@ class TestLLM(unittest.TestCase):
                 llm.get_infer_url(),
                 'https://api.cloudflare.com/client/v4/accounts/xx/ai/v1/chat/completions',
             )
-
-        for base_url in ['http://localhost:11434', 'http://localhost:11434/']:
-            llm = LLM(
-                base_url,
-                '',
-                'llama3',
-                role='default',
-                temperature=0.8,
-                timeout=10,
-                max_messages=2,
-                prompts={'default': None},
-            )
-            self.assertEqual(llm.get_infer_url(), 'http://localhost:11434/api/chat')

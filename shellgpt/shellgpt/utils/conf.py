@@ -35,6 +35,7 @@ def get_conf(profile_name, profile_key, default_val):
     val = profile_conf.get(profile_key)
     if val is not None:
         return val
+
     return _config.get(profile_key, default_val)
 
 
@@ -48,10 +49,12 @@ DEFAULT_MAX_HISTORY = 1000
 DEFAULT_MAX_CHAT_MESSAGES = 5
 DEFAULT_STREAM_VALUE = True
 DEFAULT_IMAGE_DIR_VALUE = '~/Pictures'
+DEFAULT_ROLE_VALUE = 'You are a helpful assistant.'
 
 # Auto determined configs
 OS_NAME = platform.system()
 IS_TTY = sys.stdin.isatty()
+IS_STDOUT_TTY = sys.stdout.isatty()
 
 
 def get_shell_type():
@@ -69,11 +72,11 @@ def load_config(profile_name=None):
         profile_name = _config.get('default_profile', 'default')
 
     # default 角色永远存在
-    roles = {'default': 'You are a helpful assistant.', **_config.get('roles', {})}
+    roles = {'default': DEFAULT_ROLE_VALUE, **_config.get('roles', {})}
 
     return {
-        'api_url': get_conf(profile_name, 'url', DEFAULT_API_URL),
-        'api_key': get_conf(profile_name, 'key', ''),
+        'base_url': get_conf(profile_name, 'base_url', DEFAULT_API_URL),
+        'api_key': get_conf(profile_name, 'api_key', ''),
         'model': get_conf(profile_name, 'model', DEFAULT_MODEL),
         'temperature': float(
             get_conf(profile_name, 'temperature', DEFAULT_TEMPERATURE)
@@ -92,12 +95,13 @@ def load_config(profile_name=None):
             get_conf(profile_name, 'image_dir', DEFAULT_IMAGE_DIR_VALUE)
         ),
         'roles': roles,
+        'headers': _config.get('profiles', {}).get(profile_name, {}).get('headers', {}),
     }
 
 
 # 初始化默认配置
 _default_params = load_config()
-API_URL = _default_params['api_url']
+API_URL = _default_params['base_url']
 API_KEY = _default_params['api_key']
 MODEL = _default_params['model']
 TEMPERATURE = _default_params['temperature']

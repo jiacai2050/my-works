@@ -36,12 +36,12 @@ default_profile = "ollama"
 # image_dir = "{DEFAULT_IMAGE_DIR_VALUE}"
 
 [profiles.ollama]
-url = "http://127.0.0.1:11434"
+base_url = "http://127.0.0.1:11434/v1"
 model = "{MODEL}"
 
 [profiles.openai]
-url = "https://api.openai.com/v1"
-key = "YOUR_API_KEY"
+base_url = "https://api.openai.com/v1"
+api_key = "YOUR_API_KEY"
 model = "gpt-4o"
 
 [roles]

@@ -1,12 +1,15 @@
 import argparse
 import sys
 import readline
+import traceback
 from .api.llm import LLM
 from .init import init_app
 from .utils.conf import (
     IS_TTY,
+    IS_STDOUT_TTY,
     load_config,
     DEFAULT_IMAGE_DIR_VALUE,
+    CONF_PATH,
 )
 from .utils.common import (
     is_verbose,
@@ -212,7 +215,8 @@ When system content is shell, type "e" to explain, "r" to run last command.
             else:
                 print()
         except Exception as e:
-            print(f'Error when infer: ${e}')
+            print(f'Error when infer: {e}')
+            traceback.print_exc()
             if is_verbose():
                 raise e
         finally:
@@ -255,6 +259,10 @@ def main():
         help='Create required directories and default config.toml',
     )
     parser.add_argument('--list', action='store_true', help='List all available roles')
+    parser.add_argument('--dump', action='store_true', help='Dump active configuration')
+    parser.add_argument(
+        '--dump-json', action='store_true', help='Dump active configuration in JSON'
+    )
 
     parser.add_argument(
         '-p',
@@ -329,24 +337,63 @@ def main():
         print(f"Error: role '{role_name}' not found.")
         sys.exit(1)
 
+    # stream 稍微特殊点，因为 argparse store_true 的默认值已经是 None
+    # 逻辑：命令行参数优先 > 终端状态判断 > 配置文件默认值
+    if args.stream is not None:
+        stream = args.stream
+    elif not IS_STDOUT_TTY:
+        stream = False
+    else:
+        stream = params['stream']
+
     # 准备传给 ShellGPT 的参数
     # 命令行显式传参拥有最高优先级
     conf_kwargs = {
+        'api_url': args.api_url or params['base_url'],
+        'api_key': args.api_key or params['api_key'],
+        'model': args.model or params['model'],
+        'role': role_name,
         'temperature': params['temperature'],
         'timeout': args.timeout or params['timeout'],
         'max_messages': params['max_messages'],
-        'stream': params['stream'] if args.stream is None else args.stream,
+        'stream': stream,
         'image_model': params['image_model'],
         'image_dir': params['image_dir'],
         'prompts': params['roles'],
+        'headers': params['headers'],
     }
 
+    if args.dump or args.dump_json:
+        # Create a copy for masking sensitive data
+        dump_data = conf_kwargs.copy()
+        dump_data['config_dir'] = CONF_PATH
+        if dump_data.get('api_key'):
+            dump_data['api_key'] = '<hidden>'
+
+        if args.dump_json:
+            import json
+
+            print(json.dumps(dump_data, indent=2, ensure_ascii=False))
+        else:
+            for k, v in dump_data.items():
+                if k == 'prompts':
+                    print(f'{k}: {list(v.keys())}')
+                else:
+                    print(f'{k}: {v}')
+        sys.exit(0)
+
     history = History()
+    # 移除 conf_kwargs 中与位置参数重复的字段，避免 TypeError
+    url = conf_kwargs.pop('api_url')
+    key = conf_kwargs.pop('api_key')
+    model = conf_kwargs.pop('model')
+    role = conf_kwargs.pop('role')
+
     sg = ShellGPT(
-        args.api_url or params['api_url'],
-        args.api_key or params['api_key'],
-        args.model or params['model'],
-        role_name,
+        url,
+        key,
+        model,
+        role,
         history,
         **conf_kwargs,
     )

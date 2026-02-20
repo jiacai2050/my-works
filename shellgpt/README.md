@@ -34,7 +34,7 @@ ShellGPT has three modes:
 
 ## Configuration
 
-ShellGPT is configured via `~/.shellgpt/config.toml`. You can manage multiple API providers using **Profiles**.
+ShellGPT is configured via `~/.shellgpt/config.toml`. You can change the configuration directory by setting the `SHELLGPT_CONF_DIR` environment variable.
 
 ### Multiple Profiles
 
@@ -45,31 +45,32 @@ Define your API settings in the `[profiles]` section and switch between them usi
 default_profile = "ollama"
 
 [profiles.ollama]
-url = "http://localhost:11434"
+base_url = "http://localhost:11434/v1"
 model = "llama3"
 
 [profiles.openai]
-url = "https://api.openai.com/v1"
-key = "sk-xxxx"
+base_url = "https://api.openai.com/v1"
+api_key = "sk-xxxx"
 model = "gpt-4o"
+headers = { "X-My-Header" = "value" }
 
 # https://docs.github.com/en/github-models/quickstart
 [profiles.github]
-url = "https://models.github.ai/inference"
-key = "ghp_xxxx"
-model = "openai/gpt-4.1"
+base_url = "https://models.github.ai/inference"
+api_key = "ghp_xxxx"
+model = "gpt-4o"
 
 # https://developers.cloudflare.com/workers-ai/configuration/open-ai-compatibility/
 [profiles.cloudflare]
-url = "https://api.cloudflare.com/client/v4/accounts/<account-id>/ai/v1"
-key = "<token>"
+base_url = "https://api.cloudflare.com/client/v4/accounts/<account-id>/ai/v1"
+api_key = "<token>"
 model = "@cf/meta/llama-3-8b-instruct"
 
 # https://developers.cloudflare.com/ai-gateway/usage/chat-completion/
 [profiles.cloudflare-gateway]
-url = "https://gateway.ai.cloudflare.com/v1/<account-id>/<gateway-id>/compat"
-key = ""
-model = "openai/gpt-4.1"
+base_url = "https://gateway.ai.cloudflare.com/v1/<account-id>/<gateway-id>/compat"
+api_key = "sk-xxxx"
+model = "gpt-4o"
 ```
 
 Usage:
