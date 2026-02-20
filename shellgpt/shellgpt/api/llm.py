@@ -27,6 +27,10 @@ class LLM(object):
 
         timeout = kwargs.get('timeout', DEFAULT_TIMEOUT)
         session = TimeoutSession(timeout=timeout)
+        custom_headers = kwargs.get('headers', {})
+        if custom_headers:
+            session.headers.update(custom_headers)
+
         if key is not None and key != '':
             session.headers.update({'Authorization': f'Bearer {key}'})
 
