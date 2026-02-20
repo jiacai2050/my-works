@@ -4,7 +4,6 @@ from ..utils.common import base64_image, debug_print, is_verbose, prepare_prompt
 from ..utils.conf import (
     DEFAULT_IMAGE_MODEL,
     DEFAULT_MAX_CHAT_MESSAGES,
-    DEFAULT_TEMPERATURE,
     DEFAULT_TIMEOUT,
 )
 from ..utils.http import TimeoutSession
@@ -21,7 +20,7 @@ class LLM(object):
         if role is None:
             raise Exception('role is required for LLM')
         self.role = role
-        self.temperature = kwargs.get('temperature', DEFAULT_TEMPERATURE)
+        self.temperature = kwargs.get('temperature')
         self.max_messages = kwargs.get('max_messages', DEFAULT_MAX_CHAT_MESSAGES)
         self.image_model = kwargs.get('image_model', DEFAULT_IMAGE_MODEL)
 
@@ -65,8 +64,10 @@ class LLM(object):
             'messages': messages,
             'model': model,
             'stream': stream,
-            'temperature': self.temperature,
         }
+        if self.temperature is not None:
+            payload['temperature'] = self.temperature
+
         r = self.http_session.post(url, json=payload, stream=stream)
         if r.status_code != 200:
             raise Exception('Error: ' + r.text)

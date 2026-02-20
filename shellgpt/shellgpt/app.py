@@ -12,7 +12,6 @@ from .utils.conf import (
     CONF_PATH,
 )
 from .utils.common import (
-    is_verbose,
     execute_cmd,
     copy_text,
     read_stdin,
@@ -185,7 +184,11 @@ When system content is shell, type "e" to explain, "r" to run last command.
         prompt = initial_prompt
         while True:
             try:
-                self.infer(prompt)
+                try:
+                    self.infer(prompt)
+                except Exception:
+                    # Exception is already printed by infer(), we just catch it here to keep REPL alive
+                    pass
                 prompt = input(f'{self.llm.role}@{self.llm.model}> ')
                 if IS_TTY and self.repl_action(prompt):
                     self.history.remove_last()
@@ -217,8 +220,7 @@ When system content is shell, type "e" to explain, "r" to run last command.
         except Exception as e:
             print(f'Error when infer: {e}')
             traceback.print_exc()
-            if is_verbose():
-                raise e
+            raise e
         finally:
             self.answers.append(resp)
 
@@ -307,13 +309,18 @@ def main():
     args = parser.parse_args()
     set_verbose(args.verbose)
 
-    # 这里的逻辑是：1. 命令行参数优先；2. 如果没传命令行参数，则看 -p 切换 profile；3. 最后使用默认配置
-    params = load_config(args.profile)
-
     if args.init:
         init_app()
         sys.exit(0)
-    elif args.list:
+
+    # 这里的逻辑是：1. 命令行参数优先；2. 如果没传命令行参数，则看 -p 切换 profile；3. 最后使用默认配置
+    try:
+        params = load_config(args.profile)
+    except Exception as e:
+        print(f'Error: {e}')
+        sys.exit(1)
+
+    if args.list:
         list_roles(params['roles'])
         sys.exit(0)
 
@@ -401,7 +408,10 @@ def main():
         history.add(prompt)
 
     if app_mode == AppMode.Direct:
-        sg.infer(prompt)
+        try:
+            sg.infer(prompt)
+        except Exception:
+            sys.exit(1)
     elif app_mode == AppMode.TUI:
         sg.tui(history, prompt)
     else:

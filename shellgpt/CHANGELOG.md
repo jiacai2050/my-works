@@ -13,19 +13,23 @@ All notable changes to this project will be documented in this file.
 - **Stream Control**: Added `--stream` and `--no-stream` CLI flags. `stream` now defaults to `false` if stdout is redirected.
 - **Improved Initialization**: `sg --init` now generates a rich configuration template with dynamic shell detection and multi-line role examples.
 - **New Built-in Roles**: Added `summary` and `polish` roles to the default template.
+- **Enhanced Debugging**: Added HTTP headers (masked) and truncated request bodies to debug logs in verbose mode.
 - **Multilingual Docs**: Added `README_zh.md` and `CHANGELOG_zh.md`.
 
 ### Changed
 - **Unified Terminology**: Standardized on `role` instead of `system_content` across the entire codebase and CLI (changed `-s` to `--role`).
-- **Backend Unification**: Switched to 100% OpenAI-compatible API handling; legacy native Ollama support has been removed (use Ollama's OpenAI-compatible endpoint instead).
-- **Cleaned CLI Arguments**: Removed redundant flags like `--max-messages`, `--temperature`, and `--shell` in favor of configuration file settings.
-- **URL Handling**: URLs in profiles must now be provided in full (e.g., including `/v1`), allowing better support for API gateways and proxies.
+- **Backend Unification**: Switched to 100% OpenAI-compatible API handling; legacy native Ollama support has been removed.
+- **Strict Validation**: Resolved profile names and role names must now exist in the configuration, or the program will exit with an error.
+- **Optional Parameters**: `temperature` is now optional and only sent to the API if explicitly defined in the config.
+- **Cleaned CLI Arguments**: Removed redundant flags like `--max-messages`, `--temperature`, and `--shell`.
+- **URL Handling**: URLs in profiles must now be provided in full.
 - **Architecture Refactoring**: 
     - Refactored `LLM` and `ShellGPT` to use `**kwargs` for better extensibility.
     - Moved initialization logic to `shellgpt/init.py`.
     - Eliminated dependencies on global variables.
-- **Optimized Logging**: Request logs are now truncated to 50 characters in verbose mode to keep output clean.
 
 ### Fixed
+- **Process Exit Codes**: Non-REPL mode now correctly exits with a non-zero code on inference errors.
+- **Robust Error Handling**: Added explicit traceback printing for easier troubleshooting.
 - **History Management**: Fixed a bug where AI responses were not saved to history during streaming.
-- **REPL Loop**: Fixed a bug where the initial prompt was repeatedly sent.
+- **REPL Logic**: Fixed a bug where the initial prompt was repeatedly sent.

@@ -7,7 +7,6 @@ from .utils.conf import (
     DEFAULT_TIMEOUT,
     MAX_CHAT_MESSAGES,
     DEFAULT_IMAGE_DIR_VALUE,
-    DEFAULT_TEMPERATURE,
     IMAGE_MODEL,
     OS_NAME,
     SHELL,
@@ -29,7 +28,7 @@ default_profile = "ollama"
 # Global defaults (uncomment to override)
 # stream = {str(DEFAULT_STREAM).lower()}
 # timeout = {DEFAULT_TIMEOUT}
-# temperature = {DEFAULT_TEMPERATURE}
+# temperature = 0.8
 # max_messages = {MAX_CHAT_MESSAGES}
 # max_history = 1000
 # image_model = "{IMAGE_MODEL}"

@@ -40,10 +40,8 @@ def get_conf(profile_name, profile_key, default_val):
 
 
 # Configuration Defaults
-DEFAULT_API_URL = 'http://127.0.0.1:11434'
 DEFAULT_MODEL = 'llama3'
 DEFAULT_IMAGE_MODEL = 'llava'
-DEFAULT_TEMPERATURE = 0.8
 DEFAULT_TIMEOUT = 60
 DEFAULT_MAX_HISTORY = 1000
 DEFAULT_MAX_CHAT_MESSAGES = 5
@@ -69,18 +67,29 @@ SHELL = get_shell_type()
 
 def load_config(profile_name=None):
     if profile_name is None:
-        profile_name = _config.get('default_profile', 'default')
+        profile_name = _config.get('default_profile')
+        if profile_name is None:
+            raise Exception('default_profile not found in config.toml')
+
+    if profile_name not in _config.get('profiles', {}):
+        raise Exception(f"Profile '{profile_name}' not found in config.toml")
 
     # default 角色永远存在
     roles = {'default': DEFAULT_ROLE_VALUE, **_config.get('roles', {})}
 
+    base_url = get_conf(profile_name, 'base_url', None)
+    if base_url is None:
+        raise Exception(f"base_url not found for profile '{profile_name}'")
+
+    temperature = get_conf(profile_name, 'temperature', None)
+    if temperature is not None:
+        temperature = float(temperature)
+
     return {
-        'base_url': get_conf(profile_name, 'base_url', DEFAULT_API_URL),
+        'base_url': base_url,
         'api_key': get_conf(profile_name, 'api_key', ''),
         'model': get_conf(profile_name, 'model', DEFAULT_MODEL),
-        'temperature': float(
-            get_conf(profile_name, 'temperature', DEFAULT_TEMPERATURE)
-        ),
+        'temperature': temperature,
         'timeout': int(get_conf(profile_name, 'timeout', DEFAULT_TIMEOUT)),
         'max_history': int(get_conf(profile_name, 'max_history', DEFAULT_MAX_HISTORY)),
         'max_messages': int(
