@@ -14,6 +14,7 @@ from .utils.conf import (
 from .utils.common import (
     execute_cmd,
     copy_text,
+    is_verbose,
     read_stdin,
     extract_code,
     set_verbose,
@@ -218,8 +219,9 @@ When system content is shell, type "e" to explain, "r" to run last command.
             else:
                 print()
         except Exception as e:
-            print(f'Error when infer: {e}')
-            traceback.print_exc()
+            print(f'Error when infer: {e}', file=sys.stderr)
+            if is_verbose():
+                traceback.print_exc()
             raise e
         finally:
             self.answers.append(resp)
@@ -317,7 +319,7 @@ def main():
     try:
         params = load_config(args.profile)
     except Exception as e:
-        print(f'Error: {e}')
+        print(f'Error: {e}', file=sys.stderr)
         sys.exit(1)
 
     if args.list:
@@ -341,7 +343,7 @@ def main():
         role_name = 'shell'
 
     if role_name not in params['roles']:
-        print(f"Error: role '{role_name}' not found.")
+        print(f"Error: role '{role_name}' not found.", file=sys.stderr)
         sys.exit(1)
 
     # stream 稍微特殊点，因为 argparse store_true 的默认值已经是 None

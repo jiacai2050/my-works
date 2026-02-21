@@ -31,4 +31,7 @@ dep:
 	pip install -e .
 	pip install -e "shellgpt.[tui]"
 
-.PHONY: tui repl build clean fix lint sync contents dep
+install:
+	uv tool install -e .
+
+.PHONY: tui repl build clean fix lint sync contents dep install
