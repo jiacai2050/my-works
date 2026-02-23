@@ -50,9 +50,13 @@ model = "llama3"
 
 [profiles.openai]
 base_url = "https://api.openai.com/v1"
+# 直接提供 API Key
 api_key = "sk-xxxx"
+# 或者提供包含 API Key 的环境变量名
+# api_key_env = "OPENAI_API_KEY"
 model = "gpt-4o"
-headers = { "X-My-Header" = "value" }
+# Headers 支持环境变量替换 ($VAR 或 ${VAR})
+headers = { "Authorization" = "Bearer $OPENAI_API_KEY", "X-My-Header" = "value" }
 
 # https://docs.github.com/en/github-models/quickstart
 [profiles.github]

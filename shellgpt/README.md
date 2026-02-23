@@ -50,9 +50,13 @@ model = "llama3"
 
 [profiles.openai]
 base_url = "https://api.openai.com/v1"
+# You can provide api_key directly
 api_key = "sk-xxxx"
+# Or provide the name of the environment variable that contains the API key
+# api_key_env = "OPENAI_API_KEY"
 model = "gpt-4o"
-headers = { "X-My-Header" = "value" }
+# Headers support environment variable substitution ($VAR or ${VAR})
+headers = { "Authorization" = "Bearer $OPENAI_API_KEY", "X-My-Header" = "value" }
 
 # https://docs.github.com/en/github-models/quickstart
 [profiles.github]

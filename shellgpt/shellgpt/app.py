@@ -10,6 +10,9 @@ from .utils.conf import (
     load_config,
     DEFAULT_IMAGE_DIR_VALUE,
     CONF_PATH,
+    DEFAULT_MAX_CHAT_MESSAGES,
+    DEFAULT_IMAGE_MODEL,
+    DEFAULT_TIMEOUT,
 )
 from .utils.common import (
     execute_cmd,
@@ -56,14 +59,40 @@ def repl_setup():
 
 
 class ShellGPT(object):
-    def __init__(self, url, key, model, role, history, **kwargs):
+    def __init__(
+        self,
+        url,
+        key,
+        model,
+        role,
+        history,
+        prompts,
+        temperature=None,
+        max_messages=DEFAULT_MAX_CHAT_MESSAGES,
+        image_model=DEFAULT_IMAGE_MODEL,
+        image_dir=DEFAULT_IMAGE_DIR_VALUE,
+        timeout=DEFAULT_TIMEOUT,
+        stream=True,
+        headers=None,
+    ):
         self.is_shell = role == 'shell'
         self.answers = []
         self.history = history
         self.num_prompt = 0
-        self.stream = kwargs.get('stream', True)
-        self.image_dir = kwargs.get('image_dir', DEFAULT_IMAGE_DIR_VALUE)
-        self.llm = LLM(url, key, model, role=role, **kwargs)
+        self.stream = stream
+        self.image_dir = image_dir
+        self.llm = LLM(
+            url,
+            key,
+            model,
+            role=role,
+            prompts=prompts,
+            temperature=temperature,
+            max_messages=max_messages,
+            image_model=image_model,
+            timeout=timeout,
+            headers=headers,
+        )
 
     def tui(self, history, initial_prompt):
         try:
@@ -383,19 +412,21 @@ def main():
         sys.exit(0)
 
     history = History()
-    # 移除 conf_kwargs 中与位置参数重复的字段，避免 TypeError
-    url = conf_kwargs.pop('api_url')
-    key = conf_kwargs.pop('api_key')
-    model = conf_kwargs.pop('model')
-    role = conf_kwargs.pop('role')
 
     sg = ShellGPT(
-        url,
-        key,
-        model,
-        role,
-        history,
-        **conf_kwargs,
+        url=conf_kwargs.pop('api_url'),
+        key=conf_kwargs.pop('api_key'),
+        model=conf_kwargs.pop('model'),
+        role=conf_kwargs.pop('role'),
+        history=history,
+        prompts=conf_kwargs.pop('prompts'),
+        temperature=conf_kwargs.pop('temperature'),
+        max_messages=conf_kwargs.pop('max_messages'),
+        image_model=conf_kwargs.pop('image_model'),
+        image_dir=conf_kwargs.pop('image_dir'),
+        timeout=conf_kwargs.pop('timeout'),
+        stream=conf_kwargs.pop('stream'),
+        headers=conf_kwargs.pop('headers'),
     )
     if prompt != '':
         history.add(prompt)

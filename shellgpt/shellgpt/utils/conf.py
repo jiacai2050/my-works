@@ -2,6 +2,7 @@ from os import path, environ, pathsep
 import sys
 import platform
 import os
+import re
 
 # Configuration
 CONF_PATH = os.path.expanduser(os.environ.get('SHELLGPT_CONF_DIR', '~/.shellgpt'))
@@ -65,6 +66,21 @@ def get_shell_type():
 SHELL = get_shell_type()
 
 
+def _resolve_header_values(headers):
+    resolved = {}
+    for k, v in headers.items():
+        if isinstance(v, str):
+            # match $VAR or ${VAR}
+            resolved[k] = re.sub(
+                r'\$(\w+)|\$\{(\w+)\}',
+                lambda m: os.environ.get(m.group(1) or m.group(2), m.group(0)),
+                v,
+            )
+        else:
+            resolved[k] = v
+    return resolved
+
+
 def load_config(profile_name=None):
     if profile_name is None:
         profile_name = _config.get('default_profile')
@@ -85,9 +101,15 @@ def load_config(profile_name=None):
     if temperature is not None:
         temperature = float(temperature)
 
+    api_key = get_conf(profile_name, 'api_key', '')
+    if not api_key:
+        api_key_env = get_conf(profile_name, 'api_key_env', None)
+        if api_key_env:
+            api_key = os.environ.get(api_key_env, '')
+
     return {
         'base_url': base_url,
-        'api_key': get_conf(profile_name, 'api_key', ''),
+        'api_key': api_key,
         'model': get_conf(profile_name, 'model', DEFAULT_MODEL),
         'temperature': temperature,
         'timeout': int(get_conf(profile_name, 'timeout', DEFAULT_TIMEOUT)),
@@ -104,12 +126,33 @@ def load_config(profile_name=None):
             get_conf(profile_name, 'image_dir', DEFAULT_IMAGE_DIR_VALUE)
         ),
         'roles': roles,
-        'headers': _config.get('profiles', {}).get(profile_name, {}).get('headers', {}),
+        'headers': _resolve_header_values(
+            _config.get('profiles', {}).get(profile_name, {}).get('headers', {})
+        ),
     }
 
 
 # 初始化默认配置
-_default_params = load_config()
+try:
+    _default_params = load_config()
+except Exception:
+    # CI 或者首次运行，配置可能不存在，提供一组默认值避免 import 失败
+    # Mainly used for tests.
+    _default_params = {
+        'base_url': 'http://127.0.0.1:11434/v1',
+        'api_key': '',
+        'model': DEFAULT_MODEL,
+        'temperature': None,
+        'timeout': DEFAULT_TIMEOUT,
+        'max_history': DEFAULT_MAX_HISTORY,
+        'max_messages': DEFAULT_MAX_CHAT_MESSAGES,
+        'stream': DEFAULT_STREAM_VALUE,
+        'image_model': DEFAULT_IMAGE_MODEL,
+        'image_dir': DEFAULT_IMAGE_DIR_VALUE,
+        'roles': {'default': DEFAULT_ROLE_VALUE},
+        'headers': {},
+    }
+
 API_URL = _default_params['base_url']
 API_KEY = _default_params['api_key']
 MODEL = _default_params['model']

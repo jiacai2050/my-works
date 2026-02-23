@@ -3,9 +3,9 @@ import json
 from ..utils.common import (
     base64_image,
     debug_print,
+    get_version,
     is_verbose,
     prepare_prompt,
-    get_version,
 )
 from ..utils.conf import (
     DEFAULT_IMAGE_MODEL,
@@ -16,26 +16,39 @@ from ..utils.http import TimeoutSession
 
 
 class LLM(object):
-    def __init__(self, base_url, key, model, **kwargs):
+    def __init__(
+        self,
+        base_url,
+        key,
+        model,
+        role,
+        prompts,
+        temperature=None,
+        max_messages=DEFAULT_MAX_CHAT_MESSAGES,
+        image_model=DEFAULT_IMAGE_MODEL,
+        timeout=DEFAULT_TIMEOUT,
+        headers=None,
+    ):
         self.base_url = base_url
         self.model = model
-        self.prompts = kwargs.get('prompts')
+        self.prompts = prompts
         if self.prompts is None:
             raise Exception('prompts is required for LLM')
-        role = kwargs.get('role')
         if role is None:
             raise Exception('role is required for LLM')
         self.role = role
-        self.temperature = kwargs.get('temperature')
-        self.max_messages = kwargs.get('max_messages', DEFAULT_MAX_CHAT_MESSAGES)
-        self.image_model = kwargs.get('image_model', DEFAULT_IMAGE_MODEL)
+        self.temperature = temperature
+        self.max_messages = max_messages
+        self.image_model = image_model
 
-        timeout = kwargs.get('timeout', DEFAULT_TIMEOUT)
         session = TimeoutSession(timeout=timeout)
-        session.headers.update({'User-Agent': f'shellgpt/{get_version()}; (https://pypi.org/project/shgpt)'})
-        custom_headers = kwargs.get('headers', {})
-        if custom_headers:
-            session.headers.update(custom_headers)
+        session.headers.update(
+            {
+                'User-Agent': f'shellgpt/{get_version()}; (https://pypi.org/project/shgpt)'
+            }
+        )
+        if headers:
+            session.headers.update(headers)
 
         if key is not None and key != '':
             session.headers.update({'Authorization': f'Bearer {key}'})
@@ -120,7 +133,9 @@ class LLM(object):
 
                             msg = item['delta']['content']
                             if msg is None:
-                                print(f'WARN: Received None content in delta: {resp}')
+                                debug_print(
+                                    f'WARN: Received None content in delta: {resp}'
+                                )
                                 continue
 
                             answer += msg

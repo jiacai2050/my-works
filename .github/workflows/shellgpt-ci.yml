@@ -28,4 +28,5 @@ jobs:
           make lint
       - name: unit test
         run: |
+          uv run python -m shellgpt --init
           make ut
