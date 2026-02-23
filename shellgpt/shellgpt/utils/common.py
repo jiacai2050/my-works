@@ -96,3 +96,13 @@ def prepare_prompt(raw):
     ]
     after = raw if len(imgs) == 0 else re.sub(FILE_PATH_RE, '', raw)
     return after, imgs
+
+
+def get_version():
+    from importlib import metadata
+
+    try:
+        version = metadata.version('shgpt')
+        return version
+    except metadata.PackageNotFoundError:
+        return 'unknown'

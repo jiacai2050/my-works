@@ -19,6 +19,7 @@ from .utils.common import (
     extract_code,
     set_verbose,
     AppMode,
+    get_version,
 )
 from .history import History
 
@@ -237,16 +238,6 @@ When system content is shell, type "e" to explain, "r" to run last command.
             print(r, end='', flush=True)
         print()
         self.answers.append(resp)
-
-
-def get_version():
-    from importlib import metadata
-
-    try:
-        version = metadata.version('shgpt')
-        return version
-    except metadata.PackageNotFoundError:
-        return 'Version not found'
 
 
 def main():

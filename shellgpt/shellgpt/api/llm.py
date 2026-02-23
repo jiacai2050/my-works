@@ -1,6 +1,12 @@
 import json
 
-from ..utils.common import base64_image, debug_print, is_verbose, prepare_prompt
+from ..utils.common import (
+    base64_image,
+    debug_print,
+    is_verbose,
+    prepare_prompt,
+    get_version,
+)
 from ..utils.conf import (
     DEFAULT_IMAGE_MODEL,
     DEFAULT_MAX_CHAT_MESSAGES,
@@ -26,6 +32,7 @@ class LLM(object):
 
         timeout = kwargs.get('timeout', DEFAULT_TIMEOUT)
         session = TimeoutSession(timeout=timeout)
+        session.headers.update({'User-Agent': f'shellgpt/{get_version()}; (https://pypi.org/project/shgpt)'})
         custom_headers = kwargs.get('headers', {})
         if custom_headers:
             session.headers.update(custom_headers)
