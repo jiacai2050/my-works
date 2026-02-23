@@ -399,6 +399,17 @@ def main():
         if dump_data.get('api_key'):
             dump_data['api_key'] = '<hidden>'
 
+        if dump_data.get('headers'):
+            masked_headers = {}
+            for k, v in dump_data['headers'].items():
+                if any(
+                    s in k.lower() for s in ['auth', 'key', 'token', 'cookie', 'secret']
+                ):
+                    masked_headers[k] = '<hidden>'
+                else:
+                    masked_headers[k] = v
+            dump_data['headers'] = masked_headers
+
         if args.dump_json:
             import json
 
