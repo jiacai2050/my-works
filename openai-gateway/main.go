@@ -6,8 +6,20 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"os"
-	"strings"
+	"time"
 )
+
+type loggingTransport struct {
+	transport http.RoundTripper
+}
+
+func (t *loggingTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	start := time.Now()
+	resp, err := t.transport.RoundTrip(req)
+	duration := time.Since(start).Seconds()
+	log.Printf("[%d] %s %s (%.3fs)", resp.StatusCode, req.Method, req.URL.String(), duration)
+	return resp, err
+}
 
 func main() {
 	apiKey := os.Getenv("OPENAI_API_KEY")
@@ -17,18 +29,12 @@ func main() {
 	}
 
 	upstream, _ := url.Parse(baseUrl)
-	basePath := strings.TrimSuffix(upstream.Path, "/")
-
 	proxy := &httputil.ReverseProxy{
-		Director: func(req *http.Request) {
-			req.Header.Set("Authorization", "Bearer "+apiKey)
-			req.URL.Scheme = upstream.Scheme
-			req.URL.Host = upstream.Host
-			req.Host = upstream.Host
-			req.URL.Path = basePath + req.URL.Path
-
-			log.Printf("[%s] %s", req.Method, req.URL.String())
+		Rewrite: func(r *httputil.ProxyRequest) {
+			r.SetURL(upstream)
+			r.Out.Header.Set("Authorization", "Bearer "+apiKey)
 		},
+		Transport: &loggingTransport{transport: http.DefaultTransport},
 	}
 
 	port := os.Getenv("PORT")
