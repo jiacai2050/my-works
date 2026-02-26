@@ -78,6 +78,7 @@ model = "gpt-4o"
 ```
 
 Usage:
+
 ```bash
 # Uses default_profile (ollama)
 sg How to center a div?
@@ -101,6 +102,7 @@ temperature = 0.8
 Roles allow you to define specific system prompts for different tasks. They are managed in the `[roles]` section of your config.
 
 Built-in examples (created during `sg --init`):
+
 - `shell`: Infer shell commands.
 - `typo`: Correct text typos.
 - `code`: Coding assistant.
@@ -108,6 +110,7 @@ Built-in examples (created during `sg --init`):
 - `polish`: Polish writing.
 
 Usage:
+
 ```bash
 # List all available roles and their contents
 sg --list

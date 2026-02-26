@@ -78,6 +78,7 @@ model = "gpt-4o"
 ```
 
 用法示例：
+
 ```bash
 # 使用默认配置 (ollama)
 sg 如何水平居中一个 div？
@@ -101,6 +102,7 @@ temperature = 0.8
 角色允许你为不同任务预定义系统提示词（System Prompts）。你可以在配置文件的 `[roles]` 部分进行管理。
 
 内置示例（运行 `sg --init` 后自动生成）：
+
 - `shell`: 推理 Shell 命令。
 - `typo`: 纠正文本拼写错误。
 - `code`: 编程助手。
@@ -108,6 +110,7 @@ temperature = 0.8
 - `polish`: 润色文字。
 
 用法示例：
+
 ```bash
 # 列出所有可用角色及其内容
 sg --list

@@ -26,6 +26,7 @@ graph LR
 ## 快速开始
 
 ### 1. 运行
+
 ```bash
 # 必须：设置你的真实 OpenAI API Key
 export OPENAI_API_KEY="sk-..."
@@ -39,6 +40,7 @@ go run main.go
 ### 2. 客户端配置
 
 #### OpenAI Python SDK
+
 网关已自动注入真实 API Key，你在客户端只需将 `base_url` 指向本地网关，并传入一个任意值的 `api_key` 即可。
 
 ```python
@@ -57,6 +59,7 @@ print(response.choices[0].message.content)
 ```
 
 #### Curl 测试
+
 ```bash
 # 请求 /chat/completions，转发至 {OPENAI_BASE_URL}/chat/completions
 curl http://localhost:8080/chat/completions \

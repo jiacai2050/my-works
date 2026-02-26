@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## 0.7.0 - 2026-02-23
 
 ### Added
+
 - **New Configuration System**: Introduced `~/.shellgpt/config.toml` as the primary configuration method.
 - **Multiple Profiles**: Support for multiple API providers with `base_url`, `api_key`, `model`, and custom `headers`. Switch between them using the `-p / --profile` flag.
 - **Flexible Authentication**: Added `api_key_env` to profiles, allowing API keys to be read from environment variables.
@@ -19,6 +20,7 @@ All notable changes to this project will be documented in this file.
 - **Multilingual Docs**: Added `README_zh.md` and `CHANGELOG_zh.md`.
 
 ### Changed
+
 - **Unified Terminology**: Standardized on `role` instead of `system_content` across the entire codebase and CLI (changed `-s` to `--role`).
 - **Backend Unification**: Switched to 100% OpenAI-compatible API handling; legacy native Ollama support has been removed.
 - **Strict Validation**: Resolved profile names and role names must now exist in the configuration, or the program will exit with an error.
@@ -28,10 +30,11 @@ All notable changes to this project will be documented in this file.
 - **Explicit Architecture**: Refactored `LLM` and `ShellGPT` classes to use explicit keyword arguments instead of generic `**kwargs` for better maintainability and clarity.
 - **Robust CI Support**: Improved configuration loading logic to prevent crashes in environments without a config file (like CI/CD runners).
 - **Architecture Refactoring**:
-    - Moved initialization logic to `shellgpt/init.py`.
-    - Eliminated dependencies on global variables.
+  - Moved initialization logic to `shellgpt/init.py`.
+  - Eliminated dependencies on global variables.
 
 ### Fixed
+
 - **Process Exit Codes**: Non-REPL mode now correctly exits with a non-zero code on inference errors.
 - **Robust Error Handling**: Added explicit traceback printing for easier troubleshooting.
 - **History Management**: Fixed a bug where AI responses were not saved to history during streaming.
