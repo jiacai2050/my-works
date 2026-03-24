@@ -18,7 +18,7 @@ import os
 import logging
 import subprocess
 
-__VERSION__ = '1.0.1'
+__VERSION__ = '1.1.0'
 
 UNKNOWN = 0
 RUST = 1

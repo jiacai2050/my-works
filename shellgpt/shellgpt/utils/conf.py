@@ -20,10 +20,12 @@ def _load_toml():
             try:
                 import tomli as tomllib
             except ImportError:
+                print('Try `pip install tomli`, then retry.')
                 return {}
         with open(CONFIG_FILE, 'rb') as f:
             return tomllib.load(f)
-    except Exception:
+    except Exception as e:
+        print(f'Load config({CONFIG_FILE}) failed, err:{e}')
         return {}
 
 

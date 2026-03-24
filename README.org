@@ -3,15 +3,13 @@
 #+LASTMOD: 2026-02-24T15:17:44+0800
 #+AUTHOR: Jiacai Liu
 
-This monorepo contains all public software projects I've developed and released to the community.
-
-Each project is maintained within a structured architecture that enables efficient development, testing, and deployment while promoting code reuse and standardization across projects.
+A monorepo of my public projects — tools, libraries, and experiments I've built and released over time.
 
 * Zig
 - [[file:zms/][zms]] :: A pure Zig solution to set up a mirror server for fetching Zig tarballs on demand and caching them on the local disk.
-- [[file:zigos/][zigos]] :: Zig 写 OS 的中文教程
+- [[file:zigos/][zigos]] :: A Chinese tutorial on writing an OS in Zig.
 * Go
-- [[file:openai-gateway/][openai-gateway]] :: 一个用 Go 编写的极简 OpenAI API 透明代理（代码 40 行），支持自动注入 API Key，解决 API Key 泄露风险。
+- [[file:openai-gateway/][openai-gateway]] :: A tiny (~40 lines) Go reverse proxy for the OpenAI API that injects your API key server-side, so clients never need to hold credentials.
 
 * Rust
 - [[file:rust-ffi/][rust-ffi]] :: Demo project show how to interop C with Rust.

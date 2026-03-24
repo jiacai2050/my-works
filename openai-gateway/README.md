@@ -1,47 +1,47 @@
 # OpenAI Gateway
 
-一个用 Go 编写的极简 OpenAI API 透明代理（代码 40 行），支持自动注入 API Key，解决 API Key 泄露风险。
+A tiny (~40 lines) Go reverse proxy for the OpenAI API. It injects your API key server-side so clients never need to hold credentials.
 
-> 配合[龙虾](https://openclaw.ai/)🦞食用最佳。
+> Pairs great with [OpenClaw](https://openclaw.ai/) 🦞.
 
-## 核心特性
+## Features
 
-- **身份认证**: 为所有请求自动注入 `Authorization: Bearer <OPENAI_API_KEY>`。
-- **透明转发**: 保持请求路径完整并拼接到 `OPENAI_BASE_URL` 之后。
-- **流式支持**: 完美透传 OpenAI 的 Streaming 响应。
+- **Auth injection**: Adds `Authorization: Bearer <OPENAI_API_KEY>` to every request automatically.
+- **Transparent proxying**: Forwards requests to `OPENAI_BASE_URL` with the original path intact.
+- **Streaming**: Full pass-through support for OpenAI streaming responses.
 
-## 工作流
+## How It Works
 
 ```mermaid
 graph LR
-    C1["客户端请求: Path"] --> G1
-    subgraph Gateway ["OpenAI Gateway (本地代理)"]
-        G1["注入 API Key"]
-        G2["Path 拼接: BaseURL + Path"]
+    C1["Client Request: Path"] --> G1
+    subgraph Gateway ["OpenAI Gateway (local proxy)"]
+        G1["Inject API Key"]
+        G2["Rewrite URL: BaseURL + Path"]
         G1 --> G2
     end
-    G2 --> O1["上游: OPENAI_BASE_URL + Path"]
+    G2 --> O1["Upstream: OPENAI_BASE_URL + Path"]
 ```
 
-## 快速开始
+## Quick Start
 
-### 1. 运行
+### 1. Run
 
 ```bash
-# 必须：设置你的真实 OpenAI API Key
+# Required: your real OpenAI API key
 export OPENAI_API_KEY="sk-..."
 
-# 可选：修改上游地址，默认 https://api.openai.com/v1
+# Optional: override the upstream URL (default: https://api.openai.com/v1)
 # export OPENAI_BASE_URL="https://api.openai.com/v1"
 
 go run main.go
 ```
 
-### 2. 客户端配置
+### 2. Connect a Client
 
 #### OpenAI Python SDK
 
-网关已自动注入真实 API Key，你在客户端只需将 `base_url` 指向本地网关，并传入一个任意值的 `api_key` 即可。
+Since the gateway handles auth, clients just need to point `base_url` at the gateway. The `api_key` value is ignored — pass anything.
 
 ```python
 from openai import OpenAI
@@ -58,14 +58,14 @@ response = client.chat.completions.create(
 print(response.choices[0].message.content)
 ```
 
-#### Curl 测试
+#### curl
 
 ```bash
-# 请求 /chat/completions，转发至 {OPENAI_BASE_URL}/chat/completions
+# Proxied to {OPENAI_BASE_URL}/chat/completions
 curl http://localhost:8080/chat/completions \
   -H "Content-Type: application/json" \
   -d '{"model": "gpt-3.5-turbo", "messages": [{"role": "user", "content": "Hi!"}]}'
 
-# 请求 /models，转发至 {OPENAI_BASE_URL}/models
+# Proxied to {OPENAI_BASE_URL}/models
 curl http://localhost:8080/models
 ```
