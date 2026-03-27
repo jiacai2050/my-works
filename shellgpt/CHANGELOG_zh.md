@@ -2,6 +2,16 @@
 
 此项目的所有显著更改都将记录在本文件中。
 
+## 0.7.1 - 2026-03-27
+
+### 新增
+
+- **流式 Usage 上报**: 流式请求时发送 `stream_options: {include_usage: true}`，在 stream 和非 stream 模式下均通过 `debug_print` 输出 token 用量信息。
+
+### 修复
+
+- **非流式响应解析更健壮**: 非 stream 模式下使用安全的 `.get()` 访问 `choices`、`message` 和 `content`，避免 API 返回异常结构时抛出 `KeyError` / `IndexError`。
+
 ## 0.7.0 - 2026-02-23
 
 ### 新增

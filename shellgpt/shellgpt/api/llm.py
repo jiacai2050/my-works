@@ -85,6 +85,8 @@ class LLM(object):
             'model': model,
             'stream': stream,
         }
+        if stream:
+            payload['stream_options'] = {'include_usage': True}
         if self.temperature is not None:
             payload['temperature'] = self.temperature
 
@@ -95,7 +97,12 @@ class LLM(object):
         answer = ''
         if not stream:
             resp = r.json()
-            answer = resp['choices'][0]['message']['content']
+            if 'usage' in resp and resp['usage']:
+                debug_print(f'Usage: {resp["usage"]}')
+            choices = resp.get('choices', [])
+            if not choices:
+                raise Exception(f'No choices in response: {resp}')
+            answer = choices[0].get('message', {}).get('content', '')
             self.messages.append({'role': 'assistant', 'content': answer})
             yield answer
             return
@@ -127,6 +134,8 @@ class LLM(object):
                 else:
                     try:
                         resp = json.loads(s)
+                        if 'usage' in resp and resp['usage']:
+                            debug_print(f'Usage: {resp["usage"]}')
                         for item in resp['choices']:
                             if 'content' not in item['delta']:
                                 continue

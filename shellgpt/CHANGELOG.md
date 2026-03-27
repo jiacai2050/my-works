@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.7.1 - 2026-03-27
+
+### Added
+
+- **Stream Usage Reporting**: Send `stream_options: {include_usage: true}` when streaming, and log token usage via `debug_print` in both stream and non-stream modes.
+
+### Fixed
+
+- **Robust Non-Stream Response Parsing**: Use safe `.get()` access for `choices`, `message`, and `content` in non-stream mode to avoid `KeyError` / `IndexError` on unexpected API responses.
+
 ## 0.7.0 - 2026-02-23
 
 ### Added
