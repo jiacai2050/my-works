@@ -148,7 +148,12 @@ const DraftPilotUI = {
 
       const response = await chrome.runtime.sendMessage({
         type: 'generate',
-        payload: { context, intent: intentLabel, intentValue: this.selectedIntent, userNote: input },
+        payload: {
+          context,
+          intent: intentLabel,
+          intentValue: this.selectedIntent,
+          userNote: input,
+        },
       });
 
       if (response.error) throw new Error(response.error);

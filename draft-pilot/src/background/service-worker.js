@@ -49,10 +49,13 @@ function buildUserPrompt({ context, intent, intentValue, userNote }) {
   prompt += '\n';
   if (intent) {
     const INTENT_INSTRUCTIONS = {
-      agree: 'Express clear agreement/approval. Acknowledge the good points made.',
+      agree:
+        'Express clear agreement/approval. Acknowledge the good points made.',
       question: 'Ask a clarifying question. Show what part is unclear and why.',
-      disagree: 'Respectfully disagree. State your concern and reasoning clearly.',
-      suggestion: 'Propose an alternative or improvement. Be specific and actionable.',
+      disagree:
+        'Respectfully disagree. State your concern and reasoning clearly.',
+      suggestion:
+        'Propose an alternative or improvement. Be specific and actionable.',
       info: 'Provide additional relevant information or context that others may have missed.',
       help: 'Ask for help. Clearly describe what you need and what you have tried.',
     };

@@ -57,9 +57,9 @@ DraftPilot extracts issue context from the page DOM. If that fails (e.g. GitHub 
 
 DraftPilot automatically identifies what you're replying to, in this priority:
 
-1. **Selected text** — If you select text on the page before triggering, that selection is used as context (most precise)
-2. **Comment container** — If triggered from a reply box under a comment, the comment content is extracted automatically
-3. **Global context** — Otherwise, the issue/PR title, body, and recent comments are used
+1. **GitHub-specific** — On GitHub pages, automatically extracts selected text / comment container content / issue/PR title, body, and recent comments (DOM extraction + GitHub API fallback)
+2. **Selected text** — If you select text on the page before triggering, that selection is used as context (most precise)
+3. **Page content extraction** — Uses Readability.js to intelligently extract the main content of the current page (works for email, forums, etc.)
 
 ## Keyboard Shortcut
 

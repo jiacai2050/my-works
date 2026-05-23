@@ -1,5 +1,6 @@
 // DraftPilot - Context Extraction
 
+/* global Readability:readonly */
 /* exported DraftPilotContext */
 // eslint-disable-next-line no-unused-vars
 const DraftPilotContext = {
@@ -21,7 +22,13 @@ const DraftPilotContext = {
       return this._makeContext(selection);
     }
 
-    // Step 3: Generic fallback
+    // Step 3: Readability extraction fallback
+    const readable = this._getReadableContent();
+    if (readable) {
+      return this._makeContext(readable);
+    }
+
+    // Step 4: Empty fallback
     return this._makeContext('');
   },
 
@@ -130,6 +137,21 @@ const DraftPilotContext = {
     );
     if (!match) return null;
     return { owner: match[1], repo: match[2], issueNumber: match[4] };
+  },
+
+  // --- Readability fallback ---
+  _getReadableContent() {
+    try {
+      const clone = document.cloneNode(true);
+      const article = new Readability(clone).parse();
+      const text = article?.textContent?.trim();
+      if (text) {
+        return text;
+      }
+    } catch (e) {
+      console.warn('[DraftPilot] Readability extraction failed:', e);
+    }
+    return null;
   },
 
   // --- Helpers ---

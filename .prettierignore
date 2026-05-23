@@ -1,5 +1,6 @@
 text-saver/src/libs/**
 link-preview/src/microtip.min.css
+draft-pilot/src/shared/Readability.min.js
 target
 public
 zigos/resources

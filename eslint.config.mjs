@@ -3,7 +3,7 @@ import globals from 'globals';
 import { defineConfig, globalIgnores } from 'eslint/config';
 
 export default defineConfig([
-  globalIgnores(['zigos']),
+  globalIgnores(['zigos', 'draft-pilot/src/shared/Readability.min.js']),
 
   {
     files: ['**/*.{js,mjs,cjs}'],

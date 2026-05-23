@@ -55,12 +55,16 @@
   gap: 4px;
   padding: 8px 4px;
   font-size: 12px;
-  border: 1px solid var(--borderColor-default, var(--color-border-default, #d0d7de));
+  border: 1px solid
+    var(--borderColor-default, var(--color-border-default, #d0d7de));
   border-radius: 8px;
   background: var(--bgColor-default, var(--color-canvas-default, #fff));
   color: var(--fgColor-default, var(--color-fg-default, #1f2328));
   cursor: pointer;
-  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+  transition:
+    border-color 0.15s,
+    background 0.15s,
+    box-shadow 0.15s;
 }
 
 .draftpilot-intent-btn:hover {
@@ -80,7 +84,8 @@
   min-height: 60px;
   padding: 8px;
   font-size: 13px;
-  border: 1px solid var(--borderColor-default, var(--color-border-default, #d0d7de));
+  border: 1px solid
+    var(--borderColor-default, var(--color-border-default, #d0d7de));
   border-radius: 6px;
   background: var(--bgColor-default, var(--color-canvas-default, #fff));
   color: var(--fgColor-default, var(--color-fg-default, #1f2328));
