@@ -259,7 +259,7 @@ async function fetchGitHubContext({ owner, repo, issueNumber }) {
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
     id: 'draftpilot-draft',
-    title: '✨ DraftPilot - Smart Draft Reply',
+    title: '✨ Draft Pilot - Smart Draft Reply',
     contexts: ['editable'],
   });
 });

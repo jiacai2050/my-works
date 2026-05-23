@@ -42,6 +42,7 @@ src/
 `Readability.min.js` → `context.js` → `ui.js` → `content.js`
 
 Inter-script communication via globals:
+
 - `DraftPilotContext` (exported by context.js, used by ui.js)
 - `DraftPilotUI` (exported by ui.js, used by content.js)
 - `window._draftpilotGetTarget` (exported by content.js, used by ui.js)
@@ -54,6 +55,7 @@ No build step, so `/* global */` and `// eslint-disable-next-line no-unused-vars
 ### Styles
 
 CSS uses GitHub CSS variables with hardcoded fallbacks to ensure visibility on non-GitHub sites:
+
 ```css
 var(--github-var, var(--github-var-alt, #fallback))
 ```

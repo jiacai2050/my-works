@@ -76,7 +76,6 @@ DraftPilot 会自动识别你要回复的内容，优先级如下：
 - 除你选择的 LLM 服务和 GitHub API 外，不会向任何服务器发送数据
 - 无遥测、无分析
 
-
 ## License
 
 [MIT](https://liujiacai.net/license/MIT?year=2026)

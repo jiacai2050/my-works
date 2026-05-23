@@ -1,5 +1,5 @@
 {
-  "extName": { "message": "DraftPilot" },
+  "extName": { "message": "Draft Pilot" },
   "extDescription": {
     "message": "Help non-native English speakers draft professional English replies on any website"
   },
@@ -30,7 +30,7 @@
   "errorNoApiKey": {
     "message": "Please configure your API Key in extension settings"
   },
-  "settingsTitle": { "message": "✨ DraftPilot Settings" },
+  "settingsTitle": { "message": "✨ Draft Pilot Settings" },
   "labelProvider": { "message": "API Provider" },
   "labelBaseUrl": { "message": "API Base URL" },
   "baseUrlPlaceholder": {

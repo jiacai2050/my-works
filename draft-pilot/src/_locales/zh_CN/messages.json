@@ -1,5 +1,5 @@
 {
-  "extName": { "message": "DraftPilot" },
+  "extName": { "message": "Draft Pilot" },
   "extDescription": {
     "message": "帮助非英语母语开发者在任意网站上撰写地道英文回复"
   },
@@ -28,7 +28,7 @@
   "adjustingTone": { "message": "调整语气中..." },
   "adjustFailed": { "message": "调整失败" },
   "errorNoApiKey": { "message": "请先在插件设置中配置 API Key" },
-  "settingsTitle": { "message": "✨ DraftPilot 设置" },
+  "settingsTitle": { "message": "✨ Draft Pilot 设置" },
   "labelProvider": { "message": "API Provider" },
   "labelBaseUrl": { "message": "API Base URL" },
   "baseUrlPlaceholder": {

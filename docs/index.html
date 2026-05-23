@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MyWorks — Jiacai Liu</title>
+  <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+  <style>
+    :root {
+      --accent: #0969da;
+    }
+    header { text-align: center; padding: 2rem 0; }
+    header p { color: var(--text-light); max-width: 600px; margin: 0.5rem auto; }
+    .projects { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; padding: 1rem 0; }
+    .card { border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; transition: box-shadow 0.2s; }
+    .card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    .card h3 { margin: 0 0 0.5rem; }
+    .card h3 a { text-decoration: none; color: var(--accent); }
+    .card p { margin: 0 0 0.75rem; font-size: 0.9rem; }
+    .tag { display: inline-block; font-size: 0.75rem; padding: 2px 8px; border-radius: 12px; background: var(--accent-bg, #ddf4ff); color: var(--accent); margin-right: 4px; }
+    footer { text-align: center; padding: 2rem 0; color: var(--text-light); font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>MyWorks</h1>
+    <p>A collection of open-source tools, libraries, and experiments by <a href="https://liujiacai.net">Jiacai Liu</a>.</p>
+  </header>
+  <main>
+    <section class="projects">
+      <div class="card">
+        <h3><a href="https://github.com/jiacai2050/my-works/tree/master/draft-pilot">Draft Pilot</a></h3>
+        <p>Chrome extension that helps non-native English speakers write natural English replies on any website. Optimized for GitHub issues & PRs.</p>
+        <span class="tag">JavaScript</span><span class="tag">Chrome Extension</span>
+      </div>
+      <div class="card">
+        <h3><a href="https://github.com/jiacai2050/my-works/tree/master/shellgpt">ShellGPT</a></h3>
+        <p>Chat with LLM in your terminal — shell generator, story teller, linux-terminal emulator, and more.</p>
+        <span class="tag">Python</span><span class="tag">CLI</span>
+      </div>
+      <div class="card">
+        <h3><a href="https://github.com/jiacai2050/my-works/tree/master/gooreplacer">Gooreplacer</a></h3>
+        <p>Browser extension to modify, block URLs & Headers.</p>
+        <span class="tag">JavaScript</span><span class="tag">Browser Extension</span>
+      </div>
+      <div class="card">
+        <h3><a href="https://github.com/jiacai2050/my-works/tree/master/link-preview">Link Preview</a></h3>
+        <p>Browser extension to preview link metadata (title & description) on hover, saving you from opening many tabs.</p>
+        <span class="tag">JavaScript</span><span class="tag">Browser Extension</span>
+      </div>
+      <div class="card">
+        <h3><a href="https://github.com/jiacai2050/my-works/tree/master/text-saver">Text Saver</a></h3>
+        <p>Browser extension to save texts anytime, anywhere.</p>
+        <span class="tag">JavaScript</span><span class="tag">Browser Extension</span>
+      </div>
+      <div class="card">
+        <h3><a href="https://github.com/jiacai2050/my-works/tree/master/serverless-webdav">Serverless WebDAV</a></h3>
+        <p>A serverless WebDAV server running on Cloudflare Workers, using D1 (SQLite) as the storage backend.</p>
+        <span class="tag">TypeScript</span><span class="tag">Cloudflare Workers</span>
+      </div>
+      <div class="card">
+        <h3><a href="https://github.com/jiacai2050/my-works/tree/master/openai-gateway">OpenAI Gateway</a></h3>
+        <p>A tiny (~40 lines) Go reverse proxy for the OpenAI API that injects your API key server-side.</p>
+        <span class="tag">Go</span><span class="tag">Proxy</span>
+      </div>
+      <div class="card">
+        <h3><a href="https://github.com/jiacai2050/my-works/tree/master/zigcc">zigcc</a></h3>
+        <p>Scripts to simplify using <code>zig cc</code> for compiling C, C++, Rust, and Go programs.</p>
+        <span class="tag">Python</span><span class="tag">Zig</span>
+      </div>
+      <div class="card">
+        <h3><a href="https://github.com/jiacai2050/my-works/tree/master/video-compress">Video Compress</a></h3>
+        <p>Compress video by 90% without losing much quality, similar to what Pied Piper achieves.</p>
+        <span class="tag">Python</span><span class="tag">FFmpeg</span>
+      </div>
+      <div class="card">
+        <h3><a href="https://github.com/jiacai2050/my-works/tree/master/zms">ZMS</a></h3>
+        <p>A pure Zig mirror server for fetching Zig tarballs on demand and caching them locally.</p>
+        <span class="tag">Zig</span><span class="tag">Mirror</span>
+      </div>
+      <div class="card">
+        <h3><a href="https://github.com/jiacai2050/my-works/tree/master/zigos">ZigOS</a></h3>
+        <p>A Chinese tutorial on writing an OS in Zig.</p>
+        <span class="tag">Zig</span><span class="tag">OS</span><span class="tag">Tutorial</span>
+      </div>
+      <div class="card">
+        <h3><a href="https://github.com/jiacai2050/my-works/tree/master/rust-ffi">Rust FFI</a></h3>
+        <p>Demo project showing how to interop C with Rust.</p>
+        <span class="tag">Rust</span><span class="tag">C</span><span class="tag">FFI</span>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <p>© 2026 Jiacai Liu · <a href="https://github.com/jiacai2050/my-works">Source on GitHub</a></p>
+  </footer>
+</body>
+</html>
