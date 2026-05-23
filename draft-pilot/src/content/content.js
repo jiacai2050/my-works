@@ -1,5 +1,7 @@
 // DraftPilot - Content Script (context menu + keyboard shortcut trigger)
 
+/* global DraftPilotUI:readonly */
+
 (function () {
   // Track the element that was right-clicked
   let lastActiveElement = null;

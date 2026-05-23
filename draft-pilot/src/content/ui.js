@@ -1,7 +1,11 @@
 // DraftPilot - UI Popover Rendering
 
+/* global DraftPilotContext:readonly */
+
 const _m = (key) => chrome.i18n.getMessage(key);
 
+/* exported DraftPilotUI */
+// eslint-disable-next-line no-unused-vars
 const DraftPilotUI = {
   INTENTS: [
     { emoji: '👍', labelKey: 'intentAgree', value: 'agree' },

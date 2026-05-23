@@ -1,5 +1,7 @@
 // DraftPilot - Context Extraction
 
+/* exported DraftPilotContext */
+// eslint-disable-next-line no-unused-vars
 const DraftPilotContext = {
   // --- Entry point ---
   async getContext() {
