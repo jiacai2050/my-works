@@ -1,6 +1,6 @@
 #+TITLE: Gooreplacer
 #+DATE: 2025-04-26T10:34:27+0800
-#+LASTMOD: 2025-09-24T14:43:27+0800
+#+LASTMOD: 2026-05-23T20:27:47+0800
 #+AUTHOR: Jiacai Liu
 
 #+begin_quote
@@ -23,4 +23,4 @@ https://liujiacai.net/gooreplacer
   - Rule support condition
 
 * License
-[[http://liujiacai.net/license/MIT.html?year=2023][MIT License]] © Jiacai Liu
+[[https://liujiacai.net/license/MIT.html?year=2026][MIT License]] © Jiacai Liu

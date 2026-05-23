@@ -1,6 +1,6 @@
 #+TITLE: Link Preview
 #+DATE: 2025-04-12T17:57:44+0800
-#+LASTMOD: 2025-05-04T18:26:43+0800
+#+LASTMOD: 2026-05-23T20:27:39+0800
 #+AUTHOR: Jiacai Liu
 
 #+begin_quote
@@ -37,4 +37,4 @@ Firefox users must grant permission to all sites for this extension to function 
 * Thanks
 - [[https://github.com/ghosh/microtip][Microtip]] :: Multiple line support see [[https://github.com/ghosh/microtip/issues/57#issuecomment-1551245373][#57]], also see [[https://developer.mozilla.org/en-US/docs/Web/CSS/white-space][white-space]] on MDN.
 * License
-[[http://liujiacai.net/license/MIT.html?year=2025][MIT License]] © Jiacai Liu
+[[https://liujiacai.net/license/MIT.html?year=2025][MIT License]] © Jiacai Liu

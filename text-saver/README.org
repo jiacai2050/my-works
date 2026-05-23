@@ -1,6 +1,6 @@
 #+TITLE: Text Saver
 #+DATE: 2023-03-11T17:50:32+0800
-#+LASTMOD: 2025-06-01T07:06:41+0800
+#+LASTMOD: 2026-05-23T20:27:07+0800
 #+AUTHOR: Jiacai Liu
 #+OPTIONS: toc:nil num:nil
 #+STARTUP: content
@@ -49,4 +49,4 @@ https://liujiacai.net/text-saver/
 - v1.0.1 (2023-03-11) ::
   - First release
 * License
-[[http://liujiacai.net/license/MIT.html?year=2023][MIT License]] © Jiacai Liu
+[[https://liujiacai.net/license/MIT.html?year=2026][MIT License]] © Jiacai Liu

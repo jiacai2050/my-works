@@ -76,29 +76,7 @@ DraftPilot 会自动识别你要回复的内容，优先级如下：
 - 除你选择的 LLM 服务和 GitHub API 外，不会向任何服务器发送数据
 - 无遥测、无分析
 
-## 项目结构
-
-```
-issue-pilot/
-├── manifest.json          # Manifest V3 配置
-├── shared/
-│   └── storage.js         # 存储工具（ES module）
-├── content/
-│   ├── github.js          # Issue/PR 上下文提取（DOM + API 兜底）
-│   ├── ui.js              # Popover UI 渲染
-│   └── content.js         # 右键菜单 & 快捷键触发
-├── background/
-│   └── service-worker.js  # LLM API 调用 & GitHub API
-├── popup/
-│   ├── popup.html         # 设置页
-│   └── popup.js
-├── styles/
-│   └── content.css        # 注入样式
-└── icons/
-    ├── icon-16.png
-    └── icon-48.png
-```
 
 ## License
 
-MIT
+[MIT](https://liujiacai.net/license/MIT?year=2026)
