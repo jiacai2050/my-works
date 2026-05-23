@@ -25,9 +25,10 @@
   position: fixed;
   width: 320px;
   background: var(--bgColor-default, var(--color-canvas-overlay, #fff));
-  border: 1px solid var(--borderColor-default, var(--color-border-default, #d0d7de));
+  border: 1px solid
+    var(--borderColor-default, var(--color-border-default, #d0d7de));
   border-radius: 12px;
-  box-shadow: var(--shadow-floating-large, 0 8px 24px rgba(0,0,0,0.12));
+  box-shadow: var(--shadow-floating-large, 0 8px 24px rgba(0, 0, 0, 0.12));
   padding: 16px;
   z-index: 999999;
   font-size: 14px;
@@ -88,7 +89,7 @@
 .issuepilot-input:focus {
   outline: none;
   border-color: var(--fgColor-accent, var(--color-accent-fg));
-  box-shadow: 0 0 0 3px var(--bgColor-accent-muted, rgba(9,105,218,0.15));
+  box-shadow: 0 0 0 3px var(--bgColor-accent-muted, rgba(9, 105, 218, 0.15));
 }
 
 /* Generate button */
@@ -100,7 +101,10 @@
   font-size: 13px;
   font-weight: 500;
   color: var(--fgColor-onEmphasis, #fff);
-  background: var(--bgColor-accent-emphasis, var(--color-accent-emphasis, #1f6feb));
+  background: var(
+    --bgColor-accent-emphasis,
+    var(--color-accent-emphasis, #1f6feb)
+  );
   border: none;
   border-radius: 6px;
   cursor: pointer;
@@ -182,7 +186,10 @@
 
 .issuepilot-draft-actions button.primary,
 .issuepilot-draft-actions button.primary:hover {
-  background: var(--bgColor-accent-emphasis, var(--color-accent-emphasis, #1f6feb));
+  background: var(
+    --bgColor-accent-emphasis,
+    var(--color-accent-emphasis, #1f6feb)
+  );
   color: var(--fgColor-onEmphasis, #fff);
   border: none;
 }
@@ -212,7 +219,9 @@
 }
 
 @keyframes issuepilot-spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .issuepilot-error {
@@ -220,7 +229,7 @@
   font-size: 12px;
   margin-top: 8px;
   padding: 8px;
-  background: var(--bgColor-danger-muted, rgba(255,129,130,0.1));
+  background: var(--bgColor-danger-muted, rgba(255, 129, 130, 0.1));
   border-radius: 6px;
 }
 
@@ -273,11 +282,21 @@
 .issuepilot-history-item {
   padding: 8px;
   cursor: pointer;
-  border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted, #eee));
+  border-bottom: 1px solid
+    var(--borderColor-muted, var(--color-border-muted, #eee));
   font-size: 12px;
 }
 
-.issuepilot-history-item:last-child { border-bottom: none; }
-.issuepilot-history-item:hover { background: var(--bgColor-muted, var(--color-canvas-subtle)); }
-.issuepilot-history-item .hist-date { color: var(--fgColor-muted, var(--color-fg-muted)); margin-right: 8px; }
-.issuepilot-history-item .hist-text { color: var(--fgColor-default, var(--color-fg-default)); }
+.issuepilot-history-item:last-child {
+  border-bottom: none;
+}
+.issuepilot-history-item:hover {
+  background: var(--bgColor-muted, var(--color-canvas-subtle));
+}
+.issuepilot-history-item .hist-date {
+  color: var(--fgColor-muted, var(--color-fg-muted));
+  margin-right: 8px;
+}
+.issuepilot-history-item .hist-text {
+  color: var(--fgColor-default, var(--color-fg-default));
+}

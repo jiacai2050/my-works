@@ -1,55 +1,123 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-  <meta charset="utf-8">
-  <style>
-    body { width: 320px; padding: 16px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 13px; color: #24292f; }
-    h1 { font-size: 16px; margin: 0 0 16px; }
-    label { display: block; font-weight: 600; margin-bottom: 4px; }
-    select, input { width: 100%; padding: 6px 8px; border: 1px solid #d0d7de; border-radius: 6px; font-size: 13px; box-sizing: border-box; margin-bottom: 12px; }
-    .key-wrap { position: relative; }
-    .key-wrap input { padding-right: 36px; }
-    .key-wrap button { position: absolute; right: 4px; top: 4px; border: none; background: none; cursor: pointer; font-size: 14px; }
-    .save-btn { width: 100%; padding: 8px; background: #1f6feb; color: #fff; border: none; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; }
-    .save-btn:hover { opacity: 0.9; }
-    .status { margin-top: 8px; font-size: 12px; color: #1a7f37; text-align: center; }
-    .shortcut { margin-top: 12px; font-size: 12px; color: #656d76; text-align: center; }
-    kbd { background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 3px; padding: 1px 4px; font-size: 11px; }
-  </style>
-</head>
-<body>
-  <h1>✨ IssuePilot 设置</h1>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      body {
+        width: 320px;
+        padding: 16px;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        font-size: 13px;
+        color: #24292f;
+      }
+      h1 {
+        font-size: 16px;
+        margin: 0 0 16px;
+      }
+      label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+      select,
+      input {
+        width: 100%;
+        padding: 6px 8px;
+        border: 1px solid #d0d7de;
+        border-radius: 6px;
+        font-size: 13px;
+        box-sizing: border-box;
+        margin-bottom: 12px;
+      }
+      .key-wrap {
+        position: relative;
+      }
+      .key-wrap input {
+        padding-right: 36px;
+      }
+      .key-wrap button {
+        position: absolute;
+        right: 4px;
+        top: 4px;
+        border: none;
+        background: none;
+        cursor: pointer;
+        font-size: 14px;
+      }
+      .save-btn {
+        width: 100%;
+        padding: 8px;
+        background: #1f6feb;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+      }
+      .save-btn:hover {
+        opacity: 0.9;
+      }
+      .status {
+        margin-top: 8px;
+        font-size: 12px;
+        color: #1a7f37;
+        text-align: center;
+      }
+      .shortcut {
+        margin-top: 12px;
+        font-size: 12px;
+        color: #656d76;
+        text-align: center;
+      }
+      kbd {
+        background: #f6f8fa;
+        border: 1px solid #d0d7de;
+        border-radius: 3px;
+        padding: 1px 4px;
+        font-size: 11px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>✨ IssuePilot 设置</h1>
 
-  <label>API Provider</label>
-  <select id="provider">
-    <option value="openai">OpenAI Compatible</option>
-    <option value="anthropic">Anthropic (Claude)</option>
-  </select>
+    <label>API Provider</label>
+    <select id="provider">
+      <option value="openai">OpenAI Compatible</option>
+      <option value="anthropic">Anthropic (Claude)</option>
+    </select>
 
-  <label>API Base URL</label>
-  <input id="baseUrl" type="text" placeholder="留空使用默认 (如 https://api.openai.com/v1)">
+    <label>API Base URL</label>
+    <input
+      id="baseUrl"
+      type="text"
+      placeholder="留空使用默认 (如 https://api.openai.com/v1)"
+    />
 
-  <label>API Key</label>
-  <div class="key-wrap">
-    <input id="apiKey" type="password" placeholder="sk-...">
-    <button id="toggleKey" type="button">👁</button>
-  </div>
+    <label>API Key</label>
+    <div class="key-wrap">
+      <input id="apiKey" type="password" placeholder="sk-..." />
+      <button id="toggleKey" type="button">👁</button>
+    </div>
 
-  <label>Model</label>
-  <input id="model" type="text" placeholder="留空使用默认模型">
+    <label>Model</label>
+    <input id="model" type="text" placeholder="留空使用默认模型" />
 
-  <label>默认语气</label>
-  <select id="tone">
-    <option value="">Neutral（默认）</option>
-    <option value="formal">Formal（正式）</option>
-    <option value="friendly">Friendly（友好）</option>
-    <option value="concise">Concise（简洁）</option>
-  </select>
+    <label>默认语气</label>
+    <select id="tone">
+      <option value="">Neutral（默认）</option>
+      <option value="formal">Formal（正式）</option>
+      <option value="friendly">Friendly（友好）</option>
+      <option value="concise">Concise（简洁）</option>
+    </select>
 
-  <button class="save-btn" id="save">保存设置</button>
-  <div class="status" id="status"></div>
-  <div class="shortcut">快捷键: <kbd>⌘</kbd> + <kbd>⇧</kbd> + <kbd>G</kbd></div>
+    <button class="save-btn" id="save">保存设置</button>
+    <div class="status" id="status"></div>
+    <div class="shortcut">
+      快捷键: <kbd>⌘</kbd> + <kbd>⇧</kbd> + <kbd>E</kbd>
+    </div>
 
-  <script src="popup.js"></script>
-</body>
+    <script src="popup.js"></script>
+  </body>
 </html>

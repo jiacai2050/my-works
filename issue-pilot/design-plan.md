@@ -11,6 +11,7 @@
 **核心价值**：降低英文表达门槛，让用户专注于技术本身，而不是语言组织。
 
 **设计原则**：
+
 - **最小侵入**：不破坏 GitHub 原有 UI，插件元素风格与 GitHub 保持一致
 - **低摩擦启动**：用户可以什么都不输入，直接从意图选择开始
 - **快速可用**：从点击到生成草稿，控制在 3 秒内
@@ -20,6 +21,7 @@
 ## 2. 功能范围（MVP）
 
 ### 2.1 核心功能
+
 - 在 GitHub issue / PR 评论框旁注入「✨ Draft」按钮
 - 弹出意图选择面板（6 个预设意图 + 自由输入框）
 - 读取当前 issue 标题、描述、及最近几条评论作为上下文
@@ -27,12 +29,14 @@
 - 一键将草稿填入评论输入框
 
 ### 2.2 增强功能（v1.1+）
+
 - 草稿生成后提供语气微调（Formal / Friendly / Concise）
 - 支持重新生成
 - 历史草稿记录（本地存储，最近 20 条）
 - 支持 PR Review comment 场景
 
 ### 2.3 明确不做（MVP）
+
 - 不做自动提交，用户始终手动发送
 - 不做多语言（只服务中文用户）
 - 不做云端同步
@@ -91,13 +95,13 @@
 
 ### 边界场景处理
 
-| 场景 | 处理方式 |
-|---|---|
-| 用户什么都不选也不输入，直接点生成 | 提示「请选择一个意图或输入说明」 |
-| API 调用超时 | 显示错误提示，提供重试按钮 |
-| 未配置 API Key | 引导至设置页填写 |
-| 非 issue / PR 页面 | 不注入按钮，插件静默 |
-| issue 描述过长超出 token 限制 | 截取标题 + 描述前 500 字 + 最近 3 条评论 |
+| 场景                               | 处理方式                                 |
+| ---------------------------------- | ---------------------------------------- |
+| 用户什么都不选也不输入，直接点生成 | 提示「请选择一个意图或输入说明」         |
+| API 调用超时                       | 显示错误提示，提供重试按钮               |
+| 未配置 API Key                     | 引导至设置页填写                         |
+| 非 issue / PR 页面                 | 不注入按钮，插件静默                     |
+| issue 描述过长超出 token 限制      | 截取标题 + 描述前 500 字 + 最近 3 条评论 |
 
 ---
 
@@ -117,6 +121,7 @@
 ```
 
 样式要求：
+
 - 与 GitHub 原生按钮风格一致（圆角、边框色跟随主题）
 - 支持 GitHub Light / Dark 主题自适应
 - Hover 状态有轻微高亮，不过度抢眼
@@ -183,16 +188,17 @@ issuepilot/
 
 从页面 DOM 中读取：
 
-| 内容 | CSS 选择器 / 方式 |
-|---|---|
-| Issue 标题 | `h1.gh-header-title` |
-| Issue 正文 | `.js-comment-body`（第一条） |
-| 最近评论 | `.js-comment-body`（取最近 3 条） |
-| 当前用户输入 | 评论框 `textarea` 的值 |
+| 内容         | CSS 选择器 / 方式                 |
+| ------------ | --------------------------------- |
+| Issue 标题   | `h1.gh-header-title`              |
+| Issue 正文   | `.js-comment-body`（第一条）      |
+| 最近评论     | `.js-comment-body`（取最近 3 条） |
+| 当前用户输入 | 评论框 `textarea` 的值            |
 
 ### 5.4 Prompt 设计
 
 **System Prompt：**
+
 ```
 You are helping a Chinese developer write professional GitHub issue comments in English.
 The user will provide their intent and the issue context.
@@ -202,6 +208,7 @@ Reply with only the comment text, no explanations.
 ```
 
 **User Prompt 结构：**
+
 ```
 Issue Title: {title}
 Issue Body: {body_excerpt}
@@ -216,6 +223,7 @@ Write the comment:
 ### 5.5 API 支持
 
 MVP 阶段支持：
+
 - **Anthropic Claude API**（推荐，默认）
 - **OpenAI API**（兼容格式）
 
@@ -225,19 +233,20 @@ API Key 存储：`chrome.storage.local`（不上传，本地加密存储）
 
 ## 6. 设置页（Popup）
 
-| 设置项 | 说明 |
-|---|---|
-| API Provider | Anthropic / OpenAI 切换 |
-| API Key | 输入框 + 显示/隐藏切换 |
-| Model | 默认 claude-sonnet / gpt-4o，可手动填写 |
-| 默认语气 | Neutral / Formal / Friendly |
-| 快捷键提示 | 显示当前快捷键 `Cmd+Shift+G` |
+| 设置项       | 说明                                    |
+| ------------ | --------------------------------------- |
+| API Provider | Anthropic / OpenAI 切换                 |
+| API Key      | 输入框 + 显示/隐藏切换                  |
+| Model        | 默认 claude-sonnet / gpt-4o，可手动填写 |
+| 默认语气     | Neutral / Formal / Friendly             |
+| 快捷键提示   | 显示当前快捷键 `Cmd+Shift+G`            |
 
 ---
 
 ## 7. 开发里程碑
 
 ### Phase 1 — MVP（1~2 周）
+
 - [ ] manifest.json 基础配置
 - [ ] content.js：注入「Draft」按钮到 GitHub 评论区
 - [ ] github.js：提取 issue 标题、正文、评论
@@ -247,12 +256,14 @@ API Key 存储：`chrome.storage.local`（不上传，本地加密存储）
 - [ ] popup.html：API Key 配置页
 
 ### Phase 2 — 打磨（+1 周）
+
 - [ ] Dark Mode 适配
 - [ ] 重新生成功能
 - [ ] 草稿可编辑
 - [ ] 错误处理与 loading 状态
 
 ### Phase 3 — 增强（后续迭代）
+
 - [ ] 语气微调（Formal / Friendly / Concise）
 - [ ] PR Review comment 场景支持
 - [ ] 本地草稿历史记录
@@ -262,9 +273,9 @@ API Key 存储：`chrome.storage.local`（不上传，本地加密存储）
 
 ## 8. 风险与注意事项
 
-| 风险 | 缓解措施 |
-|---|---|
-| GitHub DOM 结构更新导致注入失效 | 使用多个候选选择器，添加 MutationObserver 监听动态加载 |
-| API Key 安全 | 明确告知用户 Key 仅存本地，不经过任何服务器 |
-| 生成内容质量不稳定 | 提供重新生成，用户永远可以手动修改后再发 |
+| 风险                              | 缓解措施                                                      |
+| --------------------------------- | ------------------------------------------------------------- |
+| GitHub DOM 结构更新导致注入失效   | 使用多个候选选择器，添加 MutationObserver 监听动态加载        |
+| API Key 安全                      | 明确告知用户 Key 仅存本地，不经过任何服务器                   |
+| 生成内容质量不稳定                | 提供重新生成，用户永远可以手动修改后再发                      |
 | Chrome Extension Manifest V3 限制 | API 调用走 service worker，避免在 content script 中直接 fetch |

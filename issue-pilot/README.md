@@ -41,10 +41,12 @@ A Chrome extension that helps Chinese developers write professional English comm
 
 ## Keyboard Shortcut
 
-| Platform | Shortcut |
-|----------|----------|
-| macOS | `Cmd + Shift + G` |
-| Windows/Linux | `Ctrl + Shift + G` |
+| Platform      | Shortcut           |
+| ------------- | ------------------ |
+| macOS         | `Cmd + Shift + E`  |
+| Windows/Linux | `Ctrl + Shift + E` |
+
+To customize, open `chrome://extensions/shortcuts` in your browser and find IssuePilot.
 
 ## Privacy
 

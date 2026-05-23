@@ -1,66 +1,36 @@
-// IssuePilot - Main Content Script (injection logic)
+// IssuePilot - Content Script (context menu + keyboard shortcut trigger)
 
 (function () {
-  const BUTTON_CLASS = 'issuepilot-btn';
+  // Track the element that was right-clicked
+  let lastActiveElement = null;
 
-  function findTextarea() {
-    return document.querySelector(
-      'textarea.prc-Textarea-TextArea-snlco, textarea#new_comment_field, textarea.js-comment-field, textarea[name="comment[body]"]'
-    );
-  }
-
-  function injectButton(container) {
-    if (container.querySelector(`.${BUTTON_CLASS}`)) return;
-    const btn = document.createElement('button');
-    btn.className = BUTTON_CLASS;
-    btn.type = 'button';
-    btn.textContent = '✨ Draft';
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      IssuePilotUI.toggle(btn);
-    });
-    container.appendChild(btn);
-  }
-
-  function findAndInject() {
-    // Strategy 1: New GitHub (Primer React) - find CommentBox header's tablist
-    document.querySelectorAll('[class*="CommentBox"], [class*="MarkdownEditor"]').forEach(box => {
-      const tabList = box.querySelector('[role="tablist"]');
-      if (tabList) injectButton(tabList);
-    });
-
-    // Strategy 2: Classic GitHub - markdown-toolbar
-    document.querySelectorAll('markdown-toolbar').forEach(injectButton);
-
-    // Strategy 3: Classic GitHub - tab nav in comment forms
-    document.querySelectorAll('.js-previewable-comment-form .tabnav-tabs').forEach(injectButton);
-  }
-
-  window._issuepilotFindTextarea = findTextarea;
-
-  // Initial + delayed injection
-  findAndInject();
-  setTimeout(findAndInject, 1000);
-  setTimeout(findAndInject, 3000);
-
-  // MutationObserver for dynamic DOM
-  let debounceTimer;
-  const observer = new MutationObserver(() => {
-    clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(findAndInject, 300);
+  document.addEventListener('contextmenu', (e) => {
+    // Remember the element user right-clicked on
+    const el = e.target.closest('textarea, [contenteditable="true"]');
+    if (el) lastActiveElement = el;
   });
-  observer.observe(document.body, { childList: true, subtree: true });
 
-  // GitHub Turbo navigation
-  document.addEventListener('turbo:load', findAndInject);
-  document.addEventListener('turbo:render', findAndInject);
+  // Also track focus for keyboard shortcut
+  document.addEventListener('focusin', (e) => {
+    const el = e.target.closest('textarea, [contenteditable="true"]');
+    if (el) lastActiveElement = el;
+  });
 
-  // Keyboard shortcut
-  chrome.runtime.onMessage.addListener((msg) => {
-    if (msg.type === 'open-draft') {
-      const btn = document.querySelector(`.${BUTTON_CLASS}`);
-      if (btn) IssuePilotUI.toggle(btn);
+  function openDraft() {
+    if (!lastActiveElement) {
+      // Try to find any visible textarea
+      lastActiveElement = document.querySelector('textarea:not([hidden])');
     }
+    if (!lastActiveElement) return;
+
+    IssuePilotUI.toggle(lastActiveElement);
+  }
+
+  // Listen for messages from background (context menu click or keyboard shortcut)
+  chrome.runtime.onMessage.addListener((msg) => {
+    if (msg.type === 'open-draft') openDraft();
   });
+
+  // Expose for ui.js insert
+  window._issuepilotGetTarget = () => lastActiveElement;
 })();
