@@ -11,6 +11,13 @@
 - **主题适配** — 跟随 GitHub Light/Dark 主题
 - **兼容任意 OpenAI 格式 API** — 支持 OpenAI、Anthropic、Cloudflare AI Gateway、DeepSeek、Groq、本地 Ollama 等
 
+## 截图
+
+<div align="center">
+<img src="./draft-panel.png" width="320"/>
+<img src="./right-click.png" width="320"/>
+</div>
+
 ## 安装
 
 1. 克隆或下载本仓库

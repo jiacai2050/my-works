@@ -11,6 +11,13 @@ A Chrome extension that helps non-native English speakers write professional Eng
 - **Theme adaptive** — Follows GitHub's Light/Dark mode via CSS variables
 - **Any OpenAI-compatible API** — Works with OpenAI, Anthropic, Cloudflare AI Gateway, DeepSeek, Groq, local Ollama, etc.
 
+## Screenshots
+
+<div align="center">
+<img src="./draft-panel.png" width="320"/>
+<img src="./right-click.png" width="320"/>
+</div>
+
 ## Installation
 
 1. Clone or download this repository

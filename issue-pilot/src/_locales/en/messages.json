@@ -1,6 +1,8 @@
 {
   "extName": { "message": "IssuePilot" },
-  "extDescription": { "message": "Help non-native English speakers write professional GitHub issue comments in English" },
+  "extDescription": {
+    "message": "Help non-native English speakers write professional GitHub issue comments in English"
+  },
   "intentAgree": { "message": "Agree" },
   "intentQuestion": { "message": "Question" },
   "intentDisagree": { "message": "Disagree" },
@@ -25,11 +27,15 @@
   "noHistory": { "message": "No history yet" },
   "adjustingTone": { "message": "Adjusting tone..." },
   "adjustFailed": { "message": "Adjustment failed" },
-  "errorNoApiKey": { "message": "Please configure your API Key in extension settings" },
+  "errorNoApiKey": {
+    "message": "Please configure your API Key in extension settings"
+  },
   "settingsTitle": { "message": "✨ IssuePilot Settings" },
   "labelProvider": { "message": "API Provider" },
   "labelBaseUrl": { "message": "API Base URL" },
-  "baseUrlPlaceholder": { "message": "Leave empty for default (e.g. https://api.openai.com/v1)" },
+  "baseUrlPlaceholder": {
+    "message": "Leave empty for default (e.g. https://api.openai.com/v1)"
+  },
   "labelApiKey": { "message": "API Key" },
   "labelModel": { "message": "Model" },
   "modelPlaceholder": { "message": "Leave empty for default" },

@@ -1,6 +1,8 @@
 {
   "extName": { "message": "IssuePilot" },
-  "extDescription": { "message": "帮助非英语母语开发者在 GitHub issue 中撰写地道英文评论" },
+  "extDescription": {
+    "message": "帮助非英语母语开发者在 GitHub issue 中撰写地道英文评论"
+  },
   "intentAgree": { "message": "赞同" },
   "intentQuestion": { "message": "有疑问" },
   "intentDisagree": { "message": "反对" },
@@ -29,7 +31,9 @@
   "settingsTitle": { "message": "✨ IssuePilot 设置" },
   "labelProvider": { "message": "API Provider" },
   "labelBaseUrl": { "message": "API Base URL" },
-  "baseUrlPlaceholder": { "message": "留空使用默认 (如 https://api.openai.com/v1)" },
+  "baseUrlPlaceholder": {
+    "message": "留空使用默认 (如 https://api.openai.com/v1)"
+  },
   "labelApiKey": { "message": "API Key" },
   "labelModel": { "message": "Model" },
   "modelPlaceholder": { "message": "留空使用默认模型" },

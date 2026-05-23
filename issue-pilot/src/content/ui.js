@@ -132,7 +132,9 @@ const IssuePilotUI = {
     try {
       const context = await IssuePilotGitHub.getContext();
       const intentLabel = this.selectedIntent
-        ? _m(this.INTENTS.find((i) => i.value === this.selectedIntent)?.labelKey)
+        ? _m(
+            this.INTENTS.find((i) => i.value === this.selectedIntent)?.labelKey,
+          )
         : null;
 
       const response = await chrome.runtime.sendMessage({

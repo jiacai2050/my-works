@@ -89,7 +89,11 @@
     </select>
 
     <label data-i18n="labelBaseUrl"></label>
-    <input id="baseUrl" type="text" data-i18n-placeholder="baseUrlPlaceholder" />
+    <input
+      id="baseUrl"
+      type="text"
+      data-i18n-placeholder="baseUrlPlaceholder"
+    />
 
     <label data-i18n="labelApiKey"></label>
     <div class="key-wrap">
@@ -108,13 +112,24 @@
       <option value="concise" data-i18n="toneConciseOption"></option>
     </select>
 
-    <label><span data-i18n="labelGhToken"></span> <span style="font-weight:normal;color:#656d76" data-i18n="ghTokenHint"></span></label>
-    <input id="ghToken" type="password" data-i18n-placeholder="ghTokenPlaceholder" />
+    <label
+      ><span data-i18n="labelGhToken"></span>
+      <span
+        style="font-weight: normal; color: #656d76"
+        data-i18n="ghTokenHint"
+      ></span
+    ></label>
+    <input
+      id="ghToken"
+      type="password"
+      data-i18n-placeholder="ghTokenPlaceholder"
+    />
 
     <button class="save-btn" id="save" data-i18n="saveBtn"></button>
     <div class="status" id="status"></div>
     <div class="shortcut">
-      <span data-i18n="shortcutHint"></span> <kbd>⌘</kbd> + <kbd>⇧</kbd> + <kbd>E</kbd>
+      <span data-i18n="shortcutHint"></span> <kbd>⌘</kbd> + <kbd>⇧</kbd> +
+      <kbd>E</kbd>
     </div>
 
     <script type="module" src="popup.js"></script>
