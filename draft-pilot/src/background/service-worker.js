@@ -1,5 +1,5 @@
-// IssuePilot - Service Worker (API calls)
-import { IssuePilotStorage } from '../shared/storage.js';
+// DraftPilot - Service Worker (API calls)
+import { DraftPilotStorage } from '../shared/storage.js';
 
 const SYSTEM_PROMPT = `You are helping a developer write professional replies in English.
 The user will provide their intent and context.
@@ -45,7 +45,8 @@ async function callAnthropic(
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    const msg = err.error?.message || err.message || err.detail || JSON.stringify(err);
+    const msg =
+      err.error?.message || err.message || err.detail || JSON.stringify(err);
     throw new Error(`API error ${res.status}: ${msg}`);
   }
   const data = await res.json();
@@ -75,7 +76,8 @@ async function callOpenAI(
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    const msg = err.error?.message || err.message || err.detail || JSON.stringify(err);
+    const msg =
+      err.error?.message || err.message || err.detail || JSON.stringify(err);
     throw new Error(`API error ${res.status}: ${msg}`);
   }
   const data = await res.json();
@@ -83,7 +85,7 @@ async function callOpenAI(
 }
 
 async function handleGenerate(payload) {
-  const settings = await IssuePilotStorage.getSettings();
+  const settings = await DraftPilotStorage.getSettings();
   const provider = settings.provider || 'openai';
   const apiKey = settings.apiKey;
   const model =
@@ -115,16 +117,16 @@ async function handleGenerate(payload) {
       systemWithTone,
       baseUrl,
     );
-    await IssuePilotStorage.saveDraft(draft, payload.context?.title);
+    await DraftPilotStorage.saveDraft(draft, payload.context?.title);
     return draft;
   }
   const draft = await callAnthropic(apiKey, model, userPrompt, systemWithTone);
-  await IssuePilotStorage.saveDraft(draft, payload.context?.title);
+  await DraftPilotStorage.saveDraft(draft, payload.context?.title);
   return draft;
 }
 
 async function handleToneAdjust({ draft, tone }) {
-  const settings = await IssuePilotStorage.getSettings();
+  const settings = await DraftPilotStorage.getSettings();
   const provider = settings.provider || 'openai';
   const apiKey = settings.apiKey;
   const model =
@@ -164,7 +166,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     return true;
   }
   if (msg.type === 'get-history') {
-    IssuePilotStorage.getDraftHistory().then((history) =>
+    DraftPilotStorage.getDraftHistory().then((history) =>
       sendResponse({ history }),
     );
     return true;
@@ -178,7 +180,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 });
 
 async function fetchGitHubContext({ owner, repo, issueNumber }) {
-  const { ghToken } = await IssuePilotStorage.getSettings();
+  const { ghToken } = await DraftPilotStorage.getSettings();
   const headers = { Accept: 'application/vnd.github+json' };
   if (ghToken) headers.Authorization = `Bearer ${ghToken}`;
 
@@ -211,15 +213,15 @@ async function fetchGitHubContext({ owner, repo, issueNumber }) {
 // Register context menu on install
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
-    id: 'issuepilot-draft',
-    title: '✨ IssuePilot - Draft Reply',
+    id: 'draftpilot-draft',
+    title: '✨ DraftPilot - Smart Draft Reply',
     contexts: ['editable'],
   });
 });
 
 // Context menu click handler
 chrome.contextMenus.onClicked.addListener((info, tab) => {
-  if (info.menuItemId === 'issuepilot-draft' && tab?.id) {
+  if (info.menuItemId === 'draftpilot-draft' && tab?.id) {
     chrome.tabs.sendMessage(tab.id, { type: 'open-draft' });
   }
 });

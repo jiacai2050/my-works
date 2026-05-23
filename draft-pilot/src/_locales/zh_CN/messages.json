@@ -1,7 +1,7 @@
 {
-  "extName": { "message": "IssuePilot" },
+  "extName": { "message": "DraftPilot" },
   "extDescription": {
-    "message": "帮助非英语母语开发者在 GitHub issue 中撰写地道英文评论"
+    "message": "帮助非英语母语开发者在任意网站上撰写地道英文回复"
   },
   "intentAgree": { "message": "赞同" },
   "intentQuestion": { "message": "有疑问" },
@@ -28,7 +28,7 @@
   "adjustingTone": { "message": "调整语气中..." },
   "adjustFailed": { "message": "调整失败" },
   "errorNoApiKey": { "message": "请先在插件设置中配置 API Key" },
-  "settingsTitle": { "message": "✨ IssuePilot 设置" },
+  "settingsTitle": { "message": "✨ DraftPilot 设置" },
   "labelProvider": { "message": "API Provider" },
   "labelBaseUrl": { "message": "API Base URL" },
   "baseUrlPlaceholder": {

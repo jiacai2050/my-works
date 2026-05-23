@@ -1,6 +1,6 @@
-// IssuePilot - Context Extraction
+// DraftPilot - Context Extraction
 
-const IssuePilotContext = {
+const DraftPilotContext = {
   // --- Entry point ---
   async getContext() {
     const host = window.location.hostname;
@@ -46,7 +46,7 @@ const IssuePilotContext = {
         });
         if (response.context) return response.context;
       } catch (e) {
-        console.warn('[IssuePilot] GitHub API fallback failed:', e);
+        console.warn('[DraftPilot] GitHub API fallback failed:', e);
       }
     }
 
@@ -56,18 +56,26 @@ const IssuePilotContext = {
   _getGitHubReplyTarget() {
     // User selected text takes priority
     const selection = window.getSelection()?.toString().trim();
-    if (selection) return selection.length > 1000 ? selection.slice(0, 1000) + '...' : selection;
+    if (selection)
+      return selection.length > 1000
+        ? selection.slice(0, 1000) + '...'
+        : selection;
 
-    const target = window._issuepilotGetTarget ? window._issuepilotGetTarget() : null;
+    const target = window._draftpilotGetTarget
+      ? window._draftpilotGetTarget()
+      : null;
     if (!target) return null;
 
     const container = target.closest(
-      '.js-comment-container, .js-comment, .review-comment, .timeline-comment-group'
+      '.js-comment-container, .js-comment, .review-comment, .timeline-comment-group',
     );
     if (!container) return null;
 
     const commentBody = container.querySelector('.markdown-body');
-    if (commentBody && !container.querySelector('form')?.contains(commentBody)) {
+    if (
+      commentBody &&
+      !container.querySelector('form')?.contains(commentBody)
+    ) {
       const text = commentBody.textContent.trim();
       if (text) return text.length > 1000 ? text.slice(0, 1000) + '...' : text;
     }
@@ -75,7 +83,12 @@ const IssuePilotContext = {
   },
 
   _ghTitle() {
-    const selectors = ['.gh-header-title .js-issue-title', 'h1.gh-header-title', '[data-testid="issue-title"]', 'h1 bdi'];
+    const selectors = [
+      '.gh-header-title .js-issue-title',
+      'h1.gh-header-title',
+      '[data-testid="issue-title"]',
+      'h1 bdi',
+    ];
     for (const sel of selectors) {
       const el = document.querySelector(sel);
       if (el?.textContent.trim()) return el.textContent.trim();
@@ -100,7 +113,9 @@ const IssuePilotContext = {
   },
 
   _ghParseURL() {
-    const match = window.location.pathname.match(/\/([^/]+)\/([^/]+)\/(issues|pull)\/(\d+)/);
+    const match = window.location.pathname.match(
+      /\/([^/]+)\/([^/]+)\/(issues|pull)\/(\d+)/,
+    );
     if (!match) return null;
     return { owner: match[1], repo: match[2], issueNumber: match[4] };
   },

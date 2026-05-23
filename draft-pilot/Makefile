@@ -1,4 +1,4 @@
-CHROME_DST = /tmp/issue-pilot-chrome.zip
+CHROME_DST = /tmp/draft-pilot-chrome.zip
 
 build: buildc
 

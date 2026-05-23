@@ -1,8 +1,8 @@
-// IssuePilot - UI Popover Rendering
+// DraftPilot - UI Popover Rendering
 
 const _m = (key) => chrome.i18n.getMessage(key);
 
-const IssuePilotUI = {
+const DraftPilotUI = {
   INTENTS: [
     { emoji: '👍', labelKey: 'intentAgree', value: 'agree' },
     { emoji: '🤔', labelKey: 'intentQuestion', value: 'question' },
@@ -17,27 +17,27 @@ const IssuePilotUI = {
 
   createPopover() {
     const popover = document.createElement('div');
-    popover.className = 'issuepilot-popover';
+    popover.className = 'draftpilot-popover';
     popover.innerHTML = `
-      <div class="issuepilot-popover-title">${_m('popoverTitle')}</div>
-      <div class="issuepilot-intents">
-        ${this.INTENTS.map((i) => `<button class="issuepilot-intent-btn" data-intent="${i.value}">${i.emoji} ${_m(i.labelKey)}</button>`).join('')}
+      <div class="draftpilot-popover-title">${_m('popoverTitle')}</div>
+      <div class="draftpilot-intents">
+        ${this.INTENTS.map((i) => `<button class="draftpilot-intent-btn" data-intent="${i.value}">${i.emoji} ${_m(i.labelKey)}</button>`).join('')}
       </div>
-      <textarea class="issuepilot-input" placeholder="${_m('inputPlaceholder')}"></textarea>
-      <div class="issuepilot-btn-row">
-        <button class="issuepilot-generate-btn">${_m('generateBtn')}</button>
-        <button class="issuepilot-history-btn" title="${_m('historyBtn')}">📜</button>
+      <textarea class="draftpilot-input" placeholder="${_m('inputPlaceholder')}"></textarea>
+      <div class="draftpilot-btn-row">
+        <button class="draftpilot-generate-btn">${_m('generateBtn')}</button>
+        <button class="draftpilot-history-btn" title="${_m('historyBtn')}">📜</button>
       </div>
-      <div class="issuepilot-error issuepilot-hidden"></div>
-      <div class="issuepilot-draft-section issuepilot-hidden">
-        <div class="issuepilot-draft" contenteditable="true"></div>
-        <div class="issuepilot-tone-bar">
-          <span class="issuepilot-tone-label">${_m('toneLabel')}</span>
-          <button class="issuepilot-tone-btn" data-tone="formal">${_m('toneFormal')}</button>
-          <button class="issuepilot-tone-btn" data-tone="friendly">${_m('toneFriendly')}</button>
-          <button class="issuepilot-tone-btn" data-tone="concise">${_m('toneConcise')}</button>
+      <div class="draftpilot-error draftpilot-hidden"></div>
+      <div class="draftpilot-draft-section draftpilot-hidden">
+        <div class="draftpilot-draft" contenteditable="true"></div>
+        <div class="draftpilot-tone-bar">
+          <span class="draftpilot-tone-label">${_m('toneLabel')}</span>
+          <button class="draftpilot-tone-btn" data-tone="formal">${_m('toneFormal')}</button>
+          <button class="draftpilot-tone-btn" data-tone="friendly">${_m('toneFriendly')}</button>
+          <button class="draftpilot-tone-btn" data-tone="concise">${_m('toneConcise')}</button>
         </div>
-        <div class="issuepilot-draft-actions">
+        <div class="draftpilot-draft-actions">
           <button class="regen-btn">${_m('regenBtn')}</button>
           <button class="insert-btn primary">${_m('insertBtn')}</button>
         </div>
@@ -45,10 +45,10 @@ const IssuePilotUI = {
     `;
 
     // Intent selection
-    popover.querySelectorAll('.issuepilot-intent-btn').forEach((btn) => {
+    popover.querySelectorAll('.draftpilot-intent-btn').forEach((btn) => {
       btn.addEventListener('click', () => {
         popover
-          .querySelectorAll('.issuepilot-intent-btn')
+          .querySelectorAll('.draftpilot-intent-btn')
           .forEach((b) => b.classList.remove('selected'));
         btn.classList.add('selected');
         this.selectedIntent = btn.dataset.intent;
@@ -57,7 +57,7 @@ const IssuePilotUI = {
 
     // Generate
     popover
-      .querySelector('.issuepilot-generate-btn')
+      .querySelector('.draftpilot-generate-btn')
       .addEventListener('click', () => this.handleGenerate(popover));
 
     // Regen
@@ -71,7 +71,7 @@ const IssuePilotUI = {
       .addEventListener('click', () => this.handleInsert(popover));
 
     // Tone adjustment
-    popover.querySelectorAll('.issuepilot-tone-btn').forEach((btn) => {
+    popover.querySelectorAll('.draftpilot-tone-btn').forEach((btn) => {
       btn.addEventListener('click', () =>
         this.handleToneAdjust(popover, btn.dataset.tone),
       );
@@ -79,7 +79,7 @@ const IssuePilotUI = {
 
     // History
     popover
-      .querySelector('.issuepilot-history-btn')
+      .querySelector('.draftpilot-history-btn')
       .addEventListener('click', () => this.showHistory(popover));
 
     // Close on outside click
@@ -89,7 +89,7 @@ const IssuePilotUI = {
         (this._outsideClickHandler = (e) => {
           if (
             !popover.contains(e.target) &&
-            !e.target.classList.contains('issuepilot-btn')
+            !e.target.classList.contains('draftpilot-btn')
           ) {
             this.close();
           }
@@ -102,35 +102,35 @@ const IssuePilotUI = {
   },
 
   async handleGenerate(popover) {
-    const input = popover.querySelector('.issuepilot-input').value.trim();
-    const errorEl = popover.querySelector('.issuepilot-error');
-    const draftSection = popover.querySelector('.issuepilot-draft-section');
-    const draftEl = popover.querySelector('.issuepilot-draft');
-    const genBtn = popover.querySelector('.issuepilot-generate-btn');
+    const input = popover.querySelector('.draftpilot-input').value.trim();
+    const errorEl = popover.querySelector('.draftpilot-error');
+    const draftSection = popover.querySelector('.draftpilot-draft-section');
+    const draftEl = popover.querySelector('.draftpilot-draft');
+    const genBtn = popover.querySelector('.draftpilot-generate-btn');
 
     if (!this.selectedIntent && !input) {
       errorEl.innerHTML = _m('errorNoIntent');
-      errorEl.classList.remove('issuepilot-hidden');
+      errorEl.classList.remove('draftpilot-hidden');
       return;
     }
 
-    errorEl.classList.add('issuepilot-hidden');
+    errorEl.classList.add('draftpilot-hidden');
     genBtn.disabled = true;
     genBtn.textContent = _m('generating');
-    draftSection.classList.add('issuepilot-hidden');
+    draftSection.classList.add('draftpilot-hidden');
 
     // Show loading indicator
-    let loadingEl = popover.querySelector('.issuepilot-loading');
+    let loadingEl = popover.querySelector('.draftpilot-loading');
     if (!loadingEl) {
       loadingEl = document.createElement('div');
-      loadingEl.className = 'issuepilot-loading';
+      loadingEl.className = 'draftpilot-loading';
       genBtn.after(loadingEl);
     }
     loadingEl.textContent = _m('loadingDraft');
-    loadingEl.classList.remove('issuepilot-hidden');
+    loadingEl.classList.remove('draftpilot-hidden');
 
     try {
-      const context = await IssuePilotContext.getContext();
+      const context = await DraftPilotContext.getContext();
       const intentLabel = this.selectedIntent
         ? _m(
             this.INTENTS.find((i) => i.value === this.selectedIntent)?.labelKey,
@@ -145,15 +145,15 @@ const IssuePilotUI = {
       if (response.error) throw new Error(response.error);
 
       draftEl.textContent = response.draft;
-      draftSection.classList.remove('issuepilot-hidden');
+      draftSection.classList.remove('draftpilot-hidden');
     } catch (err) {
       errorEl.innerHTML = `${err.message || _m('generateFailed')}<span class="retry-link">${_m('retryLink')}</span>`;
-      errorEl.classList.remove('issuepilot-hidden');
+      errorEl.classList.remove('draftpilot-hidden');
       errorEl
         .querySelector('.retry-link')
         ?.addEventListener('click', () => this.handleGenerate(popover));
     } finally {
-      loadingEl.classList.add('issuepilot-hidden');
+      loadingEl.classList.add('draftpilot-hidden');
       genBtn.disabled = false;
       genBtn.textContent = _m('generateBtn');
     }
@@ -167,18 +167,18 @@ const IssuePilotUI = {
       return;
     }
 
-    const draftEl = popover.querySelector('.issuepilot-draft');
-    const draftSection = popover.querySelector('.issuepilot-draft-section');
+    const draftEl = popover.querySelector('.draftpilot-draft');
+    const draftSection = popover.querySelector('.draftpilot-draft-section');
 
     // Show a simple list overlay
-    let listEl = popover.querySelector('.issuepilot-history-list');
+    let listEl = popover.querySelector('.draftpilot-history-list');
     if (listEl) {
       listEl.remove();
       return;
     }
 
     listEl = document.createElement('div');
-    listEl.className = 'issuepilot-history-list';
+    listEl.className = 'draftpilot-history-list';
     listEl.innerHTML = history
       .map((item, i) => {
         const date = new Date(item.timestamp).toLocaleString('zh-CN', {
@@ -189,24 +189,24 @@ const IssuePilotUI = {
         });
         const preview =
           item.draft.slice(0, 60) + (item.draft.length > 60 ? '...' : '');
-        return `<div class="issuepilot-history-item" data-idx="${i}"><span class="hist-date">${date}</span><span class="hist-text">${preview}</span></div>`;
+        return `<div class="draftpilot-history-item" data-idx="${i}"><span class="hist-date">${date}</span><span class="hist-text">${preview}</span></div>`;
       })
       .join('');
     popover.appendChild(listEl);
 
     listEl.addEventListener('click', (e) => {
       e.stopPropagation();
-      const item = e.target.closest('.issuepilot-history-item');
+      const item = e.target.closest('.draftpilot-history-item');
       if (!item) return;
       draftEl.textContent = history[item.dataset.idx].draft;
-      draftSection.classList.remove('issuepilot-hidden');
+      draftSection.classList.remove('draftpilot-hidden');
       listEl.remove();
     });
   },
 
   async handleToneAdjust(popover, tone) {
-    const draftEl = popover.querySelector('.issuepilot-draft');
-    const errorEl = popover.querySelector('.issuepilot-error');
+    const draftEl = popover.querySelector('.draftpilot-draft');
+    const errorEl = popover.querySelector('.draftpilot-error');
     const currentDraft = draftEl.textContent;
     if (!currentDraft) return;
 
@@ -220,15 +220,15 @@ const IssuePilotUI = {
       draftEl.textContent = response.draft;
     } catch (err) {
       errorEl.textContent = err.message || _m('adjustFailed');
-      errorEl.classList.remove('issuepilot-hidden');
+      errorEl.classList.remove('draftpilot-hidden');
       draftEl.textContent = currentDraft;
     }
   },
 
   handleInsert(popover) {
-    const draft = popover.querySelector('.issuepilot-draft').textContent;
-    const target = window._issuepilotGetTarget
-      ? window._issuepilotGetTarget()
+    const draft = popover.querySelector('.draftpilot-draft').textContent;
+    const target = window._draftpilotGetTarget
+      ? window._draftpilotGetTarget()
       : null;
     if (target && draft) {
       if (target.tagName === 'TEXTAREA' || target.tagName === 'INPUT') {

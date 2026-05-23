@@ -1,6 +1,6 @@
-// IssuePilot - Storage Helper
+// DraftPilot - Storage Helper
 
-export const IssuePilotStorage = {
+export const DraftPilotStorage = {
   async getSettings() {
     const s = await chrome.storage.local.get([
       'provider',

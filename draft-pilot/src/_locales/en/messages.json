@@ -1,7 +1,7 @@
 {
-  "extName": { "message": "IssuePilot" },
+  "extName": { "message": "DraftPilot" },
   "extDescription": {
-    "message": "Help non-native English speakers write professional GitHub issue comments in English"
+    "message": "Help non-native English speakers draft professional English replies on any website"
   },
   "intentAgree": { "message": "Agree" },
   "intentQuestion": { "message": "Question" },
@@ -30,7 +30,7 @@
   "errorNoApiKey": {
     "message": "Please configure your API Key in extension settings"
   },
-  "settingsTitle": { "message": "✨ IssuePilot Settings" },
+  "settingsTitle": { "message": "✨ DraftPilot Settings" },
   "labelProvider": { "message": "API Provider" },
   "labelBaseUrl": { "message": "API Base URL" },
   "baseUrlPlaceholder": {

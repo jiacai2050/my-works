@@ -1,21 +1,22 @@
-# IssuePilot
+# DraftPilot
 
-一个帮助非英语母语开发者在 GitHub issue 和 PR 中撰写地道英文评论的 Chrome 扩展。
+一个帮助非英语母语开发者在任意网站上撰写地道英文回复的 Chrome 扩展。针对 GitHub issue 和 PR 场景进行了深度优化。
 
 ## 功能特性
 
 - **意图驱动** — 6 个预设意图（赞同、有疑问、反对、有建议、补充信息、求助）+ 自由输入（中英文均可）
-- **上下文感知** — 自动读取 issue 标题、正文和最近评论（DOM 提取 + GitHub API 兜底）
+- **上下文感知** — 自动识别回复目标（选中文本 > 评论容器 > 页面上下文）
+- **GitHub 深度集成** — 自动提取 issue/PR 标题、正文和评论（DOM 提取 + GitHub API 兜底）
+- **通用场景支持** — 可在 Gmail、Slack、论坛等任意网站的输入框中使用
 - **语气微调** — 生成后可一键切换为正式、友好或简洁风格
 - **草稿历史** — 本地保存最近 20 条草稿
-- **主题适配** — 跟随 GitHub Light/Dark 主题
 - **兼容任意 OpenAI 格式 API** — 支持 OpenAI、Anthropic、Cloudflare AI Gateway、DeepSeek、Groq、本地 Ollama 等
 
 ## 截图
 
 <div align="center">
-<img src="./draft-panel.png" width="320"/>
 <img src="./right-click.png" width="320"/>
+<img src="./draft-panel.png" width="320"/>
 </div>
 
 ## 安装
@@ -24,7 +25,7 @@
 2. Chrome 打开 `chrome://extensions`
 3. 开启右上角 **开发者模式**
 4. 点击 **加载已解压的扩展程序**，选择 `issue-pilot` 目录
-5. 点击工具栏中的 IssuePilot 图标进行配置
+5. 点击工具栏中的 DraftPilot 图标进行配置
 
 ## 配置
 
@@ -38,13 +39,13 @@
 
 ### GitHub Token（可选）
 
-IssuePilot 优先从页面 DOM 提取 issue 上下文。如果提取失败（如 GitHub 更新了 UI），会自动通过 GitHub API 获取。公开仓库无需 Token，私有仓库需要提供一个具有 `repo` 权限的 [Personal Access Token](https://github.com/settings/tokens)。
+DraftPilot 优先从页面 DOM 提取 issue 上下文。如果提取失败（如 GitHub 更新了 UI），会自动通过 GitHub API 获取。公开仓库无需 Token，私有仓库需要提供一个具有 `repo` 权限的 [Personal Access Token](https://github.com/settings/tokens)。
 
 ## 使用方法
 
 1. 打开任意 GitHub issue 或 PR 页面
 2. 点击评论输入框
-3. **右键** → 选择 **✨ IssuePilot - Draft Reply**
+3. **右键** → 选择 **✨ DraftPilot - Smart Draft Reply**
    - 或按快捷键 `Cmd+Shift+E` / `Ctrl+Shift+E`
 4. 选择意图 和/或 输入补充说明
 5. 点击 **生成草稿**
@@ -54,7 +55,7 @@ IssuePilot 优先从页面 DOM 提取 issue 上下文。如果提取失败（如
 
 ### 上下文识别
 
-IssuePilot 会自动识别你要回复的内容，优先级如下：
+DraftPilot 会自动识别你要回复的内容，优先级如下：
 
 1. **选中文本** — 如果你选中了页面上的某段文字再触发，会以选中内容作为回复上下文（最精准）
 2. **评论容器** — 如果在某条评论的回复框中触发，会自动提取该评论内容
@@ -67,7 +68,7 @@ IssuePilot 会自动识别你要回复的内容，优先级如下：
 | macOS         | `Cmd + Shift + E`  |
 | Windows/Linux | `Ctrl + Shift + E` |
 
-如需自定义快捷键，打开 `chrome://extensions/shortcuts` 找到 IssuePilot 修改即可。
+如需自定义快捷键，打开 `chrome://extensions/shortcuts` 找到 DraftPilot 修改即可。
 
 ## 隐私
 

@@ -1,6 +1,6 @@
 #+TITLE: MyWorks
 #+DATE: 2025-04-16T10:11:50+0800
-#+LASTMOD: 2026-05-23T12:15:12+0800
+#+LASTMOD: 2026-05-23T13:58:19+0800
 #+AUTHOR: Jiacai Liu
 
 A monorepo of my public projects — tools, libraries, and experiments I've built and released over time.
@@ -18,7 +18,8 @@ A monorepo of my public projects — tools, libraries, and experiments I've buil
 - [[file:text-saver/][Text saver]] :: Browser extension to save texts anytime, anywhere.
 - [[file:gooreplacer/][Gooreplacer]] :: Browser extension to modify, block URLs & Headers
 - [[file:serverless-webdav/][Serverless Webdav]] :: A serverless WebDAV server running on Cloudflare Workers, using D1(sqlite) as the storage backend.
-- [[file:issue-pilot/][IssuePilot]] :: 一个帮助非英语母语开发者在 GitHub issue 和 PR 中撰写地道英文评论的 Chrome 扩展。
+- [[file:draft-pilot/][DraftPilot]] :: 一个帮助非英语母语开发者在任意网站上撰写地道英文回复的 Chrome 扩展。针对 GitHub issue 和 PR 场景进行了深度优化。
+
 * Python
 - [[file:shellgpt/][shellgpt]] :: Chat with LLM in your terminal, be it shell generator, story teller, linux-terminal, etc.
 - [[file:zigcc/][zigcc]] :: Scripts aimed at simplifying the use of =zig cc= for compiling C, C++, Rust, and Go programs.

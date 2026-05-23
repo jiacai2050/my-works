@@ -1,5 +1,5 @@
-// IssuePilot - Popup Settings
-import { IssuePilotStorage } from '../shared/storage.js';
+// DraftPilot - Popup Settings
+import { DraftPilotStorage } from '../shared/storage.js';
 
 const $ = (id) => document.getElementById(id);
 const _m = (key) => chrome.i18n.getMessage(key);
@@ -13,7 +13,7 @@ document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
 });
 
 // Load saved settings
-IssuePilotStorage.getSettings().then((s) => {
+DraftPilotStorage.getSettings().then((s) => {
   $('provider').value = s.provider;
   $('apiKey').value = s.apiKey;
   $('model').value = s.model;

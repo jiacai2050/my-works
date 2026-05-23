@@ -1,4 +1,4 @@
-// IssuePilot - Content Script (context menu + keyboard shortcut trigger)
+// DraftPilot - Content Script (context menu + keyboard shortcut trigger)
 
 (function () {
   // Track the element that was right-clicked
@@ -23,7 +23,7 @@
     }
     if (!lastActiveElement) return;
 
-    IssuePilotUI.toggle(lastActiveElement);
+    DraftPilotUI.toggle(lastActiveElement);
   }
 
   // Listen for messages from background (context menu click or keyboard shortcut)
@@ -32,5 +32,5 @@
   });
 
   // Expose for ui.js insert
-  window._issuepilotGetTarget = () => lastActiveElement;
+  window._draftpilotGetTarget = () => lastActiveElement;
 })();
