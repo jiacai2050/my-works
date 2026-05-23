@@ -14,7 +14,9 @@ const DraftPilotContext = {
     }
 
     // Step 2: User-selected text (works everywhere)
-    const selection = window.getSelection()?.toString().trim();
+    const selection =
+      window._draftpilotSavedSelection ||
+      window.getSelection()?.toString().trim();
     if (selection) {
       return this._makeContext(selection);
     }
@@ -35,7 +37,13 @@ const DraftPilotContext = {
     const recentComments = this._ghRecentComments();
 
     if (title && (body || recentComments.length)) {
-      return { title, body, recentComments, existingInput: '' };
+      return {
+        url: window.location.href,
+        title,
+        body,
+        recentComments,
+        existingInput: '',
+      };
     }
 
     // Fallback to GitHub API
@@ -56,8 +64,10 @@ const DraftPilotContext = {
   },
 
   _getGitHubReplyTarget() {
-    // User selected text takes priority
-    const selection = window.getSelection()?.toString().trim();
+    // User selected text takes priority (use saved selection since right-click clears it)
+    const selection =
+      window._draftpilotSavedSelection ||
+      window.getSelection()?.toString().trim();
     if (selection)
       return selection.length > 1000
         ? selection.slice(0, 1000) + '...'
@@ -125,6 +135,7 @@ const DraftPilotContext = {
   // --- Helpers ---
   _makeContext(body) {
     return {
+      url: window.location.href,
       title: document.title,
       body: body.length > 1000 ? body.slice(0, 1000) + '...' : body,
       recentComments: [],

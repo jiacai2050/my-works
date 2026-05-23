@@ -10,7 +10,7 @@
   "intentInfo": { "message": "More Info" },
   "intentHelp": { "message": "Ask Help" },
   "popoverTitle": { "message": "What do you want to say?" },
-  "inputPlaceholder": { "message": "Additional notes (Chinese/English)" },
+  "inputPlaceholder": { "message": "Additional notes (any language)" },
   "generateBtn": { "message": "Generate Draft" },
   "historyBtn": { "message": "History" },
   "toneLabel": { "message": "Tone:" },

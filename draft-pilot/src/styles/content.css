@@ -37,7 +37,7 @@
 .draftpilot-popover-title {
   font-weight: 600;
   margin-bottom: 12px;
-  color: var(--fgColor-default, var(--color-fg-default));
+  color: var(--fgColor-default, var(--color-fg-default, #1f2328));
 }
 
 /* Intent grid */
@@ -55,20 +55,23 @@
   gap: 4px;
   padding: 8px 4px;
   font-size: 12px;
-  border: 1px solid var(--borderColor-default, var(--color-border-default));
+  border: 1px solid var(--borderColor-default, var(--color-border-default, #d0d7de));
   border-radius: 8px;
-  background: var(--bgColor-default, var(--color-canvas-default));
-  color: var(--fgColor-default, var(--color-fg-default));
+  background: var(--bgColor-default, var(--color-canvas-default, #fff));
+  color: var(--fgColor-default, var(--color-fg-default, #1f2328));
   cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
 }
 
 .draftpilot-intent-btn:hover {
-  background: var(--bgColor-muted, var(--color-canvas-subtle));
+  background: var(--bgColor-muted, var(--color-canvas-subtle, #f6f8fa));
+  border-color: var(--fgColor-muted, var(--color-fg-muted, #656d76));
 }
 
 .draftpilot-intent-btn.selected {
-  border-color: var(--fgColor-accent, var(--color-accent-fg));
-  background: var(--bgColor-accent-muted, var(--color-accent-subtle));
+  border-color: var(--fgColor-accent, var(--color-accent-fg, #0969da));
+  background: var(--bgColor-accent-muted, var(--color-accent-subtle, #ddf4ff));
+  box-shadow: 0 0 0 2px var(--bgColor-accent-muted, rgba(9, 105, 218, 0.2));
 }
 
 /* Input area */
@@ -77,10 +80,10 @@
   min-height: 60px;
   padding: 8px;
   font-size: 13px;
-  border: 1px solid var(--borderColor-default, var(--color-border-default));
+  border: 1px solid var(--borderColor-default, var(--color-border-default, #d0d7de));
   border-radius: 6px;
-  background: var(--bgColor-default, var(--color-canvas-default));
-  color: var(--fgColor-default, var(--color-fg-default));
+  background: var(--bgColor-default, var(--color-canvas-default, #fff));
+  color: var(--fgColor-default, var(--color-fg-default, #1f2328));
   resize: vertical;
   font-family: inherit;
   box-sizing: border-box;
@@ -88,7 +91,7 @@
 
 .draftpilot-input:focus {
   outline: none;
-  border-color: var(--fgColor-accent, var(--color-accent-fg));
+  border-color: var(--fgColor-accent, var(--color-accent-fg, #0969da));
   box-shadow: 0 0 0 3px var(--bgColor-accent-muted, rgba(9, 105, 218, 0.15));
 }
 

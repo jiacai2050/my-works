@@ -51,11 +51,16 @@ const DraftPilotUI = {
     // Intent selection
     popover.querySelectorAll('.draftpilot-intent-btn').forEach((btn) => {
       btn.addEventListener('click', () => {
-        popover
-          .querySelectorAll('.draftpilot-intent-btn')
-          .forEach((b) => b.classList.remove('selected'));
-        btn.classList.add('selected');
-        this.selectedIntent = btn.dataset.intent;
+        if (btn.classList.contains('selected')) {
+          btn.classList.remove('selected');
+          this.selectedIntent = null;
+        } else {
+          popover
+            .querySelectorAll('.draftpilot-intent-btn')
+            .forEach((b) => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          this.selectedIntent = btn.dataset.intent;
+        }
       });
     });
 
@@ -143,7 +148,7 @@ const DraftPilotUI = {
 
       const response = await chrome.runtime.sendMessage({
         type: 'generate',
-        payload: { context, intent: intentLabel, userNote: input },
+        payload: { context, intent: intentLabel, intentValue: this.selectedIntent, userNote: input },
       });
 
       if (response.error) throw new Error(response.error);
@@ -254,8 +259,26 @@ const DraftPilotUI = {
         target.dispatchEvent(new Event('input', { bubbles: true }));
         target.dispatchEvent(new Event('change', { bubbles: true }));
       } else {
-        target.textContent = draft;
+        // Focus and select all existing content, then replace via execCommand
+        // This works with Gmail, CKEditor, and other rich text editors
+        target.focus();
+        const sel = window.getSelection();
+        const range = document.createRange();
+        range.selectNodeContents(target);
+        sel.removeAllRanges();
+        sel.addRange(range);
+        document.execCommand('insertText', false, draft);
+        // Fallback if execCommand didn't work
+        if (!target.textContent.trim()) {
+          target.innerHTML = '';
+          const p = document.createElement('p');
+          p.textContent = draft;
+          target.appendChild(p);
+        }
+        target.removeAttribute('placeholder');
+        target.classList.remove('cke_htmlplaceholder');
         target.dispatchEvent(new InputEvent('input', { bubbles: true }));
+        target.dispatchEvent(new Event('change', { bubbles: true }));
       }
       this.close();
     }

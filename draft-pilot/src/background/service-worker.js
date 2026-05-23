@@ -1,24 +1,65 @@
 // DraftPilot - Service Worker (API calls)
 import { DraftPilotStorage } from '../shared/storage.js';
 
-const SYSTEM_PROMPT = `You are helping a developer write professional replies in English.
-The user will provide their intent and context.
-Generate a natural, concise, and appropriate English reply.
-Do not add unnecessary pleasantries. Match the tone of the conversation.
-Reply with only the text, no explanations.`;
+const SYSTEM_PROMPT = `You are helping a non-native English speaker write natural, professional replies in English.
+The user will provide their intent, context, and the platform they are on.
+Generate a natural, concise, and appropriate English reply that fits the platform's conventions.
+Do not add unnecessary pleasantries unless the platform calls for it.
+Reply with only the text, no explanations or meta-commentary.`;
 
-function buildUserPrompt({ context, intent, userNote }) {
-  let prompt = `Context: ${context.title}\n`;
-  if (context.body) prompt += `Content: ${context.body}\n`;
+function detectPlatform(context) {
+  const title = (context.title || '').toLowerCase();
+  const url = context.url || '';
+  if (url.includes('github.com') || title.includes('github')) return 'github';
+  if (
+    /mail\.google\.com|outlook\.(live|office)\.com|mail\.yahoo\.com|proton\.me|mail\.proton\.me|fastmail\.com|zoho\.com\/mail|icloud\.com\/mail|ymail\.com|aol\.com\/mail|mail\.yandex\.com/.test(
+      url,
+    ) ||
+    /gmail|outlook|邮件|邮箱|inbox/.test(title)
+  )
+    return 'email';
+  if (
+    /slack\.com|discord\.com|teams\.microsoft\.com|telegram\.org|web\.telegram|messenger\.com/.test(
+      url,
+    )
+  )
+    return 'chat';
+  return 'general';
+}
+
+const PLATFORM_HINTS = {
+  github:
+    'Platform: GitHub (issue/PR discussion). Keep it technical and concise.',
+  email:
+    'Platform: Email. Use appropriate greeting and sign-off. Be polite but not overly verbose.',
+  chat: 'Platform: Chat/messaging. Keep it conversational and brief.',
+  general:
+    'Platform: Web forum/discussion. Match the formality of the context.',
+};
+
+function buildUserPrompt({ context, intent, intentValue, userNote }) {
+  const platform = detectPlatform(context);
+  let prompt = `${PLATFORM_HINTS[platform]}\n\n`;
+
+  if (context.title) prompt += `Subject/Title: ${context.title}\n`;
+  if (context.body) prompt += `Content to reply to:\n${context.body}\n`;
   if (context.recentComments?.length) {
     prompt += `Recent messages:\n${context.recentComments.map((c, i) => `[${i + 1}] ${c}`).join('\n')}\n`;
   }
-  if (context.diffContext) {
-    prompt += `\nCode Review Context (file: ${context.diffContext.fileName}):\n\`\`\`\n${context.diffContext.code}\n\`\`\`\n`;
-  }
   prompt += '\n';
-  if (intent) prompt += `User Intent: ${intent}\n`;
-  if (userNote) prompt += `User Note: ${userNote}\n`;
+  if (intent) {
+    const INTENT_INSTRUCTIONS = {
+      agree: 'Express clear agreement/approval. Acknowledge the good points made.',
+      question: 'Ask a clarifying question. Show what part is unclear and why.',
+      disagree: 'Respectfully disagree. State your concern and reasoning clearly.',
+      suggestion: 'Propose an alternative or improvement. Be specific and actionable.',
+      info: 'Provide additional relevant information or context that others may have missed.',
+      help: 'Ask for help. Clearly describe what you need and what you have tried.',
+    };
+    const instruction = INTENT_INSTRUCTIONS[intentValue] || '';
+    prompt += `User Intent: ${intent}${instruction ? '. ' + instruction : ''}\n`;
+  }
+  if (userNote) prompt += `Additional notes: ${userNote}\n`;
   prompt += '\nWrite the reply:';
   return prompt;
 }
@@ -144,7 +185,7 @@ async function handleToneAdjust({ draft, tone }) {
     friendly: 'more friendly and approachable',
     concise: 'more concise and to-the-point',
   };
-  const prompt = `Rewrite this GitHub comment to be ${toneMap[tone]}. Keep the same meaning. Reply with only the rewritten text:\n\n${draft}`;
+  const prompt = `Rewrite this text to be ${toneMap[tone]}. Keep the same meaning. Reply with only the rewritten text:\n\n${draft}`;
 
   if (provider === 'openai')
     return await callOpenAI(apiKey, model, prompt, SYSTEM_PROMPT, baseUrl);
@@ -197,6 +238,7 @@ async function fetchGitHubContext({ owner, repo, issueNumber }) {
 
   const body = issue.body || '';
   return {
+    url: `https://github.com/${owner}/${repo}/issues/${issueNumber}`,
     title: issue.title,
     body: body.length > 2000 ? body.slice(0, 2000) + '...' : body,
     recentComments: comments

@@ -6,6 +6,19 @@
   // Track the element that was right-clicked
   let lastActiveElement = null;
 
+  // Save selection on mousedown (before focus change clears it)
+  document.addEventListener(
+    'mousedown',
+    (e) => {
+      if (e.button === 2) {
+        // right-click
+        const sel = window.getSelection()?.toString().trim();
+        window._draftpilotSavedSelection = sel || '';
+      }
+    },
+    true,
+  );
+
   document.addEventListener('contextmenu', (e) => {
     // Remember the element user right-clicked on
     const el = e.target.closest('textarea, [contenteditable="true"]');
