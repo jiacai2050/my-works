@@ -1,13 +1,15 @@
 // IssuePilot - UI Popover Rendering
 
+const _m = (key) => chrome.i18n.getMessage(key);
+
 const IssuePilotUI = {
   INTENTS: [
-    { emoji: '👍', label: '赞同', value: 'agree' },
-    { emoji: '🤔', label: '有疑问', value: 'question' },
-    { emoji: '❌', label: '反对', value: 'disagree' },
-    { emoji: '💡', label: '有建议', value: 'suggestion' },
-    { emoji: '🐛', label: '补充信息', value: 'info' },
-    { emoji: '🙏', label: '求助', value: 'help' },
+    { emoji: '👍', labelKey: 'intentAgree', value: 'agree' },
+    { emoji: '🤔', labelKey: 'intentQuestion', value: 'question' },
+    { emoji: '❌', labelKey: 'intentDisagree', value: 'disagree' },
+    { emoji: '💡', labelKey: 'intentSuggestion', value: 'suggestion' },
+    { emoji: '🐛', labelKey: 'intentInfo', value: 'info' },
+    { emoji: '🙏', labelKey: 'intentHelp', value: 'help' },
   ],
 
   selectedIntent: null,
@@ -17,27 +19,27 @@ const IssuePilotUI = {
     const popover = document.createElement('div');
     popover.className = 'issuepilot-popover';
     popover.innerHTML = `
-      <div class="issuepilot-popover-title">你想表达什么？</div>
+      <div class="issuepilot-popover-title">${_m('popoverTitle')}</div>
       <div class="issuepilot-intents">
-        ${this.INTENTS.map((i) => `<button class="issuepilot-intent-btn" data-intent="${i.value}">${i.emoji} ${i.label}</button>`).join('')}
+        ${this.INTENTS.map((i) => `<button class="issuepilot-intent-btn" data-intent="${i.value}">${i.emoji} ${_m(i.labelKey)}</button>`).join('')}
       </div>
-      <textarea class="issuepilot-input" placeholder="或补充说明（中文/英文均可）"></textarea>
+      <textarea class="issuepilot-input" placeholder="${_m('inputPlaceholder')}"></textarea>
       <div class="issuepilot-btn-row">
-        <button class="issuepilot-generate-btn">生成草稿</button>
-        <button class="issuepilot-history-btn" title="历史记录">📜</button>
+        <button class="issuepilot-generate-btn">${_m('generateBtn')}</button>
+        <button class="issuepilot-history-btn" title="${_m('historyBtn')}">📜</button>
       </div>
       <div class="issuepilot-error issuepilot-hidden"></div>
       <div class="issuepilot-draft-section issuepilot-hidden">
         <div class="issuepilot-draft" contenteditable="true"></div>
         <div class="issuepilot-tone-bar">
-          <span class="issuepilot-tone-label">语气:</span>
-          <button class="issuepilot-tone-btn" data-tone="formal">🎩 正式</button>
-          <button class="issuepilot-tone-btn" data-tone="friendly">😊 友好</button>
-          <button class="issuepilot-tone-btn" data-tone="concise">⚡ 简洁</button>
+          <span class="issuepilot-tone-label">${_m('toneLabel')}</span>
+          <button class="issuepilot-tone-btn" data-tone="formal">${_m('toneFormal')}</button>
+          <button class="issuepilot-tone-btn" data-tone="friendly">${_m('toneFriendly')}</button>
+          <button class="issuepilot-tone-btn" data-tone="concise">${_m('toneConcise')}</button>
         </div>
         <div class="issuepilot-draft-actions">
-          <button class="regen-btn">🔄 重新生成</button>
-          <button class="insert-btn primary">📋 插入输入框</button>
+          <button class="regen-btn">${_m('regenBtn')}</button>
+          <button class="insert-btn primary">${_m('insertBtn')}</button>
         </div>
       </div>
     `;
@@ -107,14 +109,14 @@ const IssuePilotUI = {
     const genBtn = popover.querySelector('.issuepilot-generate-btn');
 
     if (!this.selectedIntent && !input) {
-      errorEl.innerHTML = '请选择一个意图或输入说明';
+      errorEl.innerHTML = _m('errorNoIntent');
       errorEl.classList.remove('issuepilot-hidden');
       return;
     }
 
     errorEl.classList.add('issuepilot-hidden');
     genBtn.disabled = true;
-    genBtn.textContent = '⏳ 生成中...';
+    genBtn.textContent = _m('generating');
     draftSection.classList.add('issuepilot-hidden');
 
     // Show loading indicator
@@ -124,13 +126,13 @@ const IssuePilotUI = {
       loadingEl.className = 'issuepilot-loading';
       genBtn.after(loadingEl);
     }
-    loadingEl.textContent = '正在生成草稿...';
+    loadingEl.textContent = _m('loadingDraft');
     loadingEl.classList.remove('issuepilot-hidden');
 
     try {
       const context = await IssuePilotGitHub.getContext();
       const intentLabel = this.selectedIntent
-        ? this.INTENTS.find((i) => i.value === this.selectedIntent)?.label
+        ? _m(this.INTENTS.find((i) => i.value === this.selectedIntent)?.labelKey)
         : null;
 
       const response = await chrome.runtime.sendMessage({
@@ -143,7 +145,7 @@ const IssuePilotUI = {
       draftEl.textContent = response.draft;
       draftSection.classList.remove('issuepilot-hidden');
     } catch (err) {
-      errorEl.innerHTML = `${err.message || '生成失败'}<span class="retry-link">重试</span>`;
+      errorEl.innerHTML = `${err.message || _m('generateFailed')}<span class="retry-link">${_m('retryLink')}</span>`;
       errorEl.classList.remove('issuepilot-hidden');
       errorEl
         .querySelector('.retry-link')
@@ -151,7 +153,7 @@ const IssuePilotUI = {
     } finally {
       loadingEl.classList.add('issuepilot-hidden');
       genBtn.disabled = false;
-      genBtn.textContent = '生成草稿';
+      genBtn.textContent = _m('generateBtn');
     }
   },
 
@@ -159,7 +161,7 @@ const IssuePilotUI = {
     const response = await chrome.runtime.sendMessage({ type: 'get-history' });
     const history = response.history || [];
     if (!history.length) {
-      alert('暂无历史记录');
+      alert(_m('noHistory'));
       return;
     }
 
@@ -191,6 +193,7 @@ const IssuePilotUI = {
     popover.appendChild(listEl);
 
     listEl.addEventListener('click', (e) => {
+      e.stopPropagation();
       const item = e.target.closest('.issuepilot-history-item');
       if (!item) return;
       draftEl.textContent = history[item.dataset.idx].draft;
@@ -205,7 +208,7 @@ const IssuePilotUI = {
     const currentDraft = draftEl.textContent;
     if (!currentDraft) return;
 
-    draftEl.textContent = '调整语气中...';
+    draftEl.textContent = _m('adjustingTone');
     try {
       const response = await chrome.runtime.sendMessage({
         type: 'adjust-tone',
@@ -214,7 +217,7 @@ const IssuePilotUI = {
       if (response.error) throw new Error(response.error);
       draftEl.textContent = response.draft;
     } catch (err) {
-      errorEl.textContent = err.message || '调整失败';
+      errorEl.textContent = err.message || _m('adjustFailed');
       errorEl.classList.remove('issuepilot-hidden');
       draftEl.textContent = currentDraft;
     }

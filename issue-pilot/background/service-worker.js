@@ -93,7 +93,7 @@ async function handleGenerate(payload) {
       ? 'https://api.anthropic.com'
       : 'https://api.openai.com/v1');
 
-  if (!apiKey) throw new Error('请先在插件设置中配置 API Key');
+  if (!apiKey) throw new Error(chrome.i18n.getMessage('errorNoApiKey'));
 
   const userPrompt = buildUserPrompt(payload);
   const toneMap = {
@@ -133,7 +133,7 @@ async function handleToneAdjust({ draft, tone }) {
     (provider === 'anthropic'
       ? 'https://api.anthropic.com'
       : 'https://api.openai.com/v1');
-  if (!apiKey) throw new Error('请先在插件设置中配置 API Key');
+  if (!apiKey) throw new Error(chrome.i18n.getMessage('errorNoApiKey'));
 
   const toneMap = {
     formal: 'more formal and professional',

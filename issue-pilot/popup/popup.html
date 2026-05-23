@@ -80,54 +80,41 @@
     </style>
   </head>
   <body>
-    <h1>✨ IssuePilot 设置</h1>
+    <h1 data-i18n="settingsTitle"></h1>
 
-    <label>API Provider</label>
+    <label data-i18n="labelProvider"></label>
     <select id="provider">
       <option value="openai">OpenAI Compatible</option>
       <option value="anthropic">Anthropic (Claude)</option>
     </select>
 
-    <label>API Base URL</label>
-    <input
-      id="baseUrl"
-      type="text"
-      placeholder="留空使用默认 (如 https://api.openai.com/v1)"
-    />
+    <label data-i18n="labelBaseUrl"></label>
+    <input id="baseUrl" type="text" data-i18n-placeholder="baseUrlPlaceholder" />
 
-    <label>API Key</label>
+    <label data-i18n="labelApiKey"></label>
     <div class="key-wrap">
       <input id="apiKey" type="password" placeholder="sk-..." />
       <button id="toggleKey" type="button">👁</button>
     </div>
 
-    <label>Model</label>
-    <input id="model" type="text" placeholder="留空使用默认模型" />
+    <label data-i18n="labelModel"></label>
+    <input id="model" type="text" data-i18n-placeholder="modelPlaceholder" />
 
-    <label>默认语气</label>
+    <label data-i18n="labelTone"></label>
     <select id="tone">
-      <option value="">Neutral（默认）</option>
-      <option value="formal">Formal（正式）</option>
-      <option value="friendly">Friendly（友好）</option>
-      <option value="concise">Concise（简洁）</option>
+      <option value="" data-i18n="toneNeutral"></option>
+      <option value="formal" data-i18n="toneFormalOption"></option>
+      <option value="friendly" data-i18n="toneFriendlyOption"></option>
+      <option value="concise" data-i18n="toneConciseOption"></option>
     </select>
 
-    <label
-      >GitHub Token
-      <span style="font-weight: normal; color: #656d76"
-        >(可选，用于获取 issue 上下文)</span
-      ></label
-    >
-    <input
-      id="ghToken"
-      type="password"
-      placeholder="ghp_... (公开仓库可留空)"
-    />
+    <label><span data-i18n="labelGhToken"></span> <span style="font-weight:normal;color:#656d76" data-i18n="ghTokenHint"></span></label>
+    <input id="ghToken" type="password" data-i18n-placeholder="ghTokenPlaceholder" />
 
-    <button class="save-btn" id="save">保存设置</button>
+    <button class="save-btn" id="save" data-i18n="saveBtn"></button>
     <div class="status" id="status"></div>
     <div class="shortcut">
-      快捷键: <kbd>⌘</kbd> + <kbd>⇧</kbd> + <kbd>E</kbd>
+      <span data-i18n="shortcutHint"></span> <kbd>⌘</kbd> + <kbd>⇧</kbd> + <kbd>E</kbd>
     </div>
 
     <script type="module" src="popup.js"></script>

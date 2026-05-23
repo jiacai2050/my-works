@@ -1,8 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "IssuePilot",
+  "name": "__MSG_extName__",
   "version": "0.1.0",
-  "description": "Help Chinese developers write professional GitHub issue comments in English.",
+  "description": "__MSG_extDescription__",
+  "default_locale": "zh_CN",
   "permissions": ["storage", "activeTab", "contextMenus"],
   "host_permissions": ["https://*/*"],
   "background": {

@@ -2,6 +2,15 @@
 import { IssuePilotStorage } from '../shared/storage.js';
 
 const $ = (id) => document.getElementById(id);
+const _m = (key) => chrome.i18n.getMessage(key);
+
+// Apply i18n to DOM
+document.querySelectorAll('[data-i18n]').forEach((el) => {
+  el.textContent = _m(el.dataset.i18n);
+});
+document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
+  el.placeholder = _m(el.dataset.i18nPlaceholder);
+});
 
 // Load saved settings
 IssuePilotStorage.getSettings().then((s) => {
@@ -25,7 +34,7 @@ $('save').addEventListener('click', () => {
       ghToken: $('ghToken').value.trim(),
     },
     () => {
-      $('status').textContent = '✓ 已保存';
+      $('status').textContent = _m('saved');
       setTimeout(() => ($('status').textContent = ''), 2000);
     },
   );
