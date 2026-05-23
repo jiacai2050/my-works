@@ -112,12 +112,24 @@
       <option value="concise">Concise（简洁）</option>
     </select>
 
+    <label
+      >GitHub Token
+      <span style="font-weight: normal; color: #656d76"
+        >(可选，用于获取 issue 上下文)</span
+      ></label
+    >
+    <input
+      id="ghToken"
+      type="password"
+      placeholder="ghp_... (公开仓库可留空)"
+    />
+
     <button class="save-btn" id="save">保存设置</button>
     <div class="status" id="status"></div>
     <div class="shortcut">
       快捷键: <kbd>⌘</kbd> + <kbd>⇧</kbd> + <kbd>E</kbd>
     </div>
 
-    <script src="popup.js"></script>
+    <script type="module" src="popup.js"></script>
   </body>
 </html>

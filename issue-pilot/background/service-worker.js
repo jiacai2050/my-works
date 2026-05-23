@@ -1,4 +1,5 @@
 // IssuePilot - Service Worker (API calls)
+import { IssuePilotStorage } from '../shared/storage.js';
 
 const SYSTEM_PROMPT = `You are helping a Chinese developer write professional GitHub issue comments in English.
 The user will provide their intent and the issue context.
@@ -80,13 +81,7 @@ async function callOpenAI(
 }
 
 async function handleGenerate(payload) {
-  const settings = await chrome.storage.local.get([
-    'provider',
-    'apiKey',
-    'model',
-    'defaultTone',
-    'baseUrl',
-  ]);
+  const settings = await IssuePilotStorage.getSettings();
   const provider = settings.provider || 'openai';
   const apiKey = settings.apiKey;
   const model =
@@ -118,32 +113,16 @@ async function handleGenerate(payload) {
       systemWithTone,
       baseUrl,
     );
-    await saveDraftHistory(draft, payload.context);
+    await IssuePilotStorage.saveDraft(draft, payload.context?.title);
     return draft;
   }
   const draft = await callAnthropic(apiKey, model, userPrompt, systemWithTone);
-  await saveDraftHistory(draft, payload.context);
+  await IssuePilotStorage.saveDraft(draft, payload.context?.title);
   return draft;
 }
 
-async function saveDraftHistory(draft, context) {
-  const { draftHistory = [] } = await chrome.storage.local.get('draftHistory');
-  draftHistory.unshift({
-    draft,
-    title: context?.title || '',
-    timestamp: Date.now(),
-  });
-  if (draftHistory.length > 20) draftHistory.length = 20;
-  await chrome.storage.local.set({ draftHistory });
-}
-
 async function handleToneAdjust({ draft, tone }) {
-  const settings = await chrome.storage.local.get([
-    'provider',
-    'apiKey',
-    'model',
-    'baseUrl',
-  ]);
+  const settings = await IssuePilotStorage.getSettings();
   const provider = settings.provider || 'openai';
   const apiKey = settings.apiKey;
   const model =
@@ -183,12 +162,49 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     return true;
   }
   if (msg.type === 'get-history') {
-    chrome.storage.local.get('draftHistory', (data) =>
-      sendResponse({ history: data.draftHistory || [] }),
+    IssuePilotStorage.getDraftHistory().then((history) =>
+      sendResponse({ history }),
     );
     return true;
   }
+  if (msg.type === 'fetch-context') {
+    fetchGitHubContext(msg.payload)
+      .then((ctx) => sendResponse({ context: ctx }))
+      .catch((err) => sendResponse({ error: err.message }));
+    return true;
+  }
 });
+
+async function fetchGitHubContext({ owner, repo, issueNumber }) {
+  const { ghToken } = await IssuePilotStorage.getSettings();
+  const headers = { Accept: 'application/vnd.github+json' };
+  if (ghToken) headers.Authorization = `Bearer ${ghToken}`;
+
+  const base = `https://api.github.com/repos/${owner}/${repo}/issues/${issueNumber}`;
+
+  const [issueRes, commentsRes] = await Promise.all([
+    fetch(base, { headers }),
+    fetch(`${base}/comments?per_page=5&direction=desc`, { headers }),
+  ]);
+
+  if (!issueRes.ok) throw new Error(`GitHub API: ${issueRes.status}`);
+  const issue = await issueRes.json();
+  const comments = commentsRes.ok ? await commentsRes.json() : [];
+
+  const body = issue.body || '';
+  return {
+    title: issue.title,
+    body: body.length > 2000 ? body.slice(0, 2000) + '...' : body,
+    recentComments: comments
+      .reverse()
+      .slice(-3)
+      .map((c) => {
+        const t = c.body || '';
+        return t.length > 1000 ? t.slice(0, 1000) + '...' : t;
+      }),
+    existingInput: '',
+  };
+}
 
 // Register context menu on install
 chrome.runtime.onInstalled.addListener(() => {

@@ -1,18 +1,17 @@
 // IssuePilot - Popup Settings
+import { IssuePilotStorage } from '../shared/storage.js';
 
 const $ = (id) => document.getElementById(id);
 
 // Load saved settings
-chrome.storage.local.get(
-  ['provider', 'apiKey', 'model', 'defaultTone', 'baseUrl'],
-  (data) => {
-    if (data.provider) $('provider').value = data.provider;
-    if (data.apiKey) $('apiKey').value = data.apiKey;
-    if (data.model) $('model').value = data.model;
-    if (data.defaultTone) $('tone').value = data.defaultTone;
-    if (data.baseUrl) $('baseUrl').value = data.baseUrl;
-  },
-);
+IssuePilotStorage.getSettings().then((s) => {
+  $('provider').value = s.provider;
+  $('apiKey').value = s.apiKey;
+  $('model').value = s.model;
+  $('tone').value = s.defaultTone;
+  $('baseUrl').value = s.baseUrl;
+  $('ghToken').value = s.ghToken;
+});
 
 // Save
 $('save').addEventListener('click', () => {
@@ -23,6 +22,7 @@ $('save').addEventListener('click', () => {
       model: $('model').value,
       defaultTone: $('tone').value,
       baseUrl: $('baseUrl').value.trim(),
+      ghToken: $('ghToken').value.trim(),
     },
     () => {
       $('status').textContent = '✓ 已保存';

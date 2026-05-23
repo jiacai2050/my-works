@@ -1,7 +1,8 @@
-// IssuePilot - GitHub Context Extraction
+// IssuePilot - GitHub Context Extraction (DOM first, API fallback)
 
 const IssuePilotGitHub = {
-  getTitle() {
+  // --- DOM extraction ---
+  getTitleFromDOM() {
     const selectors = [
       '.gh-header-title .js-issue-title',
       'h1.gh-header-title',
@@ -10,73 +11,62 @@ const IssuePilotGitHub = {
     ];
     for (const sel of selectors) {
       const el = document.querySelector(sel);
-      if (el) return el.textContent.trim();
+      if (el?.textContent.trim()) return el.textContent.trim();
     }
     return '';
   },
 
-  getBody() {
-    const el = document.querySelector(
-      '.js-comment-body, .comment-body, [data-testid="issue-body"]',
-    );
+  getBodyFromDOM() {
+    const el = document.querySelector('.markdown-body');
     if (!el) return '';
     const text = el.textContent.trim();
-    return text.length > 500 ? text.slice(0, 500) + '...' : text;
+    return text.length > 2000 ? text.slice(0, 2000) + '...' : text;
   },
 
-  getRecentComments(count = 3) {
-    const bodies = document.querySelectorAll('.js-comment-body, .comment-body');
-    const comments = Array.from(bodies).slice(1);
-    const recent = comments.slice(-count);
-    return recent.map((el) => {
+  getRecentCommentsFromDOM(count = 3) {
+    const bodies = document.querySelectorAll('.markdown-body');
+    if (!bodies) return '';
+    const comments = Array.from(bodies).slice(1).slice(-count);
+    return comments.map((el) => {
       const text = el.textContent.trim();
-      return text.length > 300 ? text.slice(0, 300) + '...' : text;
+      return text.length > 1000 ? text.slice(0, 1000) + '...' : text;
     });
   },
 
-  getCommentBoxValue() {
-    const textarea = document.querySelector(
-      'textarea#new_comment_field, textarea[name="comment[body]"]',
+  // --- URL parsing ---
+  parseIssueURL() {
+    const match = window.location.pathname.match(
+      /\/([^/]+)\/([^/]+)\/(issues|pull)\/(\d+)/,
     );
-    return textarea ? textarea.value : '';
+    if (!match) return null;
+    return { owner: match[1], repo: match[2], issueNumber: match[4] };
   },
 
-  // PR Review: get diff snippet near a review comment box
-  getDiffContext(commentBox) {
-    if (!commentBox) return null;
-    const diffTable = commentBox.closest(
-      '.diff-table, .js-diff-table, [data-diff-anchor]',
-    );
-    if (!diffTable) return null;
-    // Get the code lines near the comment
-    const lines = diffTable.querySelectorAll('.blob-code-inner');
-    const codeLines = Array.from(lines)
-      .slice(-10)
-      .map((el) => el.textContent)
-      .join('\n');
-    const fileName =
-      diffTable.closest('[data-tagsearch-path]')?.dataset.tagsearchPath ||
-      diffTable.closest('.file')?.querySelector('.file-header')?.dataset.path ||
-      '';
-    return { fileName, code: codeLines.slice(0, 500) };
-  },
+  // --- Main entry: DOM first, API fallback ---
+  async getContext() {
+    const title = this.getTitleFromDOM();
+    const body = this.getBodyFromDOM();
+    const recentComments = this.getRecentCommentsFromDOM();
 
-  isPRPage() {
-    return /\/pull\/\d+/.test(window.location.pathname);
-  },
-
-  getContext(anchorEl) {
-    const base = {
-      title: this.getTitle(),
-      body: this.getBody(),
-      recentComments: this.getRecentComments(),
-      existingInput: this.getCommentBoxValue(),
-    };
-    // If in PR review context, add diff info
-    if (this.isPRPage() && anchorEl) {
-      const diff = this.getDiffContext(anchorEl);
-      if (diff) base.diffContext = diff;
+    // If DOM extraction got meaningful data, use it
+    if (title && (body || recentComments.length)) {
+      return { title, body, recentComments, existingInput: '' };
     }
-    return base;
+
+    // Fallback to GitHub API
+    const parsed = this.parseIssueURL();
+    if (!parsed) return { title, body, recentComments, existingInput: '' };
+
+    try {
+      const response = await chrome.runtime.sendMessage({
+        type: 'fetch-context',
+        payload: parsed,
+      });
+      if (response.context) return response.context;
+    } catch (e) {
+      console.warn('[IssuePilot] GitHub API fallback failed:', e);
+    }
+
+    return { title, body, recentComments, existingInput: '' };
   },
 };
