@@ -48,6 +48,17 @@ const IssuePilotGitHub = {
     const body = this.getBodyFromDOM();
     const recentComments = this.getRecentCommentsFromDOM();
 
+    // Try to get the specific comment being replied to
+    const replyContext = this.getReplyContext();
+    if (replyContext) {
+      return {
+        title,
+        body: replyContext,
+        recentComments: [],
+        existingInput: '',
+      };
+    }
+
     // If DOM extraction got meaningful data, use it
     if (title && (body || recentComments.length)) {
       return { title, body, recentComments, existingInput: '' };
@@ -68,5 +79,29 @@ const IssuePilotGitHub = {
     }
 
     return { title, body, recentComments, existingInput: '' };
+  },
+
+  // Get the comment content that the user is replying to
+  getReplyContext() {
+    // Priority 1: user selected text
+    const selection = window.getSelection()?.toString().trim();
+    if (selection) return selection.length > 1000 ? selection.slice(0, 1000) + '...' : selection;
+
+    // Priority 2: find comment container from textarea
+    const target = window._issuepilotGetTarget ? window._issuepilotGetTarget() : null;
+    if (!target) return null;
+
+    const container = target.closest(
+      '.js-comment-container, .js-comment, .review-comment, .timeline-comment-group'
+    );
+    if (!container) return null;
+
+    const commentBody = container.querySelector('.markdown-body');
+    if (commentBody && !container.querySelector('form')?.contains(commentBody)) {
+      const text = commentBody.textContent.trim();
+      if (text) return text.length > 1000 ? text.slice(0, 1000) + '...' : text;
+    }
+
+    return null;
   },
 };

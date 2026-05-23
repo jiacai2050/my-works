@@ -1,7 +1,7 @@
 // IssuePilot - Service Worker (API calls)
 import { IssuePilotStorage } from '../shared/storage.js';
 
-const SYSTEM_PROMPT = `You are helping a Chinese developer write professional GitHub issue comments in English.
+const SYSTEM_PROMPT = `You are helping a developer write professional GitHub issue comments in English.
 The user will provide their intent and the issue context.
 Generate a natural, concise, and technically appropriate English comment.
 Do not add unnecessary pleasantries. Match the tone of the issue thread.

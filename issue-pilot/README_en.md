@@ -52,6 +52,14 @@ IssuePilot extracts issue context from the page DOM. If that fails (e.g. GitHub 
 7. Click **📋 插入输入框** (Insert) to fill the comment box
 8. Review and submit using GitHub's native button
 
+### Context Detection
+
+IssuePilot automatically identifies what you're replying to, in this priority:
+
+1. **Selected text** — If you select text on the page before triggering, that selection is used as context (most precise)
+2. **Comment container** — If triggered from a reply box under a comment, the comment content is extracted automatically
+3. **Global context** — Otherwise, the issue/PR title, body, and recent comments are used
+
 ## Keyboard Shortcut
 
 | Platform      | Shortcut           |
