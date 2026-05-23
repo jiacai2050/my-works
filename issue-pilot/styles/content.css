@@ -1,0 +1,283 @@
+/* IssuePilot - Injected Styles */
+
+.issuepilot-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--fgColor-default, var(--color-fg-default));
+  background: var(--bgColor-default, var(--color-canvas-default));
+  border: 1px solid var(--borderColor-default, var(--color-border-default));
+  border-radius: 6px;
+  cursor: pointer;
+  line-height: 20px;
+  white-space: nowrap;
+}
+
+.issuepilot-btn:hover {
+  background: var(--bgColor-muted, var(--color-canvas-subtle));
+}
+
+/* Popover */
+.issuepilot-popover {
+  position: fixed;
+  width: 320px;
+  background: var(--bgColor-default, var(--color-canvas-overlay, #fff));
+  border: 1px solid var(--borderColor-default, var(--color-border-default, #d0d7de));
+  border-radius: 12px;
+  box-shadow: var(--shadow-floating-large, 0 8px 24px rgba(0,0,0,0.12));
+  padding: 16px;
+  z-index: 999999;
+  font-size: 14px;
+}
+
+.issuepilot-popover-title {
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--fgColor-default, var(--color-fg-default));
+}
+
+/* Intent grid */
+.issuepilot-intents {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.issuepilot-intent-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 4px;
+  font-size: 12px;
+  border: 1px solid var(--borderColor-default, var(--color-border-default));
+  border-radius: 8px;
+  background: var(--bgColor-default, var(--color-canvas-default));
+  color: var(--fgColor-default, var(--color-fg-default));
+  cursor: pointer;
+}
+
+.issuepilot-intent-btn:hover {
+  background: var(--bgColor-muted, var(--color-canvas-subtle));
+}
+
+.issuepilot-intent-btn.selected {
+  border-color: var(--fgColor-accent, var(--color-accent-fg));
+  background: var(--bgColor-accent-muted, var(--color-accent-subtle));
+}
+
+/* Input area */
+.issuepilot-input {
+  width: 100%;
+  min-height: 60px;
+  padding: 8px;
+  font-size: 13px;
+  border: 1px solid var(--borderColor-default, var(--color-border-default));
+  border-radius: 6px;
+  background: var(--bgColor-default, var(--color-canvas-default));
+  color: var(--fgColor-default, var(--color-fg-default));
+  resize: vertical;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.issuepilot-input:focus {
+  outline: none;
+  border-color: var(--fgColor-accent, var(--color-accent-fg));
+  box-shadow: 0 0 0 3px var(--bgColor-accent-muted, rgba(9,105,218,0.15));
+}
+
+/* Generate button */
+.issuepilot-generate-btn {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--fgColor-onEmphasis, #fff);
+  background: var(--bgColor-accent-emphasis, var(--color-accent-emphasis, #1f6feb));
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.issuepilot-generate-btn:hover {
+  opacity: 0.9;
+}
+
+.issuepilot-generate-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Draft preview */
+.issuepilot-draft {
+  margin-top: 12px;
+  padding: 8px;
+  border: 1px solid var(--borderColor-default, var(--color-border-default));
+  border-radius: 6px;
+  background: var(--bgColor-muted, var(--color-canvas-subtle));
+  min-height: 60px;
+  max-height: 200px;
+  overflow-y: auto;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--fgColor-default, var(--color-fg-default));
+  white-space: pre-wrap;
+  outline: none;
+}
+
+.issuepilot-draft-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.issuepilot-tone-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.issuepilot-tone-label {
+  font-size: 12px;
+  color: var(--fgColor-muted, var(--color-fg-muted));
+}
+
+.issuepilot-tone-btn {
+  padding: 3px 8px;
+  font-size: 11px;
+  border: 1px solid var(--borderColor-default, var(--color-border-default));
+  border-radius: 12px;
+  background: var(--bgColor-default, var(--color-canvas-default));
+  color: var(--fgColor-default, var(--color-fg-default));
+  cursor: pointer;
+}
+
+.issuepilot-tone-btn:hover {
+  background: var(--bgColor-accent-muted, var(--color-accent-subtle));
+  border-color: var(--fgColor-accent, var(--color-accent-fg));
+}
+
+.issuepilot-draft-actions button {
+  flex: 1;
+  padding: 6px 12px;
+  font-size: 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 1px solid var(--borderColor-default, var(--color-border-default));
+  background: var(--bgColor-default, var(--color-canvas-default));
+  color: var(--fgColor-default, var(--color-fg-default));
+}
+
+.issuepilot-draft-actions button:hover {
+  background: var(--bgColor-muted, var(--color-canvas-subtle));
+}
+
+.issuepilot-draft-actions button.primary,
+.issuepilot-draft-actions button.primary:hover {
+  background: var(--bgColor-accent-emphasis, var(--color-accent-emphasis, #1f6feb));
+  color: var(--fgColor-onEmphasis, #fff);
+  border: none;
+}
+
+.issuepilot-draft-actions button.primary:hover {
+  opacity: 0.85;
+}
+
+/* Loading & Error */
+.issuepilot-loading {
+  text-align: center;
+  padding: 16px;
+  color: var(--fgColor-muted, var(--color-fg-muted));
+}
+
+.issuepilot-loading::before {
+  content: '';
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--borderColor-default, var(--color-border-default));
+  border-top-color: var(--fgColor-accent, var(--color-accent-fg));
+  border-radius: 50%;
+  animation: issuepilot-spin 0.6s linear infinite;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+@keyframes issuepilot-spin {
+  to { transform: rotate(360deg); }
+}
+
+.issuepilot-error {
+  color: var(--fgColor-danger, var(--color-danger-fg, #d1242f));
+  font-size: 12px;
+  margin-top: 8px;
+  padding: 8px;
+  background: var(--bgColor-danger-muted, rgba(255,129,130,0.1));
+  border-radius: 6px;
+}
+
+.issuepilot-error .retry-link {
+  color: var(--fgColor-accent, var(--color-accent-fg));
+  cursor: pointer;
+  text-decoration: underline;
+  margin-left: 8px;
+}
+
+/* Hidden utility */
+.issuepilot-hidden {
+  display: none !important;
+}
+
+/* Button row */
+.issuepilot-btn-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.issuepilot-btn-row .issuepilot-generate-btn {
+  flex: 1;
+  margin-top: 0;
+}
+
+.issuepilot-history-btn {
+  padding: 8px 12px;
+  border: 1px solid var(--borderColor-default, var(--color-border-default));
+  border-radius: 6px;
+  background: var(--bgColor-default, var(--color-canvas-default));
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.issuepilot-history-btn:hover {
+  background: var(--bgColor-muted, var(--color-canvas-subtle));
+}
+
+/* History list */
+.issuepilot-history-list {
+  margin-top: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid var(--borderColor-default, var(--color-border-default));
+  border-radius: 6px;
+}
+
+.issuepilot-history-item {
+  padding: 8px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted, #eee));
+  font-size: 12px;
+}
+
+.issuepilot-history-item:last-child { border-bottom: none; }
+.issuepilot-history-item:hover { background: var(--bgColor-muted, var(--color-canvas-subtle)); }
+.issuepilot-history-item .hist-date { color: var(--fgColor-muted, var(--color-fg-muted)); margin-right: 8px; }
+.issuepilot-history-item .hist-text { color: var(--fgColor-default, var(--color-fg-default)); }
