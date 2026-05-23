@@ -1,17 +1,17 @@
 // IssuePilot - Service Worker (API calls)
 import { IssuePilotStorage } from '../shared/storage.js';
 
-const SYSTEM_PROMPT = `You are helping a developer write professional GitHub issue comments in English.
-The user will provide their intent and the issue context.
-Generate a natural, concise, and technically appropriate English comment.
-Do not add unnecessary pleasantries. Match the tone of the issue thread.
-Reply with only the comment text, no explanations.`;
+const SYSTEM_PROMPT = `You are helping a developer write professional replies in English.
+The user will provide their intent and context.
+Generate a natural, concise, and appropriate English reply.
+Do not add unnecessary pleasantries. Match the tone of the conversation.
+Reply with only the text, no explanations.`;
 
 function buildUserPrompt({ context, intent, userNote }) {
-  let prompt = `Issue Title: ${context.title}\n`;
-  if (context.body) prompt += `Issue Body: ${context.body}\n`;
+  let prompt = `Context: ${context.title}\n`;
+  if (context.body) prompt += `Content: ${context.body}\n`;
   if (context.recentComments?.length) {
-    prompt += `Recent Comments:\n${context.recentComments.map((c, i) => `[${i + 1}] ${c}`).join('\n')}\n`;
+    prompt += `Recent messages:\n${context.recentComments.map((c, i) => `[${i + 1}] ${c}`).join('\n')}\n`;
   }
   if (context.diffContext) {
     prompt += `\nCode Review Context (file: ${context.diffContext.fileName}):\n\`\`\`\n${context.diffContext.code}\n\`\`\`\n`;
@@ -19,7 +19,7 @@ function buildUserPrompt({ context, intent, userNote }) {
   prompt += '\n';
   if (intent) prompt += `User Intent: ${intent}\n`;
   if (userNote) prompt += `User Note: ${userNote}\n`;
-  prompt += '\nWrite the comment:';
+  prompt += '\nWrite the reply:';
   return prompt;
 }
 
@@ -45,7 +45,8 @@ async function callAnthropic(
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    throw new Error(err.error?.message || `API error: ${res.status}`);
+    const msg = err.error?.message || err.message || err.detail || JSON.stringify(err);
+    throw new Error(`API error ${res.status}: ${msg}`);
   }
   const data = await res.json();
   return data.content[0].text;
@@ -74,7 +75,8 @@ async function callOpenAI(
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    throw new Error(err.error?.message || `API error: ${res.status}`);
+    const msg = err.error?.message || err.message || err.detail || JSON.stringify(err);
+    throw new Error(`API error ${res.status}: ${msg}`);
   }
   const data = await res.json();
   return data.choices[0].message.content;

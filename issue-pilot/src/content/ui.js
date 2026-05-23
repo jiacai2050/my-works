@@ -130,7 +130,7 @@ const IssuePilotUI = {
     loadingEl.classList.remove('issuepilot-hidden');
 
     try {
-      const context = await IssuePilotGitHub.getContext();
+      const context = await IssuePilotContext.getContext();
       const intentLabel = this.selectedIntent
         ? _m(
             this.INTENTS.find((i) => i.value === this.selectedIntent)?.labelKey,
