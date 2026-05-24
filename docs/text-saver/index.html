@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Text Saver — Save & Organize Web Text Instantly</title>
+    <meta
+      name="description"
+      content="Browser extension to save any selected text, link, or URL with one click. Syncs across devices, export anytime."
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'media',
+        theme: {
+          extend: {
+            colors: {
+              brand: '#8b5cf6',
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 antialiased"
+  >
+    <!-- Nav -->
+    <nav
+      class="border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-950/80 backdrop-blur sticky top-0 z-50"
+    >
+      <div
+        class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between"
+      >
+        <a href="." class="text-xl font-bold text-brand">Text Saver</a>
+        <div
+          class="flex gap-6 text-sm font-medium text-gray-600 dark:text-gray-400"
+        >
+          <a href="." class="hover:text-brand transition">Home</a>
+          <a
+            href="https://github.com/jiacai2050/my-works/tree/main/text-saver"
+            class="hover:text-brand transition"
+            >GitHub</a
+          >
+          <a href="../" class="hover:text-brand transition">All Projects</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="max-w-5xl mx-auto px-6 pt-20 pb-16 text-center">
+      <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight">
+        Save & Organize Web Text Instantly
+      </h1>
+      <p
+        class="mt-4 text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto"
+      >
+        Highlight text, right-click, done. Text Saver captures any selection,
+        link, or URL with one click — synced across browsers and devices,
+        exportable anytime.
+      </p>
+      <div class="mt-10 flex flex-wrap justify-center gap-4">
+        <a
+          href="https://chrome.google.com/webstore/detail/text-saver/egelicndigijclebpggemngfhpnkeglk"
+          class="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-brand text-white font-medium hover:bg-purple-700 transition shadow"
+        >
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
+            />
+            <circle cx="12" cy="12" r="4" />
+          </svg>
+          Chrome
+        </a>
+        <a
+          href="https://addons.mozilla.org/firefox/addon/text-saver/"
+          class="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-orange-500 text-white font-medium hover:bg-orange-600 transition shadow"
+        >
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"
+            />
+          </svg>
+          Firefox
+        </a>
+        <a
+          href="https://microsoftedge.microsoft.com/addons/detail/text-saver/pbjcfmfdhpogmclbpfenjkajicbpfeco"
+          class="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-gray-800 dark:bg-gray-700 text-white font-medium hover:bg-gray-900 dark:hover:bg-gray-600 transition shadow"
+        >
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M21 12c0-4.97-4.03-9-9-9S3 7.03 3 12s4.03 9 9 9 9-4.03 9-9zm-9 7c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"
+            />
+            <path d="M12 8l-4 4h3v4h2v-4h3z" />
+          </svg>
+          Edge
+        </a>
+      </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="bg-gray-50 dark:bg-gray-900 py-16">
+      <div class="max-w-5xl mx-auto px-6">
+        <h2 class="text-2xl font-bold text-center mb-10">How It Works</h2>
+        <div class="grid sm:grid-cols-3 gap-8">
+          <div class="text-center">
+            <div
+              class="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900/50 text-brand flex items-center justify-center mx-auto mb-4 text-xl font-bold"
+            >
+              1
+            </div>
+            <h3 class="font-semibold mb-2">Select Text</h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm">
+              Highlight any text on a webpage, hover over a link, or just be on
+              any page.
+            </p>
+          </div>
+          <div class="text-center">
+            <div
+              class="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900/50 text-brand flex items-center justify-center mx-auto mb-4 text-xl font-bold"
+            >
+              2
+            </div>
+            <h3 class="font-semibold mb-2">Right-Click Save</h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm">
+              Click "Add to Text Saver" in the context menu. That's it.
+            </p>
+          </div>
+          <div class="text-center">
+            <div
+              class="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900/50 text-brand flex items-center justify-center mx-auto mb-4 text-xl font-bold"
+            >
+              3
+            </div>
+            <h3 class="font-semibold mb-2">Access Anywhere</h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm">
+              Synced across browsers and devices. Export as JSON anytime — no
+              vendor lock-in.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section class="py-16">
+      <div class="max-w-5xl mx-auto px-6">
+        <h2 class="text-2xl font-bold text-center mb-10">Features</h2>
+        <div class="grid sm:grid-cols-2 gap-8">
+          <div class="flex gap-4">
+            <div
+              class="w-10 h-10 shrink-0 rounded-lg bg-purple-100 dark:bg-purple-900/50 text-brand flex items-center justify-center"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M15.042 21.672L13.684 16.6m0 0l-2.51 2.225.569-9.47 5.227 7.917-3.286-.672zM12 2.25V4.5m5.834.166l-1.591 1.591M20.25 10.5H18M7.757 14.743l-1.59 1.59M6 10.5H3.75m4.007-4.243l-1.59-1.59"
+                />
+              </svg>
+            </div>
+            <div>
+              <h3 class="font-semibold mb-1">Smart Context Detection</h3>
+              <p class="text-gray-600 dark:text-gray-400 text-sm">
+                Saves text selection, hovered link, or current URL — adapts to
+                what you're doing.
+              </p>
+            </div>
+          </div>
+          <div class="flex gap-4">
+            <div
+              class="w-10 h-10 shrink-0 rounded-lg bg-purple-100 dark:bg-purple-900/50 text-brand flex items-center justify-center"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M7.5 7.5h-.75A2.25 2.25 0 004.5 9.75v7.5a2.25 2.25 0 002.25 2.25h7.5a2.25 2.25 0 002.25-2.25v-7.5a2.25 2.25 0 00-2.25-2.25h-.75m-6 3.75l3 3m0 0l3-3m-3 3V1.5"
+                />
+              </svg>
+            </div>
+            <div>
+              <h3 class="font-semibold mb-1">Import & Export</h3>
+              <p class="text-gray-600 dark:text-gray-400 text-sm">
+                Import from JSON or Mozilla Pocket CSV. Export anytime — your
+                data, your control.
+              </p>
+            </div>
+          </div>
+          <div class="flex gap-4">
+            <div
+              class="w-10 h-10 shrink-0 rounded-lg bg-purple-100 dark:bg-purple-900/50 text-brand flex items-center justify-center"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
+                />
+              </svg>
+            </div>
+            <div>
+              <h3 class="font-semibold mb-1">Cross-Device Sync</h3>
+              <p class="text-gray-600 dark:text-gray-400 text-sm">
+                All saved texts sync seamlessly via browser storage. Access your
+                collection on any device.
+              </p>
+            </div>
+          </div>
+          <div class="flex gap-4">
+            <div
+              class="w-10 h-10 shrink-0 rounded-lg bg-purple-100 dark:bg-purple-900/50 text-brand flex items-center justify-center"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"
+                />
+              </svg>
+            </div>
+            <div>
+              <h3 class="font-semibold mb-1">No Vendor Lock-in</h3>
+              <p class="text-gray-600 dark:text-gray-400 text-sm">
+                Pure portability. Standard JSON format, open-source code, works
+                on all major browsers.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-200 dark:border-gray-800 py-8">
+      <div
+        class="max-w-5xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-500 dark:text-gray-400"
+      >
+        <p>
+          &copy; 2026
+          <a href="https://liujiacai.net" class="hover:text-brand"
+            >Jiacai Liu</a
+          >
+        </p>
+        <div class="flex gap-6">
+          <a
+            href="https://github.com/jiacai2050/my-works/tree/main/text-saver"
+            class="hover:text-brand"
+            >Source Code</a
+          >
+          <a href="../" class="hover:text-brand">All Projects</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

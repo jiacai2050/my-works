@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Draft Pilot — Write Natural English Replies Anywhere</title>
+    <meta
+      name="description"
+      content="Chrome extension that helps non-native English speakers write natural English replies on any website. Optimized for GitHub issues & PRs."
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'media',
+        theme: {
+          extend: {
+            colors: {
+              brand: '#16a34a',
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 antialiased"
+  >
+    <!-- Nav -->
+    <nav
+      class="border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-950/80 backdrop-blur sticky top-0 z-50"
+    >
+      <div
+        class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between"
+      >
+        <a href="." class="text-xl font-bold text-brand">Draft Pilot</a>
+        <div
+          class="flex gap-6 text-sm font-medium text-gray-600 dark:text-gray-400"
+        >
+          <a href="." class="hover:text-brand transition">Home</a>
+          <a
+            href="https://github.com/jiacai2050/my-works/tree/main/draft-pilot"
+            class="hover:text-brand transition"
+            >GitHub</a
+          >
+          <a href="../" class="hover:text-brand transition">All Projects</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="max-w-5xl mx-auto px-6 pt-20 pb-16 text-center">
+      <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight">
+        Write Natural English Replies, Anywhere
+      </h1>
+      <p
+        class="mt-4 text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto"
+      >
+        Draft Pilot helps non-native English speakers write fluent,
+        context-aware replies on any website. Right-click, pick your intent, get
+        a polished draft in seconds.
+      </p>
+      <div class="mt-10 flex flex-wrap justify-center gap-4">
+        <span
+          class="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-gray-200 dark:bg-gray-800 text-gray-500 dark:text-gray-400 font-medium cursor-default"
+        >
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
+            />
+            <circle cx="12" cy="12" r="4" />
+          </svg>
+          Chrome — Coming Soon
+        </span>
+        <span
+          class="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-gray-200 dark:bg-gray-800 text-gray-500 dark:text-gray-400 font-medium cursor-default"
+        >
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"
+            />
+          </svg>
+          Firefox — Coming Soon
+        </span>
+        <span
+          class="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-gray-200 dark:bg-gray-800 text-gray-500 dark:text-gray-400 font-medium cursor-default"
+        >
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M21 12c0-4.97-4.03-9-9-9S3 7.03 3 12s4.03 9 9 9 9-4.03 9-9zm-9 7c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"
+            />
+            <path d="M12 8l-4 4h3v4h2v-4h3z" />
+          </svg>
+          Edge — Coming Soon
+        </span>
+      </div>
+      <p class="mt-4 text-sm text-gray-500 dark:text-gray-500">
+        Web store links will be available once the extension is published.
+      </p>
+    </section>
+
+    <!-- How it works -->
+    <section class="bg-gray-50 dark:bg-gray-900 py-16">
+      <div class="max-w-5xl mx-auto px-6">
+        <h2 class="text-2xl font-bold text-center mb-10">How It Works</h2>
+        <div class="grid sm:grid-cols-4 gap-6">
+          <div class="text-center">
+            <div
+              class="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/50 text-brand flex items-center justify-center mx-auto mb-4 text-xl font-bold"
+            >
+              1
+            </div>
+            <h3 class="font-semibold mb-2">Right-Click</h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm">
+              Right-click any input box or press
+              <kbd
+                class="px-1.5 py-0.5 rounded bg-gray-200 dark:bg-gray-700 text-xs"
+                >Cmd+Shift+E</kbd
+              >
+            </p>
+          </div>
+          <div class="text-center">
+            <div
+              class="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/50 text-brand flex items-center justify-center mx-auto mb-4 text-xl font-bold"
+            >
+              2
+            </div>
+            <h3 class="font-semibold mb-2">Pick Intent</h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm">
+              Choose from 6 presets (agree, question, disagree...) or type
+              freely in Chinese/English.
+            </p>
+          </div>
+          <div class="text-center">
+            <div
+              class="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/50 text-brand flex items-center justify-center mx-auto mb-4 text-xl font-bold"
+            >
+              3
+            </div>
+            <h3 class="font-semibold mb-2">Get Draft</h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm">
+              AI generates a natural, context-aware English reply. Edit or
+              adjust tone as needed.
+            </p>
+          </div>
+          <div class="text-center">
+            <div
+              class="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/50 text-brand flex items-center justify-center mx-auto mb-4 text-xl font-bold"
+            >
+              4
+            </div>
+            <h3 class="font-semibold mb-2">Insert & Send</h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm">
+              One click inserts the draft into the input field. Review and
+              submit.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section class="py-16">
+      <div class="max-w-5xl mx-auto px-6">
+        <h2 class="text-2xl font-bold text-center mb-10">Features</h2>
+        <div class="grid sm:grid-cols-2 gap-8">
+          <div class="flex gap-4">
+            <div
+              class="w-10 h-10 shrink-0 rounded-lg bg-green-100 dark:bg-green-900/50 text-brand flex items-center justify-center"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"
+                />
+              </svg>
+            </div>
+            <div>
+              <h3 class="font-semibold mb-1">Context-Aware</h3>
+              <p class="text-gray-600 dark:text-gray-400 text-sm">
+                Auto-detects reply target — selected text, comment container, or
+                full page context via Readability.js.
+              </p>
+            </div>
+          </div>
+          <div class="flex gap-4">
+            <div
+              class="w-10 h-10 shrink-0 rounded-lg bg-green-100 dark:bg-green-900/50 text-brand flex items-center justify-center"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M6.75 7.5l3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0021 18V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v12a2.25 2.25 0 002.25 2.25z"
+                />
+              </svg>
+            </div>
+            <div>
+              <h3 class="font-semibold mb-1">GitHub Deep Integration</h3>
+              <p class="text-gray-600 dark:text-gray-400 text-sm">
+                Extracts issue/PR title, body, and comments automatically. DOM
+                extraction + GitHub API fallback.
+              </p>
+            </div>
+          </div>
+          <div class="flex gap-4">
+            <div
+              class="w-10 h-10 shrink-0 rounded-lg bg-green-100 dark:bg-green-900/50 text-brand flex items-center justify-center"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M10.5 21l5.25-11.25L21 21m-9-3h7.5M3 5.621a48.474 48.474 0 016-.371m0 0c1.12 0 2.233.038 3.334.114M9 5.25V3m3.334 2.364C11.176 10.658 7.69 15.08 3 17.502m9.334-12.138c.896.061 1.785.147 2.666.257m-4.589 8.495a18.023 18.023 0 01-3.827-5.802"
+                />
+              </svg>
+            </div>
+            <div>
+              <h3 class="font-semibold mb-1">Intent-Driven</h3>
+              <p class="text-gray-600 dark:text-gray-400 text-sm">
+                6 presets (agree, question, disagree, suggest, add info, ask for
+                help) + free-form input in any language.
+              </p>
+            </div>
+          </div>
+          <div class="flex gap-4">
+            <div
+              class="w-10 h-10 shrink-0 rounded-lg bg-green-100 dark:bg-green-900/50 text-brand flex items-center justify-center"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"
+                />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+              </svg>
+            </div>
+            <div>
+              <h3 class="font-semibold mb-1">Tone Adjustment</h3>
+              <p class="text-gray-600 dark:text-gray-400 text-sm">
+                Switch between formal, friendly, or concise styles with one
+                click after generation.
+              </p>
+            </div>
+          </div>
+          <div class="flex gap-4">
+            <div
+              class="w-10 h-10 shrink-0 rounded-lg bg-green-100 dark:bg-green-900/50 text-brand flex items-center justify-center"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m9.193-9.193a4.5 4.5 0 016.364 6.364l-4.5 4.5a4.5 4.5 0 01-7.244-1.242"
+                />
+              </svg>
+            </div>
+            <div>
+              <h3 class="font-semibold mb-1">Any OpenAI-Compatible API</h3>
+              <p class="text-gray-600 dark:text-gray-400 text-sm">
+                Works with OpenAI, Anthropic, DeepSeek, Groq, Cloudflare AI
+                Gateway, local Ollama, and more.
+              </p>
+            </div>
+          </div>
+          <div class="flex gap-4">
+            <div
+              class="w-10 h-10 shrink-0 rounded-lg bg-green-100 dark:bg-green-900/50 text-brand flex items-center justify-center"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"
+                />
+              </svg>
+            </div>
+            <div>
+              <h3 class="font-semibold mb-1">Privacy First</h3>
+              <p class="text-gray-600 dark:text-gray-400 text-sm">
+                API keys stored locally only. No telemetry, no analytics. Data
+                only goes to your chosen LLM provider.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Supported Platforms -->
+    <section class="bg-gray-50 dark:bg-gray-900 py-16">
+      <div class="max-w-5xl mx-auto px-6 text-center">
+        <h2 class="text-2xl font-bold mb-6">Works On Any Website</h2>
+        <p class="text-gray-600 dark:text-gray-400 mb-8 max-w-xl mx-auto">
+          Optimized for GitHub, but works everywhere — Gmail, Slack, forums, and
+          any site with an input field.
+        </p>
+        <div class="flex flex-wrap justify-center gap-3">
+          <span
+            class="px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm font-medium"
+            >GitHub Issues & PRs</span
+          >
+          <span
+            class="px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm font-medium"
+            >Gmail</span
+          >
+          <span
+            class="px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm font-medium"
+            >Slack</span
+          >
+          <span
+            class="px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm font-medium"
+            >Forums</span
+          >
+          <span
+            class="px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm font-medium"
+            >Any Website</span
+          >
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-200 dark:border-gray-800 py-8">
+      <div
+        class="max-w-5xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-500 dark:text-gray-400"
+      >
+        <p>
+          &copy; 2026
+          <a href="https://liujiacai.net" class="hover:text-brand"
+            >Jiacai Liu</a
+          >
+        </p>
+        <div class="flex gap-6">
+          <a
+            href="https://github.com/jiacai2050/my-works/tree/main/draft-pilot"
+            class="hover:text-brand"
+            >Source Code</a
+          >
+          <a href="../" class="hover:text-brand">All Projects</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

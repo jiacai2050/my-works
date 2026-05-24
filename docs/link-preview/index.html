@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Link Preview — Your Instant Window to the Web</title>
+    <meta
+      name="description"
+      content="Browser extension to preview link content on hover — images, videos, articles — without leaving your current page."
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'media',
+        theme: {
+          extend: {
+            colors: {
+              brand: '#0891b2',
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 antialiased"
+  >
+    <!-- Nav -->
+    <nav
+      class="border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-950/80 backdrop-blur sticky top-0 z-50"
+    >
+      <div
+        class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between"
+      >
+        <a href="." class="text-xl font-bold text-brand">Link Preview</a>
+        <div
+          class="flex gap-6 text-sm font-medium text-gray-600 dark:text-gray-400"
+        >
+          <a href="." class="hover:text-brand transition">Home</a>
+          <a
+            href="https://github.com/jiacai2050/my-works/tree/main/link-preview"
+            class="hover:text-brand transition"
+            >GitHub</a
+          >
+          <a href="../" class="hover:text-brand transition">All Projects</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="max-w-5xl mx-auto px-6 pt-20 pb-16 text-center">
+      <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight">
+        Your Instant Window to the Web
+      </h1>
+      <p
+        class="mt-4 text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto"
+      >
+        Hover over any link to peek at what's behind it — images, videos,
+        articles — without opening a new tab. Browse faster, decide smarter.
+      </p>
+      <div class="mt-10 flex flex-wrap justify-center gap-4">
+        <a
+          href="https://chrome.google.com/webstore/detail/text-saver/ckmbklmhlmhglbokadhhljpmalopjocj"
+          class="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-brand text-white font-medium hover:bg-cyan-700 transition shadow"
+        >
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
+            />
+            <circle cx="12" cy="12" r="4" />
+          </svg>
+          Chrome
+        </a>
+        <a
+          href="https://addons.mozilla.org/firefox/addon/preview-link/"
+          class="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-orange-500 text-white font-medium hover:bg-orange-600 transition shadow"
+        >
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"
+            />
+          </svg>
+          Firefox
+        </a>
+        <a
+          href="https://microsoftedge.microsoft.com/addons/detail/link-preview/gahpjchpomlmailbmblhhnhmopncchej"
+          class="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-gray-800 dark:bg-gray-700 text-white font-medium hover:bg-gray-900 dark:hover:bg-gray-600 transition shadow"
+        >
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M21 12c0-4.97-4.03-9-9-9S3 7.03 3 12s4.03 9 9 9 9-4.03 9-9zm-9 7c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"
+            />
+            <path d="M12 8l-4 4h3v4h2v-4h3z" />
+          </svg>
+          Edge
+        </a>
+      </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="bg-gray-50 dark:bg-gray-900 py-16">
+      <div class="max-w-5xl mx-auto px-6">
+        <h2 class="text-2xl font-bold text-center mb-10">How It Works</h2>
+        <div class="grid sm:grid-cols-3 gap-8">
+          <div class="text-center">
+            <div
+              class="w-12 h-12 rounded-full bg-cyan-100 dark:bg-cyan-900/50 text-brand flex items-center justify-center mx-auto mb-4 text-xl font-bold"
+            >
+              1
+            </div>
+            <h3 class="font-semibold mb-2">Hover Over a Link</h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm">
+              Move your cursor over any hyperlink on any webpage.
+            </p>
+          </div>
+          <div class="text-center">
+            <div
+              class="w-12 h-12 rounded-full bg-cyan-100 dark:bg-cyan-900/50 text-brand flex items-center justify-center mx-auto mb-4 text-xl font-bold"
+            >
+              2
+            </div>
+            <h3 class="font-semibold mb-2">Instant Preview</h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm">
+              A sleek popup appears showing the title, description, and
+              thumbnail of the linked page.
+            </p>
+          </div>
+          <div class="text-center">
+            <div
+              class="w-12 h-12 rounded-full bg-cyan-100 dark:bg-cyan-900/50 text-brand flex items-center justify-center mx-auto mb-4 text-xl font-bold"
+            >
+              3
+            </div>
+            <h3 class="font-semibold mb-2">Decide & Move On</h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm">
+              Quickly assess relevance — click to open or move on. No
+              unnecessary tabs.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section class="py-16">
+      <div class="max-w-5xl mx-auto px-6">
+        <h2 class="text-2xl font-bold text-center mb-10">Why Link Preview?</h2>
+        <div class="grid sm:grid-cols-2 gap-8">
+          <div class="flex gap-4">
+            <div
+              class="w-10 h-10 shrink-0 rounded-lg bg-cyan-100 dark:bg-cyan-900/50 text-brand flex items-center justify-center"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"
+                />
+              </svg>
+            </div>
+            <div>
+              <h3 class="font-semibold mb-1">Save Time</h3>
+              <p class="text-gray-600 dark:text-gray-400 text-sm">
+                Stop opening tabs just to check what's behind a link. Preview
+                instantly without leaving your page.
+              </p>
+            </div>
+          </div>
+          <div class="flex gap-4">
+            <div
+              class="w-10 h-10 shrink-0 rounded-lg bg-cyan-100 dark:bg-cyan-900/50 text-brand flex items-center justify-center"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
+                />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+              </svg>
+            </div>
+            <div>
+              <h3 class="font-semibold mb-1">Rich Previews</h3>
+              <p class="text-gray-600 dark:text-gray-400 text-sm">
+                See titles, descriptions, and thumbnails — works with images,
+                videos, articles, and more.
+              </p>
+            </div>
+          </div>
+          <div class="flex gap-4">
+            <div
+              class="w-10 h-10 shrink-0 rounded-lg bg-cyan-100 dark:bg-cyan-900/50 text-brand flex items-center justify-center"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418"
+                />
+              </svg>
+            </div>
+            <div>
+              <h3 class="font-semibold mb-1">Works Everywhere</h3>
+              <p class="text-gray-600 dark:text-gray-400 text-sm">
+                Built with WebExtension APIs. Available for Chrome, Firefox, and
+                Edge.
+              </p>
+            </div>
+          </div>
+          <div class="flex gap-4">
+            <div
+              class="w-10 h-10 shrink-0 rounded-lg bg-cyan-100 dark:bg-cyan-900/50 text-brand flex items-center justify-center"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z"
+                />
+              </svg>
+            </div>
+            <div>
+              <h3 class="font-semibold mb-1">Lightweight & Non-intrusive</h3>
+              <p class="text-gray-600 dark:text-gray-400 text-sm">
+                Minimal footprint. Preview only appears on hover — never gets in
+                your way.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-200 dark:border-gray-800 py-8">
+      <div
+        class="max-w-5xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-500 dark:text-gray-400"
+      >
+        <p>
+          &copy; 2026
+          <a href="https://liujiacai.net" class="hover:text-brand"
+            >Jiacai Liu</a
+          >
+        </p>
+        <div class="flex gap-6">
+          <a
+            href="https://github.com/jiacai2050/my-works/tree/main/link-preview"
+            class="hover:text-brand"
+            >Source Code</a
+          >
+          <a href="../" class="hover:text-brand">All Projects</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

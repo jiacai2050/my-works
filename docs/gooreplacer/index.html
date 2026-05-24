@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gooreplacer — Block, Redirect URLs & Modify Headers</title>
+    <meta
+      name="description"
+      content="A browser extension to block/redirect URLs and modify headers. Supports Chrome, Firefox, and Edge."
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'media',
+        theme: {
+          extend: {
+            colors: {
+              brand: '#2563eb',
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 antialiased"
+  >
+    <!-- Nav -->
+    <nav
+      class="border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-950/80 backdrop-blur sticky top-0 z-50"
+    >
+      <div
+        class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between"
+      >
+        <a href="." class="text-xl font-bold text-brand">Gooreplacer</a>
+        <div
+          class="flex gap-6 text-sm font-medium text-gray-600 dark:text-gray-400"
+        >
+          <a href="." class="hover:text-brand transition">Home</a>
+          <a href="rules.html" class="hover:text-brand transition">Rules</a>
+          <a
+            href="https://github.com/jiacai2050/my-works/tree/main/gooreplacer"
+            class="hover:text-brand transition"
+            >GitHub</a
+          >
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="max-w-5xl mx-auto px-6 pt-20 pb-16 text-center">
+      <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight">
+        Take Control of Your Browser Requests
+      </h1>
+      <p
+        class="mt-4 text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto"
+      >
+        Gooreplacer intercepts and modifies browser requests on the fly —
+        redirect URLs, block unwanted resources, and modify HTTP headers with
+        simple rules.
+      </p>
+      <div class="mt-10 flex flex-wrap justify-center gap-4">
+        <a
+          href="https://chrome.google.com/webstore/detail/gooreplacer/jnlkjeecojckkigmchmfoigphmgkgbip"
+          class="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-brand text-white font-medium hover:bg-blue-700 transition shadow"
+        >
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
+            />
+            <circle cx="12" cy="12" r="4" />
+          </svg>
+          Chrome
+        </a>
+        <a
+          href="https://addons.mozilla.org/firefox/addon/gooreplacer/"
+          class="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-orange-500 text-white font-medium hover:bg-orange-600 transition shadow"
+        >
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"
+            />
+          </svg>
+          Firefox
+        </a>
+        <a
+          href="https://microsoftedge.microsoft.com/addons/detail/gooreplacer/cidbonnpjopamnhfjdgfcmjmlmehjnej"
+          class="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-gray-800 dark:bg-gray-700 text-white font-medium hover:bg-gray-900 dark:hover:bg-gray-600 transition shadow"
+        >
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M21 12c0-4.97-4.03-9-9-9S3 7.03 3 12s4.03 9 9 9 9-4.03 9-9zm-9 7c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"
+            />
+            <path d="M12 8l-4 4h3v4h2v-4h3z" />
+          </svg>
+          Edge
+        </a>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section class="bg-gray-50 dark:bg-gray-900 py-16">
+      <div class="max-w-5xl mx-auto px-6">
+        <h2 class="text-2xl font-bold text-center mb-10">
+          What can Gooreplacer do?
+        </h2>
+        <div class="grid sm:grid-cols-3 gap-8">
+          <div
+            class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700"
+          >
+            <div
+              class="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/50 text-brand flex items-center justify-center mb-4"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M13 7l5 5m0 0l-5 5m5-5H6"
+                />
+              </svg>
+            </div>
+            <h3 class="font-semibold text-lg mb-2">Redirect URLs</h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm">
+              Redirect requests to alternative CDNs or custom endpoints.
+              Supports static URLs, regex substitution, and URL transforms.
+            </p>
+          </div>
+          <div
+            class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700"
+          >
+            <div
+              class="w-10 h-10 rounded-lg bg-red-100 dark:bg-red-900/50 text-red-600 flex items-center justify-center mb-4"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636"
+                />
+              </svg>
+            </div>
+            <h3 class="font-semibold text-lg mb-2">Block Requests</h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm">
+              Block unwanted resources — ads, trackers, or any URL pattern you
+              specify. Uses wildcard and regex matching.
+            </p>
+          </div>
+          <div
+            class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700"
+          >
+            <div
+              class="w-10 h-10 rounded-lg bg-green-100 dark:bg-green-900/50 text-green-600 flex items-center justify-center mb-4"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+            </div>
+            <h3 class="font-semibold text-lg mb-2">Modify Headers</h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm">
+              Set, append, or remove HTTP request and response headers. Useful
+              for debugging, testing, and bypassing restrictions.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Examples -->
+    <section class="py-16">
+      <div class="max-w-5xl mx-auto px-6">
+        <h2 class="text-2xl font-bold text-center mb-10">Quick Examples</h2>
+        <div class="grid md:grid-cols-2 gap-8">
+          <!-- Example 1 -->
+          <div>
+            <h3 class="font-semibold mb-3">
+              Redirect Google resources to CDN mirror
+            </h3>
+            <pre
+              class="bg-gray-900 text-gray-100 rounded-lg p-4 text-sm overflow-x-auto leading-relaxed"
+            ><code>||ajax.googleapis.com/,wildcard,redirect
+transform:host=ajax.loli.net
+
+||fonts.googleapis.com/,wildcard,redirect
+transform:host=fonts.loli.net
+
+||fonts.gstatic.com/,wildcard,redirect
+transform:host=gstatic.loli.net</code></pre>
+          </div>
+          <!-- Example 2 -->
+          <div>
+            <h3 class="font-semibold mb-3">Quick website shortcuts</h3>
+            <pre
+              class="bg-gray-900 text-gray-100 rounded-lg p-4 text-sm overflow-x-auto leading-relaxed"
+            ><code>||go/news|,wildcard,redirect
+url:https://news.ycombinator.com/
+condition:resourceTypes=main_frame</code></pre>
+            <p class="mt-3 text-sm text-gray-600 dark:text-gray-400">
+              Type
+              <code
+                class="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-gray-800 dark:text-gray-200"
+                >go/news</code
+              >
+              in the address bar to jump to Hacker News instantly.
+            </p>
+          </div>
+        </div>
+        <div class="text-center mt-10">
+          <a
+            href="rules.html"
+            class="inline-flex items-center gap-1 text-brand font-medium hover:underline"
+          >
+            Read the full rule specification
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-200 dark:border-gray-800 py-8">
+      <div
+        class="max-w-5xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-500 dark:text-gray-400"
+      >
+        <p>
+          &copy; 2026
+          <a href="https://liujiacai.net" class="hover:text-brand"
+            >Jiacai Liu</a
+          >
+        </p>
+        <div class="flex gap-6">
+          <a
+            href="https://github.com/jiacai2050/my-works/discussions/7"
+            class="hover:text-brand"
+            >Share Rules</a
+          >
+          <a
+            href="https://github.com/jiacai2050/my-works/tree/main/gooreplacer"
+            class="hover:text-brand"
+            >Source Code</a
+          >
+          <a href="../" class="hover:text-brand">All Projects</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

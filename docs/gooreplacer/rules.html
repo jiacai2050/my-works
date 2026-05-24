@@ -1,0 +1,599 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rule Specification — Gooreplacer</title>
+    <meta
+      name="description"
+      content="Gooreplacer rule specification: plain-text format for URL matching, redirecting, blocking, and header modification."
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'media',
+        theme: {
+          extend: {
+            colors: {
+              brand: '#2563eb',
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 antialiased"
+  >
+    <!-- Nav -->
+    <nav
+      class="border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-950/80 backdrop-blur sticky top-0 z-50"
+    >
+      <div
+        class="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between"
+      >
+        <a href="." class="text-xl font-bold text-brand">Gooreplacer</a>
+        <div
+          class="flex gap-6 text-sm font-medium text-gray-600 dark:text-gray-400"
+        >
+          <a href="." class="hover:text-brand transition">Home</a>
+          <a href="rules.html" class="text-brand">Rules</a>
+          <a
+            href="https://github.com/jiacai2050/my-works/tree/main/gooreplacer"
+            class="hover:text-brand transition"
+            >GitHub</a
+          >
+        </div>
+      </div>
+    </nav>
+
+    <main class="max-w-4xl mx-auto px-6 py-12">
+      <h1 class="text-3xl font-extrabold mb-2">Rule Specification</h1>
+      <p class="text-gray-600 dark:text-gray-400 mb-10">
+        Gooreplacer uses a plain-text rule format — readable, version-control
+        friendly, and editable with any text editor.
+      </p>
+
+      <!-- Specification -->
+      <section class="mb-12">
+        <h2 id="specification" class="text-2xl font-bold mb-4">
+          Specification
+        </h2>
+        <pre
+          class="bg-gray-900 text-gray-100 rounded-lg p-5 text-sm overflow-x-auto leading-relaxed mb-6"
+        ><code>[filter],[filter_type],[action]
+[condition]+
+[action_options]+</code></pre>
+        <p class="text-gray-600 dark:text-gray-400 mb-4">
+          Empty lines or lines starting with
+          <code
+            class="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-gray-800 dark:text-gray-200"
+            >#</code
+          >
+          act as rule delimiters.
+        </p>
+
+        <div class="space-y-6">
+          <div>
+            <h3 class="font-semibold text-lg mb-2">Fields</h3>
+            <div class="overflow-x-auto">
+              <table
+                class="w-full text-sm border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden"
+              >
+                <thead class="bg-gray-50 dark:bg-gray-800">
+                  <tr>
+                    <th class="text-left px-4 py-2 font-medium">Field</th>
+                    <th class="text-left px-4 py-2 font-medium">Description</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                  <tr>
+                    <td class="px-4 py-2 font-mono text-sm">filter</td>
+                    <td class="px-4 py-2">URL pattern to match against</td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-2 font-mono text-sm">filter_type</td>
+                    <td class="px-4 py-2">
+                      <code>wildcard</code> or <code>regex</code>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-2 font-mono text-sm">action</td>
+                    <td class="px-4 py-2">
+                      <code>block</code>, <code>redirect</code>, or
+                      <code>modifyHeaders</code>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-lg mb-2">Conditions</h3>
+            <p class="text-gray-600 dark:text-gray-400 mb-3">
+              Format:
+              <code
+                class="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-gray-800 dark:text-gray-200"
+                >condition:key=value</code
+              >. Can be repeated for multiple conditions.
+            </p>
+            <div class="overflow-x-auto">
+              <table
+                class="w-full text-sm border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden"
+              >
+                <thead class="bg-gray-50 dark:bg-gray-800">
+                  <tr>
+                    <th class="text-left px-4 py-2 font-medium">Condition</th>
+                    <th class="text-left px-4 py-2 font-medium">Meaning</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                  <tr>
+                    <td class="px-4 py-2 font-mono text-xs">
+                      initiatorDomains
+                    </td>
+                    <td class="px-4 py-2">
+                      Only match requests originating from these domains
+                      (comma-separated)
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-2 font-mono text-xs">
+                      excludedInitiatorDomains
+                    </td>
+                    <td class="px-4 py-2">
+                      Exclude requests from these domains (takes precedence over
+                      initiatorDomains)
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-2 font-mono text-xs">requestDomains</td>
+                    <td class="px-4 py-2">
+                      Only match when request domain is in this list
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-2 font-mono text-xs">
+                      isUrlFilterCaseSensitive
+                    </td>
+                    <td class="px-4 py-2">
+                      Case-sensitive filter matching (default: false)
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-2 font-mono text-xs">resourceTypes</td>
+                    <td class="px-4 py-2">
+                      Match specific
+                      <a
+                        href="https://developer.chrome.com/docs/extensions/reference/api/declarativeNetRequest#type-ResourceType"
+                        class="text-brand hover:underline"
+                        >resource types</a
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-2 font-mono text-xs">
+                      excludedResourceTypes
+                    </td>
+                    <td class="px-4 py-2">Exclude specific resource types</td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-2 font-mono text-xs">requestMethods</td>
+                    <td class="px-4 py-2">
+                      Match specific
+                      <a
+                        href="https://developer.chrome.com/docs/extensions/reference/api/declarativeNetRequest#type-RequestMethod"
+                        class="text-brand hover:underline"
+                        >HTTP methods</a
+                      >
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="font-semibold text-lg mb-2">Action Options</h3>
+            <div class="space-y-4">
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-medium mb-1">block</h4>
+                <p class="text-gray-600 text-sm">No options required.</p>
+              </div>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-medium mb-2">redirect</h4>
+                <ul
+                  class="text-sm text-gray-700 dark:text-gray-300 space-y-1 list-disc list-inside"
+                >
+                  <li>
+                    <code class="bg-white dark:bg-gray-700 px-1 rounded"
+                      >url:[url]</code
+                    >
+                    — Static redirect URL
+                  </li>
+                  <li>
+                    <code class="bg-white dark:bg-gray-700 px-1 rounded"
+                      >regexSubstitution:[url]</code
+                    >
+                    — Dynamic URL with capture groups (<code>\1</code> to
+                    <code>\9</code>)
+                  </li>
+                  <li>
+                    <code class="bg-white dark:bg-gray-700 px-1 rounded"
+                      >transform:k1=v1,k2=v2</code
+                    >
+                    — Transform URL parts: <code>host</code>, <code>path</code>,
+                    <code>query</code>, <code>scheme</code> (see
+                    <a
+                      href="https://developer.chrome.com/docs/extensions/reference/api/declarativeNetRequest#type-URLTransform"
+                      class="text-brand hover:underline"
+                      >URLTransform</a
+                    >)
+                  </li>
+                </ul>
+              </div>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h4 class="font-medium mb-2">modifyHeaders</h4>
+                <p class="text-sm text-gray-700 dark:text-gray-300 mb-2">
+                  Format:
+                  <code class="bg-white dark:bg-gray-700 px-1 rounded"
+                    >[type]:[operation]:key=value</code
+                  >
+                </p>
+                <ul
+                  class="text-sm text-gray-700 dark:text-gray-300 space-y-1 list-disc list-inside"
+                >
+                  <li>
+                    <strong>type:</strong> <code>requestHeaders</code> or
+                    <code>responseHeaders</code>
+                  </li>
+                  <li>
+                    <strong>operation:</strong> <code>set</code>,
+                    <code>append</code> (response only), or <code>remove</code>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Filter Types -->
+      <section class="mb-12">
+        <h2 id="filter-type" class="text-2xl font-bold mb-4">Filter Types</h2>
+
+        <h3 id="wildcard" class="text-xl font-semibold mb-3 mt-6">Wildcard</h3>
+        <p class="text-gray-600 dark:text-gray-400 mb-4">
+          Supported constructs for wildcard patterns:
+        </p>
+        <div class="overflow-x-auto mb-4">
+          <table
+            class="w-full text-sm border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden"
+          >
+            <thead class="bg-gray-50 dark:bg-gray-800">
+              <tr>
+                <th class="text-left px-4 py-2 font-medium">Construct</th>
+                <th class="text-left px-4 py-2 font-medium">Meaning</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+              <tr>
+                <td class="px-4 py-2 font-mono">*</td>
+                <td class="px-4 py-2">
+                  Wildcard — matches any number of characters
+                </td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2 font-mono">|</td>
+                <td class="px-4 py-2">
+                  Left/right anchor — beginning or end of the URL
+                </td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2 font-mono">||</td>
+                <td class="px-4 py-2">
+                  Domain anchor — start of a (sub-)domain
+                </td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2 font-mono">^</td>
+                <td class="px-4 py-2">
+                  Separator — matches anything except letters, digits,
+                  <code>_</code> <code>-</code> <code>.</code> <code>%</code>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h4 class="font-medium mb-2">Examples</h4>
+        <div class="overflow-x-auto mb-6">
+          <table
+            class="w-full text-sm border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden"
+          >
+            <thead class="bg-gray-50 dark:bg-gray-800">
+              <tr>
+                <th class="text-left px-4 py-2 font-medium">urlFilter</th>
+                <th class="text-left px-4 py-2 font-medium">Matches</th>
+                <th class="text-left px-4 py-2 font-medium">Does not match</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+              <tr>
+                <td class="px-4 py-2 font-mono">abc</td>
+                <td class="px-4 py-2">
+                  <code>https://abcd.com</code>,
+                  <code>https://example.com/abcd</code>
+                </td>
+                <td class="px-4 py-2"><code>https://ab.com</code></td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2 font-mono">abc*d</td>
+                <td class="px-4 py-2">
+                  <code>https://abcd.com</code>,
+                  <code>https://example.com/abcxyzd</code>
+                </td>
+                <td class="px-4 py-2"><code>https://abc.com</code></td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2 font-mono">||a.example.com</td>
+                <td class="px-4 py-2">
+                  <code>https://a.example.com/</code>,
+                  <code>https://b.a.example.com/xyz</code>
+                </td>
+                <td class="px-4 py-2"><code>https://example.com/</code></td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2 font-mono">|https*</td>
+                <td class="px-4 py-2"><code>https://example.com</code></td>
+                <td class="px-4 py-2"><code>http://example.com/</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div
+          class="bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800 rounded-lg p-4 text-sm text-blue-800 dark:text-blue-300 mb-6"
+        >
+          <strong>Note:</strong> The urlFilter must be composed of only ASCII
+          characters. Internationalized domains are matched in punycode format,
+          and non-ASCII characters are URL-encoded in UTF-8.
+        </div>
+
+        <p class="text-gray-600 dark:text-gray-400 mb-4">
+          See
+          <a
+            href="https://developer.chrome.com/docs/extensions/reference/api/declarativeNetRequest#url_filter_syntax"
+            class="text-brand hover:underline"
+            >Chrome URL filter syntax docs</a
+          >
+          for full details.
+        </p>
+
+        <h3 id="regex" class="text-xl font-semibold mb-3 mt-8">Regex</h3>
+        <p class="text-gray-600 dark:text-gray-400 mb-4">
+          Regular expression matching using
+          <a
+            href="https://github.com/google/re2/wiki/Syntax"
+            class="text-brand hover:underline"
+            >RE2 syntax</a
+          >. Use
+          <code
+            class="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-gray-800 dark:text-gray-200"
+            >regexSubstitution</code
+          >
+          with capture groups (<code>\1</code> to <code>\9</code>,
+          <code>\0</code> for full match).
+        </p>
+
+        <pre
+          class="bg-gray-900 text-gray-100 rounded-lg p-4 text-sm overflow-x-auto leading-relaxed mb-3"
+        ><code>^https://www\.(abc|def)\.xyz\.com/,regex,redirect
+regexSubstitution:https://\1.xyz.com/</code></pre>
+        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+          This redirects <code>https://www.abc.xyz.com/path</code> to
+          <code>https://abc.xyz.com/path</code>.
+        </p>
+      </section>
+
+      <!-- Good Conditions -->
+      <section class="mb-12">
+        <h2 id="good-conditions" class="text-2xl font-bold mb-4">
+          Writing Good URL Conditions
+        </h2>
+        <p class="text-gray-600 dark:text-gray-400 mb-4">
+          Take care to always match an entire domain. Common mistakes:
+        </p>
+        <div class="overflow-x-auto mb-4">
+          <table
+            class="w-full text-sm border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden"
+          >
+            <thead class="bg-gray-50 dark:bg-gray-800">
+              <tr>
+                <th class="text-left px-4 py-2 font-medium">Pattern</th>
+                <th class="text-left px-4 py-2 font-medium">Problem</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+              <tr>
+                <td class="px-4 py-2 font-mono">google.com</td>
+                <td class="px-4 py-2">
+                  Matches <code>https://example.com/?param=google.com</code>
+                </td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2 font-mono">||google.com</td>
+                <td class="px-4 py-2">
+                  Matches <code>https://google.company</code>
+                </td>
+              </tr>
+              <tr>
+                <td class="px-4 py-2 font-mono">https://www.google.com</td>
+                <td class="px-4 py-2">
+                  Matches
+                  <code>https://example.com/?param=https://www.google.com</code>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="text-gray-600 dark:text-gray-400 mb-2">
+          <strong>Better alternatives:</strong>
+        </p>
+        <ul
+          class="list-disc list-inside text-gray-700 dark:text-gray-300 text-sm space-y-1 mb-4"
+        >
+          <li>
+            <code class="bg-gray-100 dark:bg-gray-800 px-1 rounded"
+              >||google.com/</code
+            >
+            — matches all paths and subdomains
+          </li>
+          <li>
+            <code class="bg-gray-100 dark:bg-gray-800 px-1 rounded"
+              >|https://www.google.com/</code
+            >
+            — matches all paths, no subdomains
+          </li>
+          <li>
+            <code class="bg-gray-100 dark:bg-gray-800 px-1 rounded"
+              >^https:\/\/www\.google\.com\/</code
+            >
+            — regex for exact domain matching
+          </li>
+        </ul>
+      </section>
+
+      <!-- Header Modification -->
+      <section class="mb-12">
+        <h2 id="supported-header" class="text-2xl font-bold mb-4">
+          Header Modification
+        </h2>
+        <p class="text-gray-600 dark:text-gray-400 mb-4">
+          According to
+          <a
+            href="https://developer.chrome.com/docs/extensions/reference/api/declarativeNetRequest#header_modification"
+            class="text-brand hover:underline"
+            >Chrome docs</a
+          >, the
+          <code
+            class="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-gray-800 dark:text-gray-200"
+            >append</code
+          >
+          operation is only supported for these headers:
+        </p>
+        <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-1">
+          <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-xs"
+            >accept</code
+          >
+          <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-xs"
+            >accept-encoding</code
+          >
+          <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-xs"
+            >accept-language</code
+          >
+          <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-xs"
+            >access-control-request-headers</code
+          >
+          <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-xs"
+            >cache-control</code
+          >
+          <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-xs"
+            >connection</code
+          >
+          <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-xs"
+            >content-language</code
+          >
+          <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-xs"
+            >cookie</code
+          >
+          <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-xs"
+            >forwarded</code
+          >
+          <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-xs"
+            >if-match</code
+          >
+          <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-xs"
+            >if-none-match</code
+          >
+          <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-xs"
+            >keep-alive</code
+          >
+          <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-xs"
+            >range</code
+          >
+          <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-xs"
+            >te</code
+          >
+          <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-xs"
+            >trailer</code
+          >
+          <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-xs"
+            >transfer-encoding</code
+          >
+          <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-xs"
+            >upgrade</code
+          >
+          <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-xs"
+            >user-agent</code
+          >
+          <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-xs"
+            >via</code
+          >
+          <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-xs"
+            >want-digest</code
+          >
+          <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-xs"
+            >x-forwarded-for</code
+          >
+        </div>
+      </section>
+
+      <!-- Full Example -->
+      <section class="mb-12">
+        <h2 id="examples" class="text-2xl font-bold mb-4">Complete Example</h2>
+        <pre
+          class="bg-gray-900 text-gray-100 rounded-lg p-5 text-sm overflow-x-auto leading-relaxed"
+        ><code># Block example.com main frame for specific initiators
+example.com,wildcard,block
+condition:resourceTypes=main_frame
+condition:isUrlFilterCaseSensitive=true
+condition:initiatorDomains=google.com,x.com
+condition:requestMethods=get,post
+
+# Modify headers on liujiacai.net
+liujiacai.net,wildcard,modifyHeaders
+responseHeaders:append:x-forwarded-for=129.9.9.1
+requestHeaders:set:user-agent=gooreplacer</code></pre>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-200 dark:border-gray-800 py-8">
+      <div
+        class="max-w-4xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-500 dark:text-gray-400"
+      >
+        <p>
+          &copy; 2026
+          <a href="https://liujiacai.net" class="hover:text-brand"
+            >Jiacai Liu</a
+          >
+        </p>
+        <div class="flex gap-6">
+          <a href="." class="hover:text-brand">Home</a>
+          <a
+            href="https://github.com/jiacai2050/my-works/discussions/7"
+            class="hover:text-brand"
+            >Share Rules</a
+          >
+          <a
+            href="https://github.com/jiacai2050/my-works/tree/main/gooreplacer"
+            class="hover:text-brand"
+            >Source Code</a
+          >
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

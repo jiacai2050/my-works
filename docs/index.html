@@ -1,97 +1,428 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MyWorks — Jiacai Liu</title>
-  <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
-  <style>
-    :root {
-      --accent: #0969da;
-    }
-    header { text-align: center; padding: 2rem 0; }
-    header p { color: var(--text-light); max-width: 600px; margin: 0.5rem auto; }
-    .projects { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; padding: 1rem 0; }
-    .card { border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; transition: box-shadow 0.2s; }
-    .card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-    .card h3 { margin: 0 0 0.5rem; }
-    .card h3 a { text-decoration: none; color: var(--accent); }
-    .card p { margin: 0 0 0.75rem; font-size: 0.9rem; }
-    .tag { display: inline-block; font-size: 0.75rem; padding: 2px 8px; border-radius: 12px; background: var(--accent-bg, #ddf4ff); color: var(--accent); margin-right: 4px; }
-    footer { text-align: center; padding: 2rem 0; color: var(--text-light); font-size: 0.85rem; }
-  </style>
-</head>
-<body>
-  <header>
-    <h1>MyWorks</h1>
-    <p>A collection of open-source tools, libraries, and experiments by <a href="https://liujiacai.net">Jiacai Liu</a>.</p>
-  </header>
-  <main>
-    <section class="projects">
-      <div class="card">
-        <h3><a href="https://github.com/jiacai2050/my-works/tree/master/draft-pilot">Draft Pilot</a></h3>
-        <p>Chrome extension that helps non-native English speakers write natural English replies on any website. Optimized for GitHub issues & PRs.</p>
-        <span class="tag">JavaScript</span><span class="tag">Chrome Extension</span>
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MyWorks — Jiacai Liu</title>
+    <meta
+      name="description"
+      content="A collection of open-source tools, libraries, and experiments by Jiacai Liu."
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'media',
+        theme: {
+          extend: {
+            colors: {
+              brand: '#2563eb',
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 antialiased"
+  >
+    <!-- Header -->
+    <header class="max-w-5xl mx-auto px-6 pt-16 pb-12 text-center">
+      <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight">
+        MyWorks
+      </h1>
+      <p class="mt-3 text-lg text-gray-600 dark:text-gray-400 max-w-xl mx-auto">
+        Open-source tools, libraries, and experiments by
+        <a href="https://liujiacai.net" class="text-brand hover:underline"
+          >Jiacai Liu</a
+        >.
+      </p>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-6 pb-16 space-y-16">
+      <!-- Browser Extensions -->
+      <section>
+        <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
+          <svg
+            class="w-6 h-6 text-brand"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418"
+            />
+          </svg>
+          Browser Extensions
+        </h2>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <a
+            href="gooreplacer/"
+            class="group block rounded-xl border border-gray-200 dark:border-gray-800 p-5 hover:border-brand dark:hover:border-brand transition"
+          >
+            <h3 class="font-semibold text-lg group-hover:text-brand transition">
+              Gooreplacer
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm mt-1">
+              Block/redirect URLs and modify HTTP headers with simple plain-text
+              rules.
+            </p>
+            <div class="mt-3 flex gap-2">
+              <span
+                class="text-xs px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300"
+                >Chrome</span
+              >
+              <span
+                class="text-xs px-2 py-0.5 rounded-full bg-orange-100 dark:bg-orange-900/50 text-orange-700 dark:text-orange-300"
+                >Firefox</span
+              >
+              <span
+                class="text-xs px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+                >Edge</span
+              >
+            </div>
+          </a>
+          <a
+            href="link-preview/"
+            class="group block rounded-xl border border-gray-200 dark:border-gray-800 p-5 hover:border-brand dark:hover:border-brand transition"
+          >
+            <h3 class="font-semibold text-lg group-hover:text-brand transition">
+              Link Preview
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm mt-1">
+              Preview link metadata (title & description) on hover — no more
+              opening countless tabs.
+            </p>
+            <div class="mt-3 flex gap-2">
+              <span
+                class="text-xs px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300"
+                >Chrome</span
+              >
+              <span
+                class="text-xs px-2 py-0.5 rounded-full bg-orange-100 dark:bg-orange-900/50 text-orange-700 dark:text-orange-300"
+                >Firefox</span
+              >
+              <span
+                class="text-xs px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+                >Edge</span
+              >
+            </div>
+          </a>
+          <a
+            href="text-saver/"
+            class="group block rounded-xl border border-gray-200 dark:border-gray-800 p-5 hover:border-brand dark:hover:border-brand transition"
+          >
+            <h3 class="font-semibold text-lg group-hover:text-brand transition">
+              Text Saver
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm mt-1">
+              Save any selected text, link, or URL with one click. Synced across
+              devices, exportable anytime.
+            </p>
+            <div class="mt-3 flex gap-2">
+              <span
+                class="text-xs px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300"
+                >Chrome</span
+              >
+              <span
+                class="text-xs px-2 py-0.5 rounded-full bg-orange-100 dark:bg-orange-900/50 text-orange-700 dark:text-orange-300"
+                >Firefox</span
+              >
+              <span
+                class="text-xs px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+                >Edge</span
+              >
+            </div>
+          </a>
+          <a
+            href="draft-pilot/"
+            class="group block rounded-xl border border-gray-200 dark:border-gray-800 p-5 hover:border-brand dark:hover:border-brand transition"
+          >
+            <h3 class="font-semibold text-lg group-hover:text-brand transition">
+              Draft Pilot
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm mt-1">
+              Helps non-native English speakers write natural English replies on
+              any website. Optimized for GitHub.
+            </p>
+            <div class="mt-3 flex gap-2">
+              <span
+                class="text-xs px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300"
+                >Chrome</span
+              >
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- AI & LLM Tools -->
+      <section>
+        <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
+          <svg
+            class="w-6 h-6 text-brand"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z"
+            />
+          </svg>
+          AI & LLM Tools
+        </h2>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <a
+            href="https://github.com/jiacai2050/my-works/tree/main/shellgpt"
+            class="group block rounded-xl border border-gray-200 dark:border-gray-800 p-5 hover:border-brand dark:hover:border-brand transition"
+          >
+            <h3 class="font-semibold text-lg group-hover:text-brand transition">
+              ShellGPT
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm mt-1">
+              Chat with LLM in your terminal — shell generator, story teller,
+              linux-terminal emulator, and more.
+            </p>
+            <div class="mt-3 flex gap-2">
+              <span
+                class="text-xs px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300"
+                >Python</span
+              >
+              <span
+                class="text-xs px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+                >CLI</span
+              >
+            </div>
+          </a>
+          <a
+            href="https://github.com/jiacai2050/my-works/tree/main/openai-gateway"
+            class="group block rounded-xl border border-gray-200 dark:border-gray-800 p-5 hover:border-brand dark:hover:border-brand transition"
+          >
+            <h3 class="font-semibold text-lg group-hover:text-brand transition">
+              OpenAI Gateway
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm mt-1">
+              A tiny (~40 lines) Go reverse proxy for the OpenAI API that
+              injects your API key server-side.
+            </p>
+            <div class="mt-3 flex gap-2">
+              <span
+                class="text-xs px-2 py-0.5 rounded-full bg-cyan-100 dark:bg-cyan-900/50 text-cyan-700 dark:text-cyan-300"
+                >Go</span
+              >
+              <span
+                class="text-xs px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+                >Proxy</span
+              >
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- Infrastructure & DevTools -->
+      <section>
+        <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
+          <svg
+            class="w-6 h-6 text-brand"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M11.42 15.17l-5.384-3.19m0 0l-.002-.001a.636.636 0 01-.306-.51V7.5a.636.636 0 01.306-.51l5.384-3.19a.636.636 0 01.636 0l5.384 3.19a.636.636 0 01.306.51v3.96a.636.636 0 01-.306.51l-5.384 3.19a.636.636 0 01-.636 0zM12 12l5.384 3.19M12 12v6.38M12 12L6.616 8.81"
+            />
+          </svg>
+          Infrastructure & DevTools
+        </h2>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <a
+            href="https://github.com/jiacai2050/my-works/tree/main/serverless-webdav"
+            class="group block rounded-xl border border-gray-200 dark:border-gray-800 p-5 hover:border-brand dark:hover:border-brand transition"
+          >
+            <h3 class="font-semibold text-lg group-hover:text-brand transition">
+              Serverless WebDAV
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm mt-1">
+              A serverless WebDAV server on Cloudflare Workers, using D1
+              (SQLite) as the storage backend.
+            </p>
+            <div class="mt-3 flex gap-2">
+              <span
+                class="text-xs px-2 py-0.5 rounded-full bg-yellow-100 dark:bg-yellow-900/50 text-yellow-700 dark:text-yellow-300"
+                >TypeScript</span
+              >
+              <span
+                class="text-xs px-2 py-0.5 rounded-full bg-orange-100 dark:bg-orange-900/50 text-orange-700 dark:text-orange-300"
+                >Cloudflare Workers</span
+              >
+            </div>
+          </a>
+          <a
+            href="https://github.com/jiacai2050/my-works/tree/main/zms"
+            class="group block rounded-xl border border-gray-200 dark:border-gray-800 p-5 hover:border-brand dark:hover:border-brand transition"
+          >
+            <h3 class="font-semibold text-lg group-hover:text-brand transition">
+              ZMS
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm mt-1">
+              A pure Zig mirror server for fetching Zig tarballs on demand and
+              caching them locally.
+            </p>
+            <div class="mt-3 flex gap-2">
+              <span
+                class="text-xs px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-300"
+                >Zig</span
+              >
+              <span
+                class="text-xs px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+                >Mirror</span
+              >
+            </div>
+          </a>
+          <a
+            href="https://github.com/jiacai2050/my-works/tree/main/zigcc"
+            class="group block rounded-xl border border-gray-200 dark:border-gray-800 p-5 hover:border-brand dark:hover:border-brand transition"
+          >
+            <h3 class="font-semibold text-lg group-hover:text-brand transition">
+              zigcc
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm mt-1">
+              Scripts to simplify using
+              <code class="bg-gray-100 dark:bg-gray-800 px-1 rounded text-xs"
+                >zig cc</code
+              >
+              for compiling C, C++, Rust, and Go programs.
+            </p>
+            <div class="mt-3 flex gap-2">
+              <span
+                class="text-xs px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300"
+                >Python</span
+              >
+              <span
+                class="text-xs px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-300"
+                >Zig</span
+              >
+            </div>
+          </a>
+          <a
+            href="https://github.com/jiacai2050/my-works/tree/main/video-compress"
+            class="group block rounded-xl border border-gray-200 dark:border-gray-800 p-5 hover:border-brand dark:hover:border-brand transition"
+          >
+            <h3 class="font-semibold text-lg group-hover:text-brand transition">
+              Video Compress
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm mt-1">
+              Compress video by 90% without losing much quality, similar to what
+              Pied Piper achieves.
+            </p>
+            <div class="mt-3 flex gap-2">
+              <span
+                class="text-xs px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300"
+                >Python</span
+              >
+              <span
+                class="text-xs px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300"
+                >FFmpeg</span
+              >
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- Learning & Experiments -->
+      <section>
+        <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
+          <svg
+            class="w-6 h-6 text-brand"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5"
+            />
+          </svg>
+          Learning & Experiments
+        </h2>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <a
+            href="https://github.com/jiacai2050/my-works/tree/main/zigos"
+            class="group block rounded-xl border border-gray-200 dark:border-gray-800 p-5 hover:border-brand dark:hover:border-brand transition"
+          >
+            <h3 class="font-semibold text-lg group-hover:text-brand transition">
+              ZigOS
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm mt-1">
+              A Chinese tutorial on writing an OS in Zig.
+            </p>
+            <div class="mt-3 flex gap-2">
+              <span
+                class="text-xs px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-300"
+                >Zig</span
+              >
+              <span
+                class="text-xs px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300"
+                >OS</span
+              >
+              <span
+                class="text-xs px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+                >Tutorial</span
+              >
+            </div>
+          </a>
+          <a
+            href="https://github.com/jiacai2050/my-works/tree/main/rust-ffi"
+            class="group block rounded-xl border border-gray-200 dark:border-gray-800 p-5 hover:border-brand dark:hover:border-brand transition"
+          >
+            <h3 class="font-semibold text-lg group-hover:text-brand transition">
+              Rust FFI
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm mt-1">
+              Demo project showing how to interop C with Rust.
+            </p>
+            <div class="mt-3 flex gap-2">
+              <span
+                class="text-xs px-2 py-0.5 rounded-full bg-orange-100 dark:bg-orange-900/50 text-orange-700 dark:text-orange-300"
+                >Rust</span
+              >
+              <span
+                class="text-xs px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+                >C</span
+              >
+              <span
+                class="text-xs px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+                >FFI</span
+              >
+            </div>
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-200 dark:border-gray-800 py-8">
+      <div
+        class="max-w-5xl mx-auto px-6 text-center text-sm text-gray-500 dark:text-gray-400"
+      >
+        <p>
+          &copy; 2026 Jiacai Liu ·
+          <a
+            href="https://github.com/jiacai2050/my-works"
+            class="text-brand hover:underline"
+            >Source on GitHub</a
+          >
+        </p>
       </div>
-      <div class="card">
-        <h3><a href="https://github.com/jiacai2050/my-works/tree/master/shellgpt">ShellGPT</a></h3>
-        <p>Chat with LLM in your terminal — shell generator, story teller, linux-terminal emulator, and more.</p>
-        <span class="tag">Python</span><span class="tag">CLI</span>
-      </div>
-      <div class="card">
-        <h3><a href="https://github.com/jiacai2050/my-works/tree/master/gooreplacer">Gooreplacer</a></h3>
-        <p>Browser extension to modify, block URLs & Headers.</p>
-        <span class="tag">JavaScript</span><span class="tag">Browser Extension</span>
-      </div>
-      <div class="card">
-        <h3><a href="https://github.com/jiacai2050/my-works/tree/master/link-preview">Link Preview</a></h3>
-        <p>Browser extension to preview link metadata (title & description) on hover, saving you from opening many tabs.</p>
-        <span class="tag">JavaScript</span><span class="tag">Browser Extension</span>
-      </div>
-      <div class="card">
-        <h3><a href="https://github.com/jiacai2050/my-works/tree/master/text-saver">Text Saver</a></h3>
-        <p>Browser extension to save texts anytime, anywhere.</p>
-        <span class="tag">JavaScript</span><span class="tag">Browser Extension</span>
-      </div>
-      <div class="card">
-        <h3><a href="https://github.com/jiacai2050/my-works/tree/master/serverless-webdav">Serverless WebDAV</a></h3>
-        <p>A serverless WebDAV server running on Cloudflare Workers, using D1 (SQLite) as the storage backend.</p>
-        <span class="tag">TypeScript</span><span class="tag">Cloudflare Workers</span>
-      </div>
-      <div class="card">
-        <h3><a href="https://github.com/jiacai2050/my-works/tree/master/openai-gateway">OpenAI Gateway</a></h3>
-        <p>A tiny (~40 lines) Go reverse proxy for the OpenAI API that injects your API key server-side.</p>
-        <span class="tag">Go</span><span class="tag">Proxy</span>
-      </div>
-      <div class="card">
-        <h3><a href="https://github.com/jiacai2050/my-works/tree/master/zigcc">zigcc</a></h3>
-        <p>Scripts to simplify using <code>zig cc</code> for compiling C, C++, Rust, and Go programs.</p>
-        <span class="tag">Python</span><span class="tag">Zig</span>
-      </div>
-      <div class="card">
-        <h3><a href="https://github.com/jiacai2050/my-works/tree/master/video-compress">Video Compress</a></h3>
-        <p>Compress video by 90% without losing much quality, similar to what Pied Piper achieves.</p>
-        <span class="tag">Python</span><span class="tag">FFmpeg</span>
-      </div>
-      <div class="card">
-        <h3><a href="https://github.com/jiacai2050/my-works/tree/master/zms">ZMS</a></h3>
-        <p>A pure Zig mirror server for fetching Zig tarballs on demand and caching them locally.</p>
-        <span class="tag">Zig</span><span class="tag">Mirror</span>
-      </div>
-      <div class="card">
-        <h3><a href="https://github.com/jiacai2050/my-works/tree/master/zigos">ZigOS</a></h3>
-        <p>A Chinese tutorial on writing an OS in Zig.</p>
-        <span class="tag">Zig</span><span class="tag">OS</span><span class="tag">Tutorial</span>
-      </div>
-      <div class="card">
-        <h3><a href="https://github.com/jiacai2050/my-works/tree/master/rust-ffi">Rust FFI</a></h3>
-        <p>Demo project showing how to interop C with Rust.</p>
-        <span class="tag">Rust</span><span class="tag">C</span><span class="tag">FFI</span>
-      </div>
-    </section>
-  </main>
-  <footer>
-    <p>© 2026 Jiacai Liu · <a href="https://github.com/jiacai2050/my-works">Source on GitHub</a></p>
-  </footer>
-</body>
+    </footer>
+  </body>
 </html>
