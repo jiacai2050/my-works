@@ -19,6 +19,7 @@
   "toneConcise": { "message": "⚡ 简洁" },
   "regenBtn": { "message": "🔄 重新生成" },
   "insertBtn": { "message": "📋 插入输入框" },
+  "copyBtn": { "message": "📄 复制" },
   "errorNoIntent": { "message": "请选择一个意图或输入说明" },
   "generating": { "message": "⏳ 生成中..." },
   "loadingDraft": { "message": "正在生成草稿..." },

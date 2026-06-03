@@ -19,6 +19,7 @@
   "toneConcise": { "message": "⚡ Concise" },
   "regenBtn": { "message": "🔄 Regenerate" },
   "insertBtn": { "message": "📋 Insert" },
+  "copyBtn": { "message": "📄 Copy" },
   "errorNoIntent": { "message": "Please select an intent or enter a note" },
   "generating": { "message": "⏳ Generating..." },
   "loadingDraft": { "message": "Generating draft..." },

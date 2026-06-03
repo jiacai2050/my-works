@@ -43,6 +43,7 @@ const DraftPilotUI = {
         </div>
         <div class="draftpilot-draft-actions">
           <button class="regen-btn">${_m('regenBtn')}</button>
+          <button class="copy-btn">${_m('copyBtn')}</button>
           <button class="insert-btn primary">${_m('insertBtn')}</button>
         </div>
       </div>
@@ -73,6 +74,11 @@ const DraftPilotUI = {
     popover
       .querySelector('.regen-btn')
       .addEventListener('click', () => this.handleGenerate(popover));
+
+    // Copy
+    popover
+      .querySelector('.copy-btn')
+      .addEventListener('click', () => this.handleCopy(popover));
 
     // Insert
     popover
@@ -237,6 +243,16 @@ const DraftPilotUI = {
       errorEl.classList.remove('draftpilot-hidden');
       draftEl.textContent = currentDraft;
     }
+  },
+
+  handleCopy(popover) {
+    const draft = popover.querySelector('.draftpilot-draft').textContent;
+    navigator.clipboard.writeText(draft).then(() => {
+      const btn = popover.querySelector('.copy-btn');
+      const orig = btn.textContent;
+      btn.textContent = '✓';
+      setTimeout(() => (btn.textContent = orig), 1500);
+    });
   },
 
   handleInsert(popover) {
