@@ -21,11 +21,17 @@ A Chrome extension that helps non-native English speakers write professional Eng
 
 ## Installation
 
+### Chrome Web Store
+
+[Install Draft Pilot from the Chrome Web Store](https://chromewebstore.google.com/detail/draft-pilot/dfopgklchlakdkacmilipchcolbialck)
+
+### Local development
+
 1. Clone or download this repository
 2. Open `chrome://extensions` in Chrome
 3. Enable **Developer mode** (top-right toggle)
 4. Click **Load unpacked** and select the `draft-pilot` directory
-5. Click the DraftPilot icon in the toolbar to configure your API key
+5. Click the Draft Pilot icon in the toolbar to configure your API key
 
 ## Setup
 

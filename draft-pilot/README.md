@@ -21,11 +21,17 @@
 
 ## 安装
 
+### Chrome Web Store
+
+[从 Chrome Web Store 安装 Draft Pilot](https://chromewebstore.google.com/detail/draft-pilot/dfopgklchlakdkacmilipchcolbialck)
+
+### 本地开发安装
+
 1. 克隆或下载本仓库
 2. Chrome 打开 `chrome://extensions`
 3. 开启右上角 **开发者模式**
-4. 点击 **加载已解压的扩展程序**，选择 `issue-pilot` 目录
-5. 点击工具栏中的 DraftPilot 图标进行配置
+4. 点击 **加载已解压的扩展程序**，选择 `draft-pilot` 目录
+5. 点击工具栏中的 Draft Pilot 图标进行配置
 
 ## 配置
 
