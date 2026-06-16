@@ -70,12 +70,15 @@ function createAndShowPopup(text, engine) {
   }
 
   const popupContainer = document.createElement('div');
-  const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const isDarkMode =
+    window.matchMedia &&
+    window.matchMedia('(prefers-color-scheme: dark)').matches;
   const colors = isDarkMode
     ? {
         background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
         border: '1px solid rgba(148, 163, 184, 0.24)',
-        shadow: '0 18px 45px rgba(0, 0, 0, 0.42), 0 4px 12px rgba(0, 0, 0, 0.3)',
+        shadow:
+          '0 18px 45px rgba(0, 0, 0, 0.42), 0 4px 12px rgba(0, 0, 0, 0.3)',
         text: '#f8fafc',
         title: '#86efac',
         message: '#cbd5e1',
@@ -83,7 +86,8 @@ function createAndShowPopup(text, engine) {
     : {
         background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
         border: '1px solid rgba(148, 163, 184, 0.28)',
-        shadow: '0 18px 45px rgba(15, 23, 42, 0.18), 0 4px 12px rgba(15, 23, 42, 0.08)',
+        shadow:
+          '0 18px 45px rgba(15, 23, 42, 0.18), 0 4px 12px rgba(15, 23, 42, 0.08)',
         text: '#0f172a',
         title: '#15803d',
         message: '#475569',
@@ -103,7 +107,8 @@ function createAndShowPopup(text, engine) {
   popupContainer.style.borderRadius = '12px';
   popupContainer.style.boxShadow = colors.shadow;
   popupContainer.style.color = colors.text;
-  popupContainer.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+  popupContainer.style.fontFamily =
+    '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
   popupContainer.style.animation = 'extTextSaverPopupIn 180ms ease-out';
 
   const styleElement = document.createElement('style');
