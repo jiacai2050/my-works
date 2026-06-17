@@ -4,6 +4,8 @@ import { DraftPilotStorage } from '../shared/storage.js';
 const $ = (id) => document.getElementById(id);
 const _m = (key) => chrome.i18n.getMessage(key);
 
+$('version').textContent = chrome.runtime.getManifest().version;
+
 // Apply i18n to DOM
 document.querySelectorAll('[data-i18n]').forEach((el) => {
   el.textContent = _m(el.dataset.i18n);
@@ -14,7 +16,6 @@ document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
 
 // Load saved settings
 DraftPilotStorage.getSettings().then((s) => {
-  $('provider').value = s.provider;
   $('apiKey').value = s.apiKey;
   $('model').value = s.model;
   $('tone').value = s.defaultTone;
@@ -22,21 +23,55 @@ DraftPilotStorage.getSettings().then((s) => {
   $('ghToken').value = s.ghToken;
 });
 
+function getOriginPattern(rawUrl) {
+  const url = new URL(rawUrl);
+  if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+    throw new Error('invalid protocol');
+  }
+  return `${url.origin}/*`;
+}
+
+function requestOrigins(origins) {
+  return new Promise((resolve) => {
+    chrome.permissions.request({ origins }, resolve);
+  });
+}
+
+function showStatus(messageKey) {
+  $('status').textContent = _m(messageKey);
+  setTimeout(() => ($('status').textContent = ''), 2500);
+}
+
 // Save
-$('save').addEventListener('click', () => {
+$('save').addEventListener('click', async () => {
+  const baseUrl = $('baseUrl').value.trim();
+  const ghToken = $('ghToken').value.trim();
+
+  let origins;
+  try {
+    origins = [getOriginPattern(baseUrl)];
+    if (ghToken) origins.push('https://api.github.com/*');
+    origins = [...new Set(origins)];
+  } catch (_) {
+    showStatus('invalidBaseUrl');
+    return;
+  }
+
+  const granted = await requestOrigins(origins);
+  if (!granted) {
+    showStatus('permissionDenied');
+    return;
+  }
+
   chrome.storage.local.set(
     {
-      provider: $('provider').value,
       apiKey: $('apiKey').value,
       model: $('model').value,
       defaultTone: $('tone').value,
-      baseUrl: $('baseUrl').value.trim(),
-      ghToken: $('ghToken').value.trim(),
+      baseUrl,
+      ghToken,
     },
-    () => {
-      $('status').textContent = _m('saved');
-      setTimeout(() => ($('status').textContent = ''), 2000);
-    },
+    () => showStatus('saved'),
   );
 });
 
@@ -44,4 +79,9 @@ $('save').addEventListener('click', () => {
 $('toggleKey').addEventListener('click', () => {
   const input = $('apiKey');
   input.type = input.type === 'password' ? 'text' : 'password';
+});
+
+// Open Chrome shortcut settings
+$('manageShortcut').addEventListener('click', () => {
+  chrome.tabs.create({ url: 'chrome://extensions/shortcuts' });
 });

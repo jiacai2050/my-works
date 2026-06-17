@@ -3,7 +3,6 @@
 export const DraftPilotStorage = {
   async getSettings() {
     const s = await chrome.storage.local.get([
-      'provider',
       'apiKey',
       'model',
       'defaultTone',
@@ -11,7 +10,6 @@ export const DraftPilotStorage = {
       'ghToken',
     ]);
     return {
-      provider: s.provider || 'openai',
       apiKey: s.apiKey || '',
       model: s.model || '',
       defaultTone: s.defaultTone || '',

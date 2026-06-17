@@ -31,11 +31,13 @@
   "errorNoApiKey": {
     "message": "Please configure your API Key in extension settings"
   },
+  "errorNoBaseUrl": {
+    "message": "Please configure your API Base URL in extension settings"
+  },
   "settingsTitle": { "message": "✨ Draft Pilot Settings" },
-  "labelProvider": { "message": "API Provider" },
   "labelBaseUrl": { "message": "API Base URL" },
   "baseUrlPlaceholder": {
-    "message": "Leave empty for default (e.g. https://api.openai.com/v1)"
+    "message": "Required, e.g. https://api.openai.com/v1"
   },
   "labelApiKey": { "message": "API Key" },
   "labelModel": { "message": "Model" },
@@ -50,5 +52,17 @@
   "ghTokenPlaceholder": { "message": "ghp_... (not needed for public repos)" },
   "saveBtn": { "message": "Save" },
   "saved": { "message": "✓ Saved" },
-  "shortcutHint": { "message": "Shortcut:" }
+  "permissionDenied": { "message": "Permission denied. Settings were not saved." },
+  "invalidBaseUrl": { "message": "Please enter a valid API Base URL." },
+  "shortcutHint": { "message": "Open the draft panel from the current text field:" },
+  "footerVersion": { "message": "Version" },
+  "footerProjectHome": { "message": "Project Home" },
+  "footerGitHub": { "message": "GitHub" },
+  "sectionProvider": { "message": "OpenAI-Compatible API" },
+  "sectionProviderDesc": { "message": "Configure the API endpoint and model used to generate drafts." },
+  "sectionGitHub": { "message": "GitHub Context" },
+  "sectionGitHubDesc": { "message": "Optionally use a GitHub token to fetch richer issue and PR context." },
+  "sectionUsage": { "message": "Usage" },
+  "sectionUsageDesc": { "message": "Control how Draft Pilot opens while you write." },
+  "shortcutManageBtn": { "message": "Change shortcut" }
 }
