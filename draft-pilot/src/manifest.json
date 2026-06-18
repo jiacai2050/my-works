@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "description": "__MSG_extDescription__",
   "default_locale": "en",
-  "permissions": ["storage", "activeTab", "contextMenus", "tabs", "scripting"],
+  "permissions": ["storage", "activeTab", "contextMenus", "scripting"],
   "optional_host_permissions": ["http://*/*", "https://*/*"],
   "background": {
     "service_worker": "background/service-worker.js",

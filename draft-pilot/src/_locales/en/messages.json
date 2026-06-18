@@ -52,17 +52,29 @@
   "ghTokenPlaceholder": { "message": "ghp_... (not needed for public repos)" },
   "saveBtn": { "message": "Save" },
   "saved": { "message": "✓ Saved" },
-  "permissionDenied": { "message": "Permission denied. Settings were not saved." },
+  "permissionDenied": {
+    "message": "Permission denied. Settings were not saved."
+  },
   "invalidBaseUrl": { "message": "Please enter a valid API Base URL." },
-  "shortcutHint": { "message": "Open the draft panel from the current text field:" },
+  "shortcutHint": {
+    "message": "Open the draft panel from the current text field via the context menu or shortcut:"
+  },
   "footerVersion": { "message": "Version" },
   "footerProjectHome": { "message": "Project Home" },
   "footerGitHub": { "message": "GitHub" },
   "sectionProvider": { "message": "OpenAI-Compatible API" },
-  "sectionProviderDesc": { "message": "Configure the API endpoint and model used to generate drafts." },
+  "sectionProviderDesc": {
+    "message": "Configure the API endpoint and model used to generate drafts."
+  },
   "sectionGitHub": { "message": "GitHub Context" },
-  "sectionGitHubDesc": { "message": "Optionally use a GitHub token to fetch richer issue and PR context." },
+  "sectionGitHubDesc": {
+    "message": "Optionally use a GitHub token to fetch richer issue and PR context."
+  },
   "sectionUsage": { "message": "Usage" },
-  "sectionUsageDesc": { "message": "Control how Draft Pilot opens while you write." },
-  "shortcutManageBtn": { "message": "Change shortcut" }
+  "sectionUsageDesc": {
+    "message": "Control how Draft Pilot opens while you write."
+  },
+  "shortcutManageHint": {
+    "message": "To change it, open Chrome Extensions → Keyboard shortcuts"
+  }
 }

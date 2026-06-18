@@ -28,7 +28,7 @@ function getOriginPattern(rawUrl) {
   if (url.protocol !== 'http:' && url.protocol !== 'https:') {
     throw new Error('invalid protocol');
   }
-  return `${url.origin}/*`;
+  return `${url.protocol}//${url.hostname}/*`;
 }
 
 function requestOrigins(origins) {
@@ -37,9 +37,15 @@ function requestOrigins(origins) {
   });
 }
 
+let statusTimer = null;
+
 function showStatus(messageKey) {
+  if (statusTimer) clearTimeout(statusTimer);
   $('status').textContent = _m(messageKey);
-  setTimeout(() => ($('status').textContent = ''), 2500);
+  statusTimer = setTimeout(() => {
+    $('status').textContent = '';
+    statusTimer = null;
+  }, 2500);
 }
 
 // Save
@@ -75,13 +81,11 @@ $('save').addEventListener('click', async () => {
   );
 });
 
-// Toggle key visibility
-$('toggleKey').addEventListener('click', () => {
-  const input = $('apiKey');
+function togglePassword(id) {
+  const input = $(id);
   input.type = input.type === 'password' ? 'text' : 'password';
-});
+}
 
-// Open Chrome shortcut settings
-$('manageShortcut').addEventListener('click', () => {
-  chrome.tabs.create({ url: 'chrome://extensions/shortcuts' });
-});
+// Toggle key visibility
+$('toggleKey').addEventListener('click', () => togglePassword('apiKey'));
+$('toggleGhToken').addEventListener('click', () => togglePassword('ghToken'));

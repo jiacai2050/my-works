@@ -50,15 +50,21 @@
   "saved": { "message": "✓ 已保存" },
   "permissionDenied": { "message": "未授予权限，设置未保存。" },
   "invalidBaseUrl": { "message": "请输入有效的 API Base URL。" },
-  "shortcutHint": { "message": "在当前输入框打开草稿面板：" },
+  "shortcutHint": {
+    "message": "可通过右键菜单或快捷键在当前输入框打开草稿面板："
+  },
   "footerVersion": { "message": "版本" },
   "footerProjectHome": { "message": "项目主页" },
   "footerGitHub": { "message": "GitHub" },
   "sectionProvider": { "message": "OpenAI 兼容 API" },
   "sectionProviderDesc": { "message": "配置用于生成草稿的 API 地址和模型。" },
   "sectionGitHub": { "message": "GitHub 上下文" },
-  "sectionGitHubDesc": { "message": "可选配置 GitHub Token，用于获取更完整的 issue 和 PR 上下文。" },
+  "sectionGitHubDesc": {
+    "message": "可选配置 GitHub Token，用于获取更完整的 issue 和 PR 上下文。"
+  },
   "sectionUsage": { "message": "使用方式" },
   "sectionUsageDesc": { "message": "设置写作时如何打开 Draft Pilot。" },
-  "shortcutManageBtn": { "message": "修改快捷键" }
+  "shortcutManageHint": {
+    "message": "如需修改，请打开 Chrome 扩展程序 → 键盘快捷键"
+  }
 }

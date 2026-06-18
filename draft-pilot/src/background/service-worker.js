@@ -111,7 +111,13 @@ async function handleGenerate(payload) {
     ? SYSTEM_PROMPT + '\n' + toneMap[settings.defaultTone]
     : SYSTEM_PROMPT;
 
-  const draft = await callOpenAI(apiKey, model, userPrompt, systemWithTone, baseUrl);
+  const draft = await callOpenAI(
+    apiKey,
+    model,
+    userPrompt,
+    systemWithTone,
+    baseUrl,
+  );
   await DraftPilotStorage.saveDraft(draft, payload.context?.title);
   return draft;
 }
