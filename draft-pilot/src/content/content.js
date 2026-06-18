@@ -33,6 +33,12 @@
 
   function openDraft() {
     if (!lastActiveElement) {
+      const activeElement = document.activeElement?.closest?.(
+        'textarea, [contenteditable="true"]',
+      );
+      if (activeElement) lastActiveElement = activeElement;
+    }
+    if (!lastActiveElement) {
       // Try to find any visible textarea
       lastActiveElement = document.querySelector('textarea:not([hidden])');
     }
@@ -42,8 +48,15 @@
   }
 
   // Listen for messages from background (context menu click or keyboard shortcut)
-  chrome.runtime.onMessage.addListener((msg) => {
-    if (msg.type === 'open-draft') openDraft();
+  chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+    if (msg.type === 'ping') {
+      sendResponse({ ok: true });
+      return;
+    }
+    if (msg.type === 'open-draft') {
+      openDraft();
+      sendResponse({ ok: true });
+    }
   });
 
   // Expose for ui.js insert

@@ -67,44 +67,8 @@ function buildUserPrompt({ context, intent, intentValue, userNote }) {
   return prompt;
 }
 
-async function callAnthropic(
-  apiKey,
-  model,
-  userPrompt,
-  system = SYSTEM_PROMPT,
-) {
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify({
-      model,
-      max_tokens: 1024,
-      system,
-      messages: [{ role: 'user', content: userPrompt }],
-    }),
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    const msg =
-      err.error?.message || err.message || err.detail || JSON.stringify(err);
-    throw new Error(`API error ${res.status}: ${msg}`);
-  }
-  const data = await res.json();
-  return data.content[0].text;
-}
-
-async function callOpenAI(
-  apiKey,
-  model,
-  userPrompt,
-  system = SYSTEM_PROMPT,
-  baseUrl = 'https://api.openai.com/v1',
-) {
-  const res = await fetch(`${baseUrl}/chat/completions`, {
+async function callOpenAI(apiKey, model, userPrompt, system, baseUrl) {
+  const res = await fetch(`${baseUrl.replace(/\/$/, '')}/chat/completions`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -130,18 +94,12 @@ async function callOpenAI(
 
 async function handleGenerate(payload) {
   const settings = await DraftPilotStorage.getSettings();
-  const provider = settings.provider || 'openai';
   const apiKey = settings.apiKey;
-  const model =
-    settings.model ||
-    (provider === 'anthropic' ? 'claude-sonnet-4-20250514' : 'gpt-4o');
-  const baseUrl =
-    settings.baseUrl ||
-    (provider === 'anthropic'
-      ? 'https://api.anthropic.com'
-      : 'https://api.openai.com/v1');
+  const model = settings.model || 'gpt-4o';
+  const baseUrl = settings.baseUrl;
 
   if (!apiKey) throw new Error(chrome.i18n.getMessage('errorNoApiKey'));
+  if (!baseUrl) throw new Error(chrome.i18n.getMessage('errorNoBaseUrl'));
 
   const userPrompt = buildUserPrompt(payload);
   const toneMap = {
@@ -153,35 +111,24 @@ async function handleGenerate(payload) {
     ? SYSTEM_PROMPT + '\n' + toneMap[settings.defaultTone]
     : SYSTEM_PROMPT;
 
-  if (provider === 'openai') {
-    const draft = await callOpenAI(
-      apiKey,
-      model,
-      userPrompt,
-      systemWithTone,
-      baseUrl,
-    );
-    await DraftPilotStorage.saveDraft(draft, payload.context?.title);
-    return draft;
-  }
-  const draft = await callAnthropic(apiKey, model, userPrompt, systemWithTone);
+  const draft = await callOpenAI(
+    apiKey,
+    model,
+    userPrompt,
+    systemWithTone,
+    baseUrl,
+  );
   await DraftPilotStorage.saveDraft(draft, payload.context?.title);
   return draft;
 }
 
 async function handleToneAdjust({ draft, tone }) {
   const settings = await DraftPilotStorage.getSettings();
-  const provider = settings.provider || 'openai';
   const apiKey = settings.apiKey;
-  const model =
-    settings.model ||
-    (provider === 'anthropic' ? 'claude-sonnet-4-20250514' : 'gpt-4o');
-  const baseUrl =
-    settings.baseUrl ||
-    (provider === 'anthropic'
-      ? 'https://api.anthropic.com'
-      : 'https://api.openai.com/v1');
+  const model = settings.model || 'gpt-4o';
+  const baseUrl = settings.baseUrl;
   if (!apiKey) throw new Error(chrome.i18n.getMessage('errorNoApiKey'));
+  if (!baseUrl) throw new Error(chrome.i18n.getMessage('errorNoBaseUrl'));
 
   const toneMap = {
     formal: 'more formal and professional',
@@ -190,9 +137,7 @@ async function handleToneAdjust({ draft, tone }) {
   };
   const prompt = `Rewrite this text to be ${toneMap[tone]}. Keep the same meaning. Reply with only the rewritten text:\n\n${draft}`;
 
-  if (provider === 'openai')
-    return await callOpenAI(apiKey, model, prompt, SYSTEM_PROMPT, baseUrl);
-  return await callAnthropic(apiKey, model, prompt);
+  return await callOpenAI(apiKey, model, prompt, SYSTEM_PROMPT, baseUrl);
 }
 
 // Message listener
@@ -225,8 +170,19 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
 async function fetchGitHubContext({ owner, repo, issueNumber }) {
   const { ghToken } = await DraftPilotStorage.getSettings();
-  const headers = { Accept: 'application/vnd.github+json' };
-  if (ghToken) headers.Authorization = `Bearer ${ghToken}`;
+  if (!ghToken) {
+    return {
+      url: `https://github.com/${owner}/${repo}/issues/${issueNumber}`,
+      title: '',
+      body: '',
+      recentComments: [],
+      existingInput: '',
+    };
+  }
+  const headers = {
+    Accept: 'application/vnd.github+json',
+    Authorization: `Bearer ${ghToken}`,
+  };
 
   const base = `https://api.github.com/repos/${owner}/${repo}/issues/${issueNumber}`;
 
@@ -255,6 +211,36 @@ async function fetchGitHubContext({ owner, repo, issueNumber }) {
   };
 }
 
+async function ensureContentScripts(tabId) {
+  try {
+    await chrome.tabs.sendMessage(tabId, { type: 'ping' });
+  } catch (_) {
+    await chrome.scripting.insertCSS({
+      target: { tabId },
+      files: ['styles/content.css'],
+    });
+    await chrome.scripting.executeScript({
+      target: { tabId },
+      files: [
+        'shared/Readability.min.js',
+        'content/context.js',
+        'content/ui.js',
+        'content/content.js',
+      ],
+    });
+  }
+}
+
+async function openDraftInTab(tabId) {
+  await ensureContentScripts(tabId);
+  await chrome.tabs.sendMessage(tabId, { type: 'open-draft' });
+}
+
+// Toolbar icon opens the options page
+chrome.action.onClicked.addListener(() => {
+  chrome.runtime.openOptionsPage();
+});
+
 // Register context menu on install
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
@@ -267,7 +253,7 @@ chrome.runtime.onInstalled.addListener(() => {
 // Context menu click handler
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   if (info.menuItemId === 'draftpilot-draft' && tab?.id) {
-    chrome.tabs.sendMessage(tab.id, { type: 'open-draft' });
+    openDraftInTab(tab.id).catch(console.error);
   }
 });
 
@@ -275,7 +261,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 chrome.commands.onCommand.addListener((command) => {
   if (command === 'open-draft') {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      if (tabs[0]) chrome.tabs.sendMessage(tabs[0].id, { type: 'open-draft' });
+      if (tabs[0]?.id) openDraftInTab(tabs[0].id).catch(console.error);
     });
   }
 });
