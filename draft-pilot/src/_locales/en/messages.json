@@ -68,7 +68,7 @@
   },
   "sectionGitHub": { "message": "GitHub Context" },
   "sectionGitHubDesc": {
-    "message": "Optionally use a GitHub token to fetch richer issue and PR context."
+    "message": "Set a GitHub token to enable GitHub API context for issues and PRs."
   },
   "sectionUsage": { "message": "Usage" },
   "sectionUsageDesc": {

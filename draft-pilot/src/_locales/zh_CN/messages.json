@@ -60,7 +60,7 @@
   "sectionProviderDesc": { "message": "配置用于生成草稿的 API 地址和模型。" },
   "sectionGitHub": { "message": "GitHub 上下文" },
   "sectionGitHubDesc": {
-    "message": "可选配置 GitHub Token，用于获取更完整的 issue 和 PR 上下文。"
+    "message": "设置 GitHub Token 后，可通过 GitHub API 获取更多 issue 和 PR 上下文。"
   },
   "sectionUsage": { "message": "使用方式" },
   "sectionUsageDesc": { "message": "设置写作时如何打开 Draft Pilot。" },
