@@ -53,7 +53,10 @@
       sendResponse({ ok: true });
       return;
     }
-    if (msg.type === 'open-draft') openDraft();
+    if (msg.type === 'open-draft') {
+      openDraft();
+      sendResponse({ ok: true });
+    }
   });
 
   // Expose for ui.js insert
