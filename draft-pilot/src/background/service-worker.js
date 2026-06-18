@@ -170,8 +170,19 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
 async function fetchGitHubContext({ owner, repo, issueNumber }) {
   const { ghToken } = await DraftPilotStorage.getSettings();
-  const headers = { Accept: 'application/vnd.github+json' };
-  if (ghToken) headers.Authorization = `Bearer ${ghToken}`;
+  if (!ghToken) {
+    return {
+      url: `https://github.com/${owner}/${repo}/issues/${issueNumber}`,
+      title: '',
+      body: '',
+      recentComments: [],
+      existingInput: '',
+    };
+  }
+  const headers = {
+    Accept: 'application/vnd.github+json',
+    Authorization: `Bearer ${ghToken}`,
+  };
 
   const base = `https://api.github.com/repos/${owner}/${repo}/issues/${issueNumber}`;
 
