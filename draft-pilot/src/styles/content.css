@@ -36,8 +36,15 @@
   font-size: 12px;
   font-weight: 500;
   color: var(--fgColor-default, var(--color-fg-default, var(--draftpilot-fg)));
-  background: var(--bgColor-default, var(--color-canvas-default, var(--draftpilot-bg)));
-  border: 1px solid var(--borderColor-default, var(--color-border-default, var(--draftpilot-border)));
+  background: var(
+    --bgColor-default,
+    var(--color-canvas-default, var(--draftpilot-bg))
+  );
+  border: 1px solid
+    var(
+      --borderColor-default,
+      var(--color-border-default, var(--draftpilot-border))
+    );
   border-radius: 6px;
   cursor: pointer;
   line-height: 20px;
@@ -45,7 +52,10 @@
 }
 
 .draftpilot-btn:hover {
-  background: var(--bgColor-muted, var(--color-canvas-subtle, var(--draftpilot-bg-muted)));
+  background: var(
+    --bgColor-muted,
+    var(--color-canvas-subtle, var(--draftpilot-bg-muted))
+  );
 }
 
 /* Popover */
@@ -55,9 +65,15 @@
   flex-direction: column;
   width: 320px;
   max-height: calc(100vh - 24px);
-  background: var(--bgColor-default, var(--color-canvas-overlay, var(--draftpilot-bg-overlay)));
+  background: var(
+    --bgColor-default,
+    var(--color-canvas-overlay, var(--draftpilot-bg-overlay))
+  );
   border: 1px solid
-    var(--borderColor-default, var(--color-border-default, var(--draftpilot-border)));
+    var(
+      --borderColor-default,
+      var(--color-border-default, var(--draftpilot-border))
+    );
   border-radius: 12px;
   box-shadow: var(--shadow-floating-large, 0 8px 24px rgba(0, 0, 0, 0.12));
   padding: 16px;
@@ -95,9 +111,15 @@
   padding: 8px 4px;
   font-size: 12px;
   border: 1px solid
-    var(--borderColor-default, var(--color-border-default, var(--draftpilot-border)));
+    var(
+      --borderColor-default,
+      var(--color-border-default, var(--draftpilot-border))
+    );
   border-radius: 8px;
-  background: var(--bgColor-default, var(--color-canvas-default, var(--draftpilot-bg)));
+  background: var(
+    --bgColor-default,
+    var(--color-canvas-default, var(--draftpilot-bg))
+  );
   color: var(--fgColor-default, var(--color-fg-default, var(--draftpilot-fg)));
   cursor: pointer;
   transition:
@@ -107,13 +129,25 @@
 }
 
 .draftpilot-intent-btn:hover {
-  background: var(--bgColor-muted, var(--color-canvas-subtle, var(--draftpilot-bg-muted)));
-  border-color: var(--fgColor-muted, var(--color-fg-muted, var(--draftpilot-fg-muted)));
+  background: var(
+    --bgColor-muted,
+    var(--color-canvas-subtle, var(--draftpilot-bg-muted))
+  );
+  border-color: var(
+    --fgColor-muted,
+    var(--color-fg-muted, var(--draftpilot-fg-muted))
+  );
 }
 
 .draftpilot-intent-btn.selected {
-  border-color: var(--fgColor-accent, var(--color-accent-fg, var(--draftpilot-accent)));
-  background: var(--bgColor-accent-muted, var(--color-accent-subtle, var(--draftpilot-bg-accent-muted)));
+  border-color: var(
+    --fgColor-accent,
+    var(--color-accent-fg, var(--draftpilot-accent))
+  );
+  background: var(
+    --bgColor-accent-muted,
+    var(--color-accent-subtle, var(--draftpilot-bg-accent-muted))
+  );
   box-shadow: 0 0 0 2px var(--bgColor-accent-muted, rgba(9, 105, 218, 0.2));
 }
 
@@ -124,9 +158,15 @@
   padding: 8px;
   font-size: 13px;
   border: 1px solid
-    var(--borderColor-default, var(--color-border-default, var(--draftpilot-border)));
+    var(
+      --borderColor-default,
+      var(--color-border-default, var(--draftpilot-border))
+    );
   border-radius: 6px;
-  background: var(--bgColor-default, var(--color-canvas-default, var(--draftpilot-bg)));
+  background: var(
+    --bgColor-default,
+    var(--color-canvas-default, var(--draftpilot-bg))
+  );
   color: var(--fgColor-default, var(--color-fg-default, var(--draftpilot-fg)));
   resize: vertical;
   font-family: inherit;
@@ -135,7 +175,10 @@
 
 .draftpilot-input:focus {
   outline: none;
-  border-color: var(--fgColor-accent, var(--color-accent-fg, var(--draftpilot-accent)));
+  border-color: var(
+    --fgColor-accent,
+    var(--color-accent-fg, var(--draftpilot-accent))
+  );
   box-shadow: 0 0 0 3px var(--bgColor-accent-muted, rgba(9, 105, 218, 0.15));
 }
 
@@ -177,9 +220,16 @@
 .draftpilot-draft {
   margin-top: 12px;
   padding: 8px;
-  border: 1px solid var(--borderColor-default, var(--color-border-default, var(--draftpilot-border)));
+  border: 1px solid
+    var(
+      --borderColor-default,
+      var(--color-border-default, var(--draftpilot-border))
+    );
   border-radius: 6px;
-  background: var(--bgColor-muted, var(--color-canvas-subtle, var(--draftpilot-bg-muted)));
+  background: var(
+    --bgColor-muted,
+    var(--color-canvas-subtle, var(--draftpilot-bg-muted))
+  );
   min-height: 60px;
   max-height: min(200px, 35vh);
   overflow-y: auto;
@@ -206,22 +256,38 @@
 
 .draftpilot-tone-label {
   font-size: 12px;
-  color: var(--fgColor-muted, var(--color-fg-muted, var(--draftpilot-fg-muted)));
+  color: var(
+    --fgColor-muted,
+    var(--color-fg-muted, var(--draftpilot-fg-muted))
+  );
 }
 
 .draftpilot-tone-btn {
   padding: 3px 8px;
   font-size: 11px;
-  border: 1px solid var(--borderColor-default, var(--color-border-default, var(--draftpilot-border)));
+  border: 1px solid
+    var(
+      --borderColor-default,
+      var(--color-border-default, var(--draftpilot-border))
+    );
   border-radius: 12px;
-  background: var(--bgColor-default, var(--color-canvas-default, var(--draftpilot-bg)));
+  background: var(
+    --bgColor-default,
+    var(--color-canvas-default, var(--draftpilot-bg))
+  );
   color: var(--fgColor-default, var(--color-fg-default, var(--draftpilot-fg)));
   cursor: pointer;
 }
 
 .draftpilot-tone-btn:hover {
-  background: var(--bgColor-accent-muted, var(--color-accent-subtle, var(--draftpilot-bg-accent-muted)));
-  border-color: var(--fgColor-accent, var(--color-accent-fg, var(--draftpilot-accent)));
+  background: var(
+    --bgColor-accent-muted,
+    var(--color-accent-subtle, var(--draftpilot-bg-accent-muted))
+  );
+  border-color: var(
+    --fgColor-accent,
+    var(--color-accent-fg, var(--draftpilot-accent))
+  );
 }
 
 .draftpilot-draft-actions button {
@@ -230,13 +296,23 @@
   font-size: 12px;
   border-radius: 6px;
   cursor: pointer;
-  border: 1px solid var(--borderColor-default, var(--color-border-default, var(--draftpilot-border)));
-  background: var(--bgColor-default, var(--color-canvas-default, var(--draftpilot-bg)));
+  border: 1px solid
+    var(
+      --borderColor-default,
+      var(--color-border-default, var(--draftpilot-border))
+    );
+  background: var(
+    --bgColor-default,
+    var(--color-canvas-default, var(--draftpilot-bg))
+  );
   color: var(--fgColor-default, var(--color-fg-default, var(--draftpilot-fg)));
 }
 
 .draftpilot-draft-actions button:hover {
-  background: var(--bgColor-muted, var(--color-canvas-subtle, var(--draftpilot-bg-muted)));
+  background: var(
+    --bgColor-muted,
+    var(--color-canvas-subtle, var(--draftpilot-bg-muted))
+  );
 }
 
 .draftpilot-draft-actions button.primary,
@@ -257,7 +333,10 @@
 .draftpilot-loading {
   text-align: center;
   padding: 16px;
-  color: var(--fgColor-muted, var(--color-fg-muted, var(--draftpilot-fg-muted)));
+  color: var(
+    --fgColor-muted,
+    var(--color-fg-muted, var(--draftpilot-fg-muted))
+  );
 }
 
 .draftpilot-loading::before {
@@ -265,8 +344,15 @@
   display: inline-block;
   width: 16px;
   height: 16px;
-  border: 2px solid var(--borderColor-default, var(--color-border-default, var(--draftpilot-border)));
-  border-top-color: var(--fgColor-accent, var(--color-accent-fg, var(--draftpilot-accent)));
+  border: 2px solid
+    var(
+      --borderColor-default,
+      var(--color-border-default, var(--draftpilot-border))
+    );
+  border-top-color: var(
+    --fgColor-accent,
+    var(--color-accent-fg, var(--draftpilot-accent))
+  );
   border-radius: 50%;
   animation: draftpilot-spin 0.6s linear infinite;
   margin-right: 8px;
@@ -289,7 +375,10 @@
 }
 
 .draftpilot-error .retry-link {
-  color: var(--fgColor-accent, var(--color-accent-fg, var(--draftpilot-accent)));
+  color: var(
+    --fgColor-accent,
+    var(--color-accent-fg, var(--draftpilot-accent))
+  );
   cursor: pointer;
   text-decoration: underline;
   margin-left: 8px;
@@ -314,15 +403,25 @@
 
 .draftpilot-history-btn {
   padding: 8px 12px;
-  border: 1px solid var(--borderColor-default, var(--color-border-default, var(--draftpilot-border)));
+  border: 1px solid
+    var(
+      --borderColor-default,
+      var(--color-border-default, var(--draftpilot-border))
+    );
   border-radius: 6px;
-  background: var(--bgColor-default, var(--color-canvas-default, var(--draftpilot-bg)));
+  background: var(
+    --bgColor-default,
+    var(--color-canvas-default, var(--draftpilot-bg))
+  );
   cursor: pointer;
   font-size: 14px;
 }
 
 .draftpilot-history-btn:hover {
-  background: var(--bgColor-muted, var(--color-canvas-subtle, var(--draftpilot-bg-muted)));
+  background: var(
+    --bgColor-muted,
+    var(--color-canvas-subtle, var(--draftpilot-bg-muted))
+  );
 }
 
 /* History list */
@@ -330,7 +429,11 @@
   margin-top: 8px;
   max-height: 200px;
   overflow-y: auto;
-  border: 1px solid var(--borderColor-default, var(--color-border-default, var(--draftpilot-border)));
+  border: 1px solid
+    var(
+      --borderColor-default,
+      var(--color-border-default, var(--draftpilot-border))
+    );
   border-radius: 6px;
 }
 
@@ -338,7 +441,10 @@
   padding: 8px;
   cursor: pointer;
   border-bottom: 1px solid
-    var(--borderColor-muted, var(--color-border-muted, var(--draftpilot-border-muted)));
+    var(
+      --borderColor-muted,
+      var(--color-border-muted, var(--draftpilot-border-muted))
+    );
   font-size: 12px;
 }
 
@@ -346,10 +452,16 @@
   border-bottom: none;
 }
 .draftpilot-history-item:hover {
-  background: var(--bgColor-muted, var(--color-canvas-subtle, var(--draftpilot-bg-muted)));
+  background: var(
+    --bgColor-muted,
+    var(--color-canvas-subtle, var(--draftpilot-bg-muted))
+  );
 }
 .draftpilot-history-item .hist-date {
-  color: var(--fgColor-muted, var(--color-fg-muted, var(--draftpilot-fg-muted)));
+  color: var(
+    --fgColor-muted,
+    var(--color-fg-muted, var(--draftpilot-fg-muted))
+  );
   margin-right: 8px;
 }
 .draftpilot-history-item .hist-text {

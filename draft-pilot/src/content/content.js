@@ -19,7 +19,8 @@
 
     const range = selection.getRangeAt(0);
     const rect = range.getBoundingClientRect();
-    const clientRect = rect.width || rect.height ? rect : range.getClientRects()[0];
+    const clientRect =
+      rect.width || rect.height ? rect : range.getClientRects()[0];
     if (!clientRect) return null;
 
     return { x: clientRect.right, y: clientRect.bottom };
