@@ -91,6 +91,16 @@
   user-select: none;
 }
 
+.draftpilot-popover-title:hover::after {
+  content: ' · drag to move';
+  font-size: 12px;
+  font-weight: 400;
+  color: var(
+    --fgColor-muted,
+    var(--color-fg-muted, var(--draftpilot-fg-muted))
+  );
+}
+
 .draftpilot-dragging .draftpilot-popover-title {
   cursor: grabbing;
 }

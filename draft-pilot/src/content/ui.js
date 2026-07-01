@@ -158,7 +158,9 @@ const DraftPilotUI = {
     const stopDragging = (e) => {
       if (!dragging) return;
       dragging = false;
-      handle.releasePointerCapture(e.pointerId);
+      if (handle.hasPointerCapture(e.pointerId)) {
+        handle.releasePointerCapture(e.pointerId);
+      }
       popover.classList.remove('draftpilot-dragging');
     };
 
@@ -382,18 +384,29 @@ const DraftPilotUI = {
             right: anchor?.x ?? window.innerWidth - 8,
           };
       popover.style.position = 'fixed';
-      // Position above the textarea, aligned to right
-      const popoverHeight = 400; // approximate max
-      const spaceAbove = rect.top;
-      if (spaceAbove > popoverHeight) {
-        popover.style.bottom = window.innerHeight - rect.top + 8 + 'px';
-        popover.style.top = 'auto';
-      } else {
-        popover.style.top = rect.bottom + 8 + 'px';
-        popover.style.bottom = 'auto';
-      }
-      popover.style.right = Math.max(8, window.innerWidth - rect.right) + 'px';
-      popover.style.left = 'auto';
+      const margin = 8;
+      const maxLeft = Math.max(
+        margin,
+        window.innerWidth - popover.offsetWidth - margin,
+      );
+      const maxTop = Math.max(
+        margin,
+        window.innerHeight - popover.offsetHeight - margin,
+      );
+      const left = Math.min(
+        Math.max(margin, rect.right - popover.offsetWidth),
+        maxLeft,
+      );
+      const topAnchor =
+        rect.top > popover.offsetHeight + margin
+          ? rect.top - popover.offsetHeight - margin
+          : rect.bottom + margin;
+      const top = Math.min(Math.max(margin, topAnchor), maxTop);
+
+      popover.style.left = left + 'px';
+      popover.style.top = top + 'px';
+      popover.style.right = 'auto';
+      popover.style.bottom = 'auto';
     }
   },
 };
