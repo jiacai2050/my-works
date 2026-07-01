@@ -97,6 +97,8 @@ const DraftPilotUI = {
       .querySelector('.draftpilot-history-btn')
       .addEventListener('click', () => this.showHistory(popover));
 
+    this.makeDraggable(popover);
+
     // Close on outside click
     setTimeout(() => {
       document.addEventListener(
@@ -114,6 +116,54 @@ const DraftPilotUI = {
 
     this.popoverEl = popover;
     return popover;
+  },
+
+  makeDraggable(popover) {
+    const handle = popover.querySelector('.draftpilot-popover-title');
+    if (!handle) return;
+
+    let dragging = false;
+    let offsetX = 0;
+    let offsetY = 0;
+
+    const movePopover = (clientX, clientY) => {
+      const maxLeft = Math.max(8, window.innerWidth - popover.offsetWidth - 8);
+      const maxTop = Math.max(8, window.innerHeight - popover.offsetHeight - 8);
+      const left = Math.min(Math.max(8, clientX - offsetX), maxLeft);
+      const top = Math.min(Math.max(8, clientY - offsetY), maxTop);
+
+      popover.style.left = left + 'px';
+      popover.style.top = top + 'px';
+      popover.style.right = 'auto';
+      popover.style.bottom = 'auto';
+    };
+
+    handle.addEventListener('pointerdown', (e) => {
+      if (e.button !== 0) return;
+      const rect = popover.getBoundingClientRect();
+      dragging = true;
+      offsetX = e.clientX - rect.left;
+      offsetY = e.clientY - rect.top;
+      handle.setPointerCapture(e.pointerId);
+      popover.classList.add('draftpilot-dragging');
+      movePopover(e.clientX, e.clientY);
+      e.preventDefault();
+    });
+
+    handle.addEventListener('pointermove', (e) => {
+      if (!dragging) return;
+      movePopover(e.clientX, e.clientY);
+    });
+
+    const stopDragging = (e) => {
+      if (!dragging) return;
+      dragging = false;
+      handle.releasePointerCapture(e.pointerId);
+      popover.classList.remove('draftpilot-dragging');
+    };
+
+    handle.addEventListener('pointerup', stopDragging);
+    handle.addEventListener('pointercancel', stopDragging);
   },
 
   async handleGenerate(popover) {
@@ -317,14 +367,20 @@ const DraftPilotUI = {
     }
   },
 
-  toggle(anchorEl) {
+  toggle(anchor) {
     if (this.popoverEl) {
       this.close();
     } else {
-      this._anchorEl = anchorEl;
+      this._anchorEl = anchor;
       const popover = this.createPopover();
       document.body.appendChild(popover);
-      const rect = anchorEl.getBoundingClientRect();
+      const rect = anchor?.getBoundingClientRect
+        ? anchor.getBoundingClientRect()
+        : {
+            top: anchor?.y ?? window.innerHeight / 2,
+            bottom: anchor?.y ?? window.innerHeight / 2,
+            right: anchor?.x ?? window.innerWidth - 8,
+          };
       popover.style.position = 'fixed';
       // Position above the textarea, aligned to right
       const popoverHeight = 400; // approximate max

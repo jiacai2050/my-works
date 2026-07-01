@@ -231,9 +231,9 @@ async function ensureContentScripts(tabId) {
   }
 }
 
-async function openDraftInTab(tabId) {
+async function openDraftInTab(tabId, selectionText = '') {
   await ensureContentScripts(tabId);
-  await chrome.tabs.sendMessage(tabId, { type: 'open-draft' });
+  await chrome.tabs.sendMessage(tabId, { type: 'open-draft', selectionText });
 }
 
 // Toolbar icon opens the options page
@@ -246,14 +246,14 @@ chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
     id: 'draftpilot-draft',
     title: '✨ Draft Pilot - Smart Draft Reply',
-    contexts: ['editable'],
+    contexts: ['editable', 'selection'],
   });
 });
 
 // Context menu click handler
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   if (info.menuItemId === 'draftpilot-draft' && tab?.id) {
-    openDraftInTab(tab.id).catch(console.error);
+    openDraftInTab(tab.id, info.selectionText || '').catch(console.error);
   }
 });
 

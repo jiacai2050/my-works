@@ -5,11 +5,24 @@
 (function () {
   // Track the element that was right-clicked
   let lastActiveElement = null;
+  let lastContextMenuPoint = null;
 
   function getEditableTarget(target) {
     const el = target?.closest?.('textarea, [contenteditable="true"]');
     if (!el || el.closest('.draftpilot-popover')) return null;
     return el;
+  }
+
+  function getSelectionPoint() {
+    const selection = window.getSelection();
+    if (!selection?.rangeCount) return null;
+
+    const range = selection.getRangeAt(0);
+    const rect = range.getBoundingClientRect();
+    const clientRect = rect.width || rect.height ? rect : range.getClientRects()[0];
+    if (!clientRect) return null;
+
+    return { x: clientRect.right, y: clientRect.bottom };
   }
 
   // Save selection on mousedown (before focus change clears it)
@@ -20,6 +33,7 @@
         // right-click
         const sel = window.getSelection()?.toString().trim();
         window._draftpilotSavedSelection = sel || '';
+        lastContextMenuPoint = { x: e.clientX, y: e.clientY };
       }
     },
     true,
@@ -37,18 +51,27 @@
     if (el) lastActiveElement = el;
   });
 
-  function openDraft() {
+  function openDraft(selectionText = '') {
+    if (selectionText) {
+      window._draftpilotSavedSelection = selectionText.trim();
+    }
+
     if (!lastActiveElement) {
       const activeElement = getEditableTarget(document.activeElement);
       if (activeElement) lastActiveElement = activeElement;
     }
-    if (!lastActiveElement) {
+    if (!lastActiveElement && !window._draftpilotSavedSelection) {
       // Try to find any visible textarea
-      lastActiveElement = document.querySelector('textarea:not([hidden])');
+      lastActiveElement = getEditableTarget(
+        document.querySelector('textarea:not([hidden])'),
+      );
     }
-    if (!lastActiveElement) return;
+    if (!lastActiveElement && !window._draftpilotSavedSelection) return;
 
-    DraftPilotUI.toggle(lastActiveElement);
+    const anchor = window._draftpilotSavedSelection
+      ? lastContextMenuPoint || getSelectionPoint() || lastActiveElement
+      : lastActiveElement;
+    DraftPilotUI.toggle(anchor);
   }
 
   // Listen for messages from background (context menu click or keyboard shortcut)
@@ -58,7 +81,7 @@
       return;
     }
     if (msg.type === 'open-draft') {
-      openDraft();
+      openDraft(msg.selectionText || '');
       sendResponse({ ok: true });
     }
   });
