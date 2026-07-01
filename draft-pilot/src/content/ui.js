@@ -23,7 +23,10 @@ const DraftPilotUI = {
     const popover = document.createElement('div');
     popover.className = 'draftpilot-popover';
     popover.innerHTML = `
-      <div class="draftpilot-popover-title">${_m('popoverTitle')}</div>
+      <div class="draftpilot-popover-title">
+        <span class="draftpilot-title-text">${_m('popoverTitle')}</span>
+        <span class="draftpilot-drag-hint">drag to move</span>
+      </div>
       <div class="draftpilot-intents">
         ${this.INTENTS.map((i) => `<button class="draftpilot-intent-btn" data-intent="${i.value}">${i.emoji} ${_m(i.labelKey)}</button>`).join('')}
       </div>
@@ -118,6 +121,77 @@ const DraftPilotUI = {
     return popover;
   },
 
+  clamp(value, min, max) {
+    return Math.min(Math.max(min, value), max);
+  },
+
+  anchorPopover(popover, anchor) {
+    const margin = 8;
+    const rect = anchor?.getBoundingClientRect
+      ? anchor.getBoundingClientRect()
+      : {
+          top: anchor?.y ?? window.innerHeight / 2,
+          bottom: anchor?.y ?? window.innerHeight / 2,
+          right: anchor?.x ?? window.innerWidth - margin,
+        };
+    const maxLeft = Math.max(
+      margin,
+      window.innerWidth - popover.offsetWidth - margin,
+    );
+    const left = this.clamp(rect.right - popover.offsetWidth, margin, maxLeft);
+    const spaceAbove = rect.top - margin * 2;
+    const spaceBelow = window.innerHeight - rect.bottom - margin * 2;
+    const shouldOpenAbove =
+      spaceAbove >= popover.offsetHeight || spaceAbove > spaceBelow;
+    const availableHeight = Math.max(
+      160,
+      shouldOpenAbove ? spaceAbove : spaceBelow,
+    );
+
+    popover.style.position = 'fixed';
+    popover.style.left = left + 'px';
+    popover.style.right = 'auto';
+    popover.style.maxHeight = availableHeight + 'px';
+
+    if (shouldOpenAbove) {
+      popover.style.bottom = window.innerHeight - rect.top + margin + 'px';
+      popover.style.top = 'auto';
+    } else {
+      popover.style.top = rect.bottom + margin + 'px';
+      popover.style.bottom = 'auto';
+    }
+  },
+
+  updateDetachedBounds(popover) {
+    const margin = 8;
+    const rect = popover.getBoundingClientRect();
+    const top = this.clamp(
+      rect.top,
+      margin,
+      Math.max(margin, window.innerHeight - margin - 160),
+    );
+    const maxLeft = Math.max(
+      margin,
+      window.innerWidth - popover.offsetWidth - margin,
+    );
+    const left = this.clamp(rect.left, margin, maxLeft);
+
+    popover.style.left = left + 'px';
+    popover.style.top = top + 'px';
+    popover.style.right = 'auto';
+    popover.style.bottom = 'auto';
+    popover.style.maxHeight =
+      Math.max(160, window.innerHeight - top - margin) + 'px';
+  },
+
+  refreshPopoverBounds(popover) {
+    if (!popover.classList.contains('draftpilot-detached') && this._anchorEl) {
+      this.anchorPopover(popover, this._anchorEl);
+    } else {
+      this.updateDetachedBounds(popover);
+    }
+  },
+
   makeDraggable(popover) {
     const handle = popover.querySelector('.draftpilot-popover-title');
     if (!handle) return;
@@ -127,15 +201,24 @@ const DraftPilotUI = {
     let offsetY = 0;
 
     const movePopover = (clientX, clientY) => {
-      const maxLeft = Math.max(8, window.innerWidth - popover.offsetWidth - 8);
-      const maxTop = Math.max(8, window.innerHeight - popover.offsetHeight - 8);
-      const left = Math.min(Math.max(8, clientX - offsetX), maxLeft);
-      const top = Math.min(Math.max(8, clientY - offsetY), maxTop);
+      const margin = 8;
+      const maxLeft = Math.max(
+        margin,
+        window.innerWidth - popover.offsetWidth - margin,
+      );
+      const maxTop = Math.max(
+        margin,
+        window.innerHeight - popover.offsetHeight - margin,
+      );
+      const left = this.clamp(clientX - offsetX, margin, maxLeft);
+      const top = this.clamp(clientY - offsetY, margin, maxTop);
 
       popover.style.left = left + 'px';
       popover.style.top = top + 'px';
       popover.style.right = 'auto';
       popover.style.bottom = 'auto';
+      popover.style.maxHeight =
+        Math.max(160, window.innerHeight - top - margin) + 'px';
     };
 
     handle.addEventListener('pointerdown', (e) => {
@@ -145,7 +228,7 @@ const DraftPilotUI = {
       offsetX = e.clientX - rect.left;
       offsetY = e.clientY - rect.top;
       handle.setPointerCapture(e.pointerId);
-      popover.classList.add('draftpilot-dragging');
+      popover.classList.add('draftpilot-dragging', 'draftpilot-detached');
       movePopover(e.clientX, e.clientY);
       e.preventDefault();
     });
@@ -218,6 +301,7 @@ const DraftPilotUI = {
 
       draftEl.textContent = response.draft;
       draftSection.classList.remove('draftpilot-hidden');
+      this.refreshPopoverBounds(popover);
     } catch (err) {
       errorEl.innerHTML = `${err.message || _m('generateFailed')}<span class="retry-link">${_m('retryLink')}</span>`;
       errorEl.classList.remove('draftpilot-hidden');
@@ -228,6 +312,7 @@ const DraftPilotUI = {
       loadingEl.classList.add('draftpilot-hidden');
       genBtn.disabled = false;
       genBtn.textContent = _m('generateBtn');
+      this.refreshPopoverBounds(popover);
     }
   },
 
@@ -246,6 +331,7 @@ const DraftPilotUI = {
     let listEl = popover.querySelector('.draftpilot-history-list');
     if (listEl) {
       listEl.remove();
+      this.refreshPopoverBounds(popover);
       return;
     }
 
@@ -265,6 +351,7 @@ const DraftPilotUI = {
       })
       .join('');
     popover.appendChild(listEl);
+    this.refreshPopoverBounds(popover);
 
     listEl.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -273,6 +360,7 @@ const DraftPilotUI = {
       draftEl.textContent = history[item.dataset.idx].draft;
       draftSection.classList.remove('draftpilot-hidden');
       listEl.remove();
+      this.refreshPopoverBounds(popover);
     });
   },
 
@@ -290,6 +378,7 @@ const DraftPilotUI = {
       });
       if (response.error) throw new Error(response.error);
       draftEl.textContent = response.draft;
+      this.refreshPopoverBounds(popover);
     } catch (err) {
       errorEl.textContent = err.message || _m('adjustFailed');
       errorEl.classList.remove('draftpilot-hidden');
@@ -376,37 +465,7 @@ const DraftPilotUI = {
       this._anchorEl = anchor;
       const popover = this.createPopover();
       document.body.appendChild(popover);
-      const rect = anchor?.getBoundingClientRect
-        ? anchor.getBoundingClientRect()
-        : {
-            top: anchor?.y ?? window.innerHeight / 2,
-            bottom: anchor?.y ?? window.innerHeight / 2,
-            right: anchor?.x ?? window.innerWidth - 8,
-          };
-      popover.style.position = 'fixed';
-      const margin = 8;
-      const maxLeft = Math.max(
-        margin,
-        window.innerWidth - popover.offsetWidth - margin,
-      );
-      const maxTop = Math.max(
-        margin,
-        window.innerHeight - popover.offsetHeight - margin,
-      );
-      const left = Math.min(
-        Math.max(margin, rect.right - popover.offsetWidth),
-        maxLeft,
-      );
-      const topAnchor =
-        rect.top > popover.offsetHeight + margin
-          ? rect.top - popover.offsetHeight - margin
-          : rect.bottom + margin;
-      const top = Math.min(Math.max(margin, topAnchor), maxTop);
-
-      popover.style.left = left + 'px';
-      popover.style.top = top + 'px';
-      popover.style.right = 'auto';
-      popover.style.bottom = 'auto';
+      this.anchorPopover(popover, anchor);
     }
   },
 };

@@ -32,7 +32,7 @@
     (e) => {
       if (e.button === 2) {
         // right-click
-        const sel = window.getSelection()?.toString().trim();
+        const sel = window.getSelection()?.toString()?.trim();
         window._draftpilotSavedSelection = sel || '';
         lastContextMenuPoint = { x: e.clientX, y: e.clientY };
       }
@@ -58,7 +58,7 @@
     } else {
       // Avoid reusing a previous selection when opened via shortcut or editable menu.
       window._draftpilotSavedSelection =
-        window.getSelection()?.toString().trim() || '';
+        window.getSelection()?.toString()?.trim() || '';
       // Context-menu coordinates are only valid for the click that captured them.
       lastContextMenuPoint = null;
     }

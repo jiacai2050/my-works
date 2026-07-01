@@ -81,24 +81,41 @@
   font-size: 14px;
   box-sizing: border-box;
   color-scheme: light dark;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .draftpilot-popover-title {
-  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   margin-bottom: 12px;
   color: var(--fgColor-default, var(--color-fg-default, var(--draftpilot-fg)));
   cursor: grab;
   user-select: none;
 }
 
-.draftpilot-popover-title:hover::after {
-  content: ' · drag to move';
+.draftpilot-title-text {
+  min-width: 0;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.draftpilot-drag-hint {
+  display: none;
+  flex: 0 0 auto;
   font-size: 12px;
   font-weight: 400;
   color: var(
     --fgColor-muted,
     var(--color-fg-muted, var(--draftpilot-fg-muted))
   );
+}
+
+.draftpilot-popover-title:hover .draftpilot-drag-hint {
+  display: inline;
 }
 
 .draftpilot-dragging .draftpilot-popover-title {
@@ -165,6 +182,7 @@
 .draftpilot-input {
   width: 100%;
   min-height: 60px;
+  max-height: 30vh;
   padding: 8px;
   font-size: 13px;
   border: 1px solid
