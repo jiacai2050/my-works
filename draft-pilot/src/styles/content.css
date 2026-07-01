@@ -135,7 +135,7 @@
   align-items: center;
   justify-content: center;
   gap: 4px;
-  padding: 8px 4px;
+  padding: 6px 4px;
   font-size: 12px;
   border: 1px solid
     var(
@@ -215,7 +215,7 @@
   display: block;
   width: 100%;
   margin-top: 12px;
-  padding: 8px 16px;
+  padding: 6px 14px;
   font-size: 13px;
   font-weight: 500;
   color: var(--fgColor-onEmphasis, #fff);
@@ -271,8 +271,8 @@
 .draftpilot-draft-actions {
   display: flex;
   flex: 0 0 auto;
-  gap: 8px;
-  margin-top: 8px;
+  gap: 6px;
+  margin-top: 6px;
 }
 
 .draftpilot-tone-bar {
@@ -291,7 +291,7 @@
 }
 
 .draftpilot-tone-btn {
-  padding: 3px 8px;
+  padding: 2px 7px;
   font-size: 11px;
   border: 1px solid
     var(
@@ -320,9 +320,10 @@
 
 .draftpilot-draft-actions button {
   flex: 1;
-  padding: 6px 12px;
+  padding: 3px 8px;
   font-size: 12px;
-  border-radius: 6px;
+  line-height: 18px;
+  border-radius: 5px;
   cursor: pointer;
   border: 1px solid
     var(
@@ -430,7 +431,7 @@
 }
 
 .draftpilot-history-btn {
-  padding: 8px 12px;
+  padding: 6px 10px;
   border: 1px solid
     var(
       --borderColor-default,

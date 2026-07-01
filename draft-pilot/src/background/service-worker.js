@@ -270,12 +270,3 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
     openDraftInTab(tab.id, info.selectionText || '').catch(console.error);
   }
 });
-
-// Keyboard shortcut command
-chrome.commands.onCommand.addListener((command) => {
-  if (command === 'open-draft') {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      if (tabs[0]?.id) openDraftInTab(tabs[0].id).catch(console.error);
-    });
-  }
-});

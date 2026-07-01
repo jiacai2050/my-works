@@ -50,9 +50,6 @@
   "saved": { "message": "✓ 已保存" },
   "permissionDenied": { "message": "未授予权限，设置未保存。" },
   "invalidBaseUrl": { "message": "请输入有效的 API Base URL。" },
-  "shortcutHint": {
-    "message": "可通过右键菜单或快捷键在当前输入框打开草稿面板："
-  },
   "footerVersion": { "message": "版本" },
   "footerProjectHome": { "message": "项目主页" },
   "footerGitHub": { "message": "GitHub" },
@@ -61,10 +58,5 @@
   "sectionGitHub": { "message": "GitHub 上下文" },
   "sectionGitHubDesc": {
     "message": "设置 GitHub Token 后，可通过 GitHub API 获取更多 issue 和 PR 上下文。"
-  },
-  "sectionUsage": { "message": "使用方式" },
-  "sectionUsageDesc": { "message": "设置写作时如何打开 Draft Pilot。" },
-  "shortcutManageHint": {
-    "message": "如需修改，请打开 Chrome 扩展程序 → 键盘快捷键"
   }
 }

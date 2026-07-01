@@ -121,12 +121,43 @@ const DraftPilotUI = {
     return popover;
   },
 
+  POSITION_MARGIN: 8,
+  MIN_POPOVER_HEIGHT: 160,
+
   clamp(value, min, max) {
     return Math.min(Math.max(min, value), max);
   },
 
+  clampPopoverLeft(popover, left) {
+    const margin = this.POSITION_MARGIN;
+    const maxLeft = Math.max(
+      margin,
+      window.innerWidth - popover.offsetWidth - margin,
+    );
+    return this.clamp(left, margin, maxLeft);
+  },
+
+  setDetachedPosition(popover, left, top) {
+    const margin = this.POSITION_MARGIN;
+    const clampedTop = this.clamp(
+      top,
+      margin,
+      Math.max(margin, window.innerHeight - margin - this.MIN_POPOVER_HEIGHT),
+    );
+
+    popover.style.left = this.clampPopoverLeft(popover, left) + 'px';
+    popover.style.top = clampedTop + 'px';
+    popover.style.right = 'auto';
+    popover.style.bottom = 'auto';
+    popover.style.maxHeight =
+      Math.max(
+        this.MIN_POPOVER_HEIGHT,
+        window.innerHeight - clampedTop - margin,
+      ) + 'px';
+  },
+
   anchorPopover(popover, anchor) {
-    const margin = 8;
+    const margin = this.POSITION_MARGIN;
     const rect = anchor?.getBoundingClientRect
       ? anchor.getBoundingClientRect()
       : {
@@ -134,17 +165,16 @@ const DraftPilotUI = {
           bottom: anchor?.y ?? window.innerHeight / 2,
           right: anchor?.x ?? window.innerWidth - margin,
         };
-    const maxLeft = Math.max(
-      margin,
-      window.innerWidth - popover.offsetWidth - margin,
+    const left = this.clampPopoverLeft(
+      popover,
+      rect.right - popover.offsetWidth,
     );
-    const left = this.clamp(rect.right - popover.offsetWidth, margin, maxLeft);
     const spaceAbove = rect.top - margin * 2;
     const spaceBelow = window.innerHeight - rect.bottom - margin * 2;
     const shouldOpenAbove =
       spaceAbove >= popover.offsetHeight || spaceAbove > spaceBelow;
     const availableHeight = Math.max(
-      160,
+      this.MIN_POPOVER_HEIGHT,
       shouldOpenAbove ? spaceAbove : spaceBelow,
     );
 
@@ -163,25 +193,8 @@ const DraftPilotUI = {
   },
 
   updateDetachedBounds(popover) {
-    const margin = 8;
     const rect = popover.getBoundingClientRect();
-    const top = this.clamp(
-      rect.top,
-      margin,
-      Math.max(margin, window.innerHeight - margin - 160),
-    );
-    const maxLeft = Math.max(
-      margin,
-      window.innerWidth - popover.offsetWidth - margin,
-    );
-    const left = this.clamp(rect.left, margin, maxLeft);
-
-    popover.style.left = left + 'px';
-    popover.style.top = top + 'px';
-    popover.style.right = 'auto';
-    popover.style.bottom = 'auto';
-    popover.style.maxHeight =
-      Math.max(160, window.innerHeight - top - margin) + 'px';
+    this.setDetachedPosition(popover, rect.left, rect.top);
   },
 
   refreshPopoverBounds(popover) {
@@ -201,24 +214,7 @@ const DraftPilotUI = {
     let offsetY = 0;
 
     const movePopover = (clientX, clientY) => {
-      const margin = 8;
-      const maxLeft = Math.max(
-        margin,
-        window.innerWidth - popover.offsetWidth - margin,
-      );
-      const maxTop = Math.max(
-        margin,
-        window.innerHeight - popover.offsetHeight - margin,
-      );
-      const left = this.clamp(clientX - offsetX, margin, maxLeft);
-      const top = this.clamp(clientY - offsetY, margin, maxTop);
-
-      popover.style.left = left + 'px';
-      popover.style.top = top + 'px';
-      popover.style.right = 'auto';
-      popover.style.bottom = 'auto';
-      popover.style.maxHeight =
-        Math.max(160, window.innerHeight - top - margin) + 'px';
+      this.setDetachedPosition(popover, clientX - offsetX, clientY - offsetY);
     };
 
     handle.addEventListener('pointerdown', (e) => {

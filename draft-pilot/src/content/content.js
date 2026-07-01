@@ -1,4 +1,4 @@
-// DraftPilot - Content Script (context menu + keyboard shortcut trigger)
+// DraftPilot - Content Script (context menu trigger)
 
 /* global DraftPilotUI:readonly */
 
@@ -46,7 +46,7 @@
     if (el) lastActiveElement = el;
   });
 
-  // Also track focus for keyboard shortcut
+  // Also track focus as a fallback for editable context menu targets
   document.addEventListener('focusin', (e) => {
     const el = getEditableTarget(e.target);
     if (el) lastActiveElement = el;
@@ -56,7 +56,7 @@
     if (selectionText) {
       window._draftpilotSavedSelection = selectionText.trim();
     } else {
-      // Avoid reusing a previous selection when opened via shortcut or editable menu.
+      // Avoid reusing a previous selection when opened via editable menu.
       window._draftpilotSavedSelection =
         window.getSelection()?.toString()?.trim() || '';
       // Context-menu coordinates are only valid for the click that captured them.
@@ -84,7 +84,7 @@
     DraftPilotUI.toggle(anchor);
   }
 
-  // Listen for messages from background (context menu click or keyboard shortcut)
+  // Listen for messages from background context menu clicks
   chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     if (msg.type === 'ping') {
       sendResponse({ ok: true });
