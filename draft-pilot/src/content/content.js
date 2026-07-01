@@ -6,6 +6,12 @@
   // Track the element that was right-clicked
   let lastActiveElement = null;
 
+  function getEditableTarget(target) {
+    const el = target?.closest?.('textarea, [contenteditable="true"]');
+    if (!el || el.closest('.draftpilot-popover')) return null;
+    return el;
+  }
+
   // Save selection on mousedown (before focus change clears it)
   document.addEventListener(
     'mousedown',
@@ -21,21 +27,19 @@
 
   document.addEventListener('contextmenu', (e) => {
     // Remember the element user right-clicked on
-    const el = e.target.closest('textarea, [contenteditable="true"]');
+    const el = getEditableTarget(e.target);
     if (el) lastActiveElement = el;
   });
 
   // Also track focus for keyboard shortcut
   document.addEventListener('focusin', (e) => {
-    const el = e.target.closest('textarea, [contenteditable="true"]');
+    const el = getEditableTarget(e.target);
     if (el) lastActiveElement = el;
   });
 
   function openDraft() {
     if (!lastActiveElement) {
-      const activeElement = document.activeElement?.closest?.(
-        'textarea, [contenteditable="true"]',
-      );
+      const activeElement = getEditableTarget(document.activeElement);
       if (activeElement) lastActiveElement = activeElement;
     }
     if (!lastActiveElement) {
