@@ -55,6 +55,12 @@
   function openDraft(selectionText = '') {
     if (selectionText) {
       window._draftpilotSavedSelection = selectionText.trim();
+    } else {
+      // Avoid reusing a previous selection when opened via shortcut or editable menu.
+      window._draftpilotSavedSelection =
+        window.getSelection()?.toString().trim() || '';
+      // Context-menu coordinates are only valid for the click that captured them.
+      lastContextMenuPoint = null;
     }
 
     if (!lastActiveElement) {
@@ -69,8 +75,11 @@
     }
     if (!lastActiveElement && !window._draftpilotSavedSelection) return;
 
+    // If the script was injected after right-click, fall back to the selection range.
+    const selectionAnchor =
+      lastContextMenuPoint || getSelectionPoint() || lastActiveElement;
     const anchor = window._draftpilotSavedSelection
-      ? lastContextMenuPoint || getSelectionPoint() || lastActiveElement
+      ? selectionAnchor
       : lastActiveElement;
     DraftPilotUI.toggle(anchor);
   }
