@@ -353,11 +353,12 @@ const DraftPilotUI = {
       return;
     }
 
+    const uiLanguage = chrome.i18n.getUILanguage?.();
     listEl = document.createElement('div');
     listEl.className = 'draftpilot-history-list';
     listEl.innerHTML = history
       .map((item, i) => {
-        const date = new Date(item.timestamp).toLocaleString('zh-CN', {
+        const date = new Date(item.timestamp).toLocaleString(uiLanguage, {
           month: 'short',
           day: 'numeric',
           hour: '2-digit',
