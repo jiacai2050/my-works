@@ -207,7 +207,7 @@
     --fgColor-accent,
     var(--color-accent-fg, var(--draftpilot-accent))
   );
-  box-shadow: 0 0 0 3px var(--bgColor-accent-muted, rgba(9, 105, 218, 0.15));
+  box-shadow: 0 0 0 3px var(--bgColor-accent-muted, var(--color-accent-subtle, var(--draftpilot-bg-accent-muted, rgba(9, 105, 218, 0.15))));
 }
 
 /* Generate button */
