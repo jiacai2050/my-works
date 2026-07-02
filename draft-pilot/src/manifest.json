@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "__MSG_extName__",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "__MSG_extDescription__",
   "default_locale": "en",
   "permissions": ["storage", "activeTab", "contextMenus", "scripting"],
@@ -23,14 +23,5 @@
   "icons": {
     "16": "icons/icon-16.png",
     "48": "icons/icon-48.png"
-  },
-  "commands": {
-    "open-draft": {
-      "suggested_key": {
-        "default": "Ctrl+Shift+E",
-        "mac": "Command+Shift+E"
-      },
-      "description": "Open Draft Pilot draft panel"
-    }
   }
 }

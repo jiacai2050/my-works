@@ -17,7 +17,7 @@ const DraftPilotContext = {
     // Step 2: User-selected text (works everywhere)
     const selection =
       window._draftpilotSavedSelection ||
-      window.getSelection()?.toString().trim();
+      window.getSelection()?.toString()?.trim();
     if (selection) {
       return this._makeContext(selection);
     }
@@ -74,7 +74,7 @@ const DraftPilotContext = {
     // User selected text takes priority (use saved selection since right-click clears it)
     const selection =
       window._draftpilotSavedSelection ||
-      window.getSelection()?.toString().trim();
+      window.getSelection()?.toString()?.trim();
     if (selection)
       return selection.length > 1000
         ? selection.slice(0, 1000) + '...'

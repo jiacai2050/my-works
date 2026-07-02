@@ -23,7 +23,10 @@ const DraftPilotUI = {
     const popover = document.createElement('div');
     popover.className = 'draftpilot-popover';
     popover.innerHTML = `
-      <div class="draftpilot-popover-title">${_m('popoverTitle')}</div>
+      <div class="draftpilot-popover-title">
+        <span class="draftpilot-title-text">${_m('popoverTitle')}</span>
+        <span class="draftpilot-drag-hint">${_m('dragHint')}</span>
+      </div>
       <div class="draftpilot-intents">
         ${this.INTENTS.map((i) => `<button class="draftpilot-intent-btn" data-intent="${i.value}">${i.emoji} ${_m(i.labelKey)}</button>`).join('')}
       </div>
@@ -97,6 +100,8 @@ const DraftPilotUI = {
       .querySelector('.draftpilot-history-btn')
       .addEventListener('click', () => this.showHistory(popover));
 
+    this.makeDraggable(popover);
+
     // Close on outside click
     setTimeout(() => {
       document.addEventListener(
@@ -114,6 +119,154 @@ const DraftPilotUI = {
 
     this.popoverEl = popover;
     return popover;
+  },
+
+  bindViewportRefresh(popover) {
+    let frame = null;
+    const refresh = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = null;
+        if (this.popoverEl === popover) this.refreshPopoverBounds(popover);
+      });
+    };
+
+    window.addEventListener('resize', refresh);
+    window.addEventListener('scroll', refresh, true);
+    this._viewportRefreshHandler = refresh;
+  },
+
+  unbindViewportRefresh() {
+    if (!this._viewportRefreshHandler) return;
+    window.removeEventListener('resize', this._viewportRefreshHandler);
+    window.removeEventListener('scroll', this._viewportRefreshHandler, true);
+    this._viewportRefreshHandler = null;
+  },
+
+  POSITION_MARGIN: 8,
+  MIN_POPOVER_HEIGHT: 160,
+
+  clamp(value, min, max) {
+    return Math.min(Math.max(min, value), max);
+  },
+
+  clampPopoverLeft(popover, left) {
+    const margin = this.POSITION_MARGIN;
+    const maxLeft = Math.max(
+      margin,
+      window.innerWidth - popover.offsetWidth - margin,
+    );
+    return this.clamp(left, margin, maxLeft);
+  },
+
+  setDetachedPosition(popover, left, top) {
+    const margin = this.POSITION_MARGIN;
+    const clampedTop = this.clamp(
+      top,
+      margin,
+      Math.max(margin, window.innerHeight - margin - this.MIN_POPOVER_HEIGHT),
+    );
+
+    popover.style.left = this.clampPopoverLeft(popover, left) + 'px';
+    popover.style.top = clampedTop + 'px';
+    popover.style.right = 'auto';
+    popover.style.bottom = 'auto';
+    popover.style.maxHeight =
+      Math.max(
+        this.MIN_POPOVER_HEIGHT,
+        window.innerHeight - clampedTop - margin,
+      ) + 'px';
+  },
+
+  anchorPopover(popover, anchor) {
+    const margin = this.POSITION_MARGIN;
+    const rect = anchor?.getBoundingClientRect
+      ? anchor.getBoundingClientRect()
+      : {
+          top: anchor?.y ?? window.innerHeight / 2,
+          bottom: anchor?.y ?? window.innerHeight / 2,
+          right: anchor?.x ?? window.innerWidth - margin,
+        };
+    const left = this.clampPopoverLeft(
+      popover,
+      rect.right - popover.offsetWidth,
+    );
+    const spaceAbove = rect.top - margin * 2;
+    const spaceBelow = window.innerHeight - rect.bottom - margin * 2;
+    const shouldOpenAbove =
+      spaceAbove >= popover.offsetHeight || spaceAbove > spaceBelow;
+    const availableHeight = Math.max(
+      this.MIN_POPOVER_HEIGHT,
+      shouldOpenAbove ? spaceAbove : spaceBelow,
+    );
+
+    popover.style.position = 'fixed';
+    popover.style.left = left + 'px';
+    popover.style.right = 'auto';
+    popover.style.maxHeight = availableHeight + 'px';
+
+    if (shouldOpenAbove) {
+      popover.style.bottom = window.innerHeight - rect.top + margin + 'px';
+      popover.style.top = 'auto';
+    } else {
+      popover.style.top = rect.bottom + margin + 'px';
+      popover.style.bottom = 'auto';
+    }
+  },
+
+  updateDetachedBounds(popover) {
+    const rect = popover.getBoundingClientRect();
+    this.setDetachedPosition(popover, rect.left, rect.top);
+  },
+
+  refreshPopoverBounds(popover) {
+    if (!popover.classList.contains('draftpilot-detached') && this._anchorEl) {
+      this.anchorPopover(popover, this._anchorEl);
+    } else {
+      this.updateDetachedBounds(popover);
+    }
+  },
+
+  makeDraggable(popover) {
+    const handle = popover.querySelector('.draftpilot-popover-title');
+    if (!handle) return;
+
+    let dragging = false;
+    let offsetX = 0;
+    let offsetY = 0;
+
+    const movePopover = (clientX, clientY) => {
+      this.setDetachedPosition(popover, clientX - offsetX, clientY - offsetY);
+    };
+
+    handle.addEventListener('pointerdown', (e) => {
+      if (e.button !== 0) return;
+      const rect = popover.getBoundingClientRect();
+      dragging = true;
+      offsetX = e.clientX - rect.left;
+      offsetY = e.clientY - rect.top;
+      handle.setPointerCapture(e.pointerId);
+      popover.classList.add('draftpilot-dragging', 'draftpilot-detached');
+      movePopover(e.clientX, e.clientY);
+      e.preventDefault();
+    });
+
+    handle.addEventListener('pointermove', (e) => {
+      if (!dragging) return;
+      movePopover(e.clientX, e.clientY);
+    });
+
+    const stopDragging = (e) => {
+      if (!dragging) return;
+      dragging = false;
+      if (handle.hasPointerCapture(e.pointerId)) {
+        handle.releasePointerCapture(e.pointerId);
+      }
+      popover.classList.remove('draftpilot-dragging');
+    };
+
+    handle.addEventListener('pointerup', stopDragging);
+    handle.addEventListener('pointercancel', stopDragging);
   },
 
   async handleGenerate(popover) {
@@ -166,6 +319,7 @@ const DraftPilotUI = {
 
       draftEl.textContent = response.draft;
       draftSection.classList.remove('draftpilot-hidden');
+      this.refreshPopoverBounds(popover);
     } catch (err) {
       errorEl.innerHTML = `${err.message || _m('generateFailed')}<span class="retry-link">${_m('retryLink')}</span>`;
       errorEl.classList.remove('draftpilot-hidden');
@@ -176,6 +330,7 @@ const DraftPilotUI = {
       loadingEl.classList.add('draftpilot-hidden');
       genBtn.disabled = false;
       genBtn.textContent = _m('generateBtn');
+      this.refreshPopoverBounds(popover);
     }
   },
 
@@ -190,18 +345,20 @@ const DraftPilotUI = {
     const draftEl = popover.querySelector('.draftpilot-draft');
     const draftSection = popover.querySelector('.draftpilot-draft-section');
 
-    // Show a simple list overlay
+    // Show a simple inline list below the history button row
     let listEl = popover.querySelector('.draftpilot-history-list');
     if (listEl) {
       listEl.remove();
+      this.refreshPopoverBounds(popover);
       return;
     }
 
+    const uiLanguage = chrome.i18n.getUILanguage?.();
     listEl = document.createElement('div');
     listEl.className = 'draftpilot-history-list';
     listEl.innerHTML = history
       .map((item, i) => {
-        const date = new Date(item.timestamp).toLocaleString('zh-CN', {
+        const date = new Date(item.timestamp).toLocaleString(uiLanguage, {
           month: 'short',
           day: 'numeric',
           hour: '2-digit',
@@ -212,7 +369,8 @@ const DraftPilotUI = {
         return `<div class="draftpilot-history-item" data-idx="${i}"><span class="hist-date">${date}</span><span class="hist-text">${preview}</span></div>`;
       })
       .join('');
-    popover.appendChild(listEl);
+    popover.querySelector('.draftpilot-btn-row').after(listEl);
+    this.refreshPopoverBounds(popover);
 
     listEl.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -221,6 +379,7 @@ const DraftPilotUI = {
       draftEl.textContent = history[item.dataset.idx].draft;
       draftSection.classList.remove('draftpilot-hidden');
       listEl.remove();
+      this.refreshPopoverBounds(popover);
     });
   },
 
@@ -238,6 +397,7 @@ const DraftPilotUI = {
       });
       if (response.error) throw new Error(response.error);
       draftEl.textContent = response.draft;
+      this.refreshPopoverBounds(popover);
     } catch (err) {
       errorEl.textContent = err.message || _m('adjustFailed');
       errorEl.classList.remove('draftpilot-hidden');
@@ -306,6 +466,7 @@ const DraftPilotUI = {
   },
 
   close() {
+    this.unbindViewportRefresh();
     if (this.popoverEl) {
       this.popoverEl.remove();
       this.popoverEl = null;
@@ -317,27 +478,15 @@ const DraftPilotUI = {
     }
   },
 
-  toggle(anchorEl) {
+  toggle(anchor) {
     if (this.popoverEl) {
       this.close();
     } else {
-      this._anchorEl = anchorEl;
+      this._anchorEl = anchor;
       const popover = this.createPopover();
       document.body.appendChild(popover);
-      const rect = anchorEl.getBoundingClientRect();
-      popover.style.position = 'fixed';
-      // Position above the textarea, aligned to right
-      const popoverHeight = 400; // approximate max
-      const spaceAbove = rect.top;
-      if (spaceAbove > popoverHeight) {
-        popover.style.bottom = window.innerHeight - rect.top + 8 + 'px';
-        popover.style.top = 'auto';
-      } else {
-        popover.style.top = rect.bottom + 8 + 'px';
-        popover.style.bottom = 'auto';
-      }
-      popover.style.right = Math.max(8, window.innerWidth - rect.right) + 'px';
-      popover.style.left = 'auto';
+      this.anchorPopover(popover, anchor);
+      this.bindViewportRefresh(popover);
     }
   },
 };

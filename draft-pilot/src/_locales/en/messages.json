@@ -10,6 +10,7 @@
   "intentInfo": { "message": "More Info" },
   "intentHelp": { "message": "Ask Help" },
   "popoverTitle": { "message": "What do you want to say?" },
+  "dragHint": { "message": "Drag to move" },
   "inputPlaceholder": { "message": "Additional notes (any language)" },
   "generateBtn": { "message": "Generate Draft" },
   "historyBtn": { "message": "History" },
@@ -56,9 +57,6 @@
     "message": "Permission denied. Settings were not saved."
   },
   "invalidBaseUrl": { "message": "Please enter a valid API Base URL." },
-  "shortcutHint": {
-    "message": "Open the draft panel from the current text field via the context menu or shortcut:"
-  },
   "footerVersion": { "message": "Version" },
   "footerProjectHome": { "message": "Project Home" },
   "footerGitHub": { "message": "GitHub" },
@@ -69,12 +67,5 @@
   "sectionGitHub": { "message": "GitHub Context" },
   "sectionGitHubDesc": {
     "message": "Set a GitHub token to enable GitHub API context for issues and PRs."
-  },
-  "sectionUsage": { "message": "Usage" },
-  "sectionUsageDesc": {
-    "message": "Control how Draft Pilot opens while you write."
-  },
-  "shortcutManageHint": {
-    "message": "To change it, open Chrome Extensions → Keyboard shortcuts"
   }
 }
