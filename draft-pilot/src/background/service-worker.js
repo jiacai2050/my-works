@@ -60,11 +60,11 @@ const INTENT_INSTRUCTIONS = {
 };
 
 function buildSystemPrompt({
-  context,
+  context = {},
   intentValue,
   userNote,
   toneInstruction,
-}) {
+} = {}) {
   const platform = detectPlatform(context);
   const parts = [SYSTEM_PROMPT, `Platform:\n${PLATFORM_HINTS[platform]}`];
 
@@ -86,7 +86,7 @@ function buildSystemPrompt({
   return parts.join('\n\n');
 }
 
-function buildUserPrompt({ context }) {
+function buildUserPrompt({ context = {} } = {}) {
   const parts = [];
 
   if (context.title) parts.push(`Subject/Title: ${context.title}`);

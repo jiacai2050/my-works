@@ -10,7 +10,7 @@
   "intentInfo": { "message": "More Info" },
   "intentHelp": { "message": "Ask Help" },
   "popoverTitle": { "message": "What do you want to say?" },
-  "dragHint": { "message": "drag to move" },
+  "dragHint": { "message": "Drag to move" },
   "inputPlaceholder": { "message": "Additional notes (any language)" },
   "generateBtn": { "message": "Generate Draft" },
   "historyBtn": { "message": "History" },
