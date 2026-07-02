@@ -10,6 +10,7 @@ Rules:
 - Do not add unnecessary pleasantries unless the platform calls for it.`;
 
 function detectPlatform(context) {
+  context = context || {};
   const title = (context.title || '').toLowerCase();
   const url = context.url || '';
   if (url.includes('github.com') || title.includes('github')) return 'github';
@@ -60,11 +61,12 @@ const INTENT_INSTRUCTIONS = {
 };
 
 function buildSystemPrompt({
-  context = {},
+  context,
   intentValue,
   userNote,
   toneInstruction,
 } = {}) {
+  context = context || {};
   const platform = detectPlatform(context);
   const parts = [SYSTEM_PROMPT, `Platform:\n${PLATFORM_HINTS[platform]}`];
 
@@ -86,7 +88,8 @@ function buildSystemPrompt({
   return parts.join('\n\n');
 }
 
-function buildUserPrompt({ context = {} } = {}) {
+function buildUserPrompt({ context } = {}) {
+  context = context || {};
   const parts = [];
 
   if (context.title) parts.push(`Subject/Title: ${context.title}`);
