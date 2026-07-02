@@ -121,6 +121,28 @@ const DraftPilotUI = {
     return popover;
   },
 
+  bindViewportRefresh(popover) {
+    let frame = null;
+    const refresh = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = null;
+        if (this.popoverEl === popover) this.refreshPopoverBounds(popover);
+      });
+    };
+
+    window.addEventListener('resize', refresh);
+    window.addEventListener('scroll', refresh, true);
+    this._viewportRefreshHandler = refresh;
+  },
+
+  unbindViewportRefresh() {
+    if (!this._viewportRefreshHandler) return;
+    window.removeEventListener('resize', this._viewportRefreshHandler);
+    window.removeEventListener('scroll', this._viewportRefreshHandler, true);
+    this._viewportRefreshHandler = null;
+  },
+
   POSITION_MARGIN: 8,
   MIN_POPOVER_HEIGHT: 160,
 
@@ -443,6 +465,7 @@ const DraftPilotUI = {
   },
 
   close() {
+    this.unbindViewportRefresh();
     if (this.popoverEl) {
       this.popoverEl.remove();
       this.popoverEl = null;
@@ -462,6 +485,7 @@ const DraftPilotUI = {
       const popover = this.createPopover();
       document.body.appendChild(popover);
       this.anchorPopover(popover, anchor);
+      this.bindViewportRefresh(popover);
     }
   },
 };
