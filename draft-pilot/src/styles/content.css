@@ -214,9 +214,9 @@
 .draftpilot-generate-btn {
   display: block;
   width: 100%;
-  margin-top: 12px;
-  padding: 6px 14px;
-  font-size: 13px;
+  margin-top: 8px;
+  padding: 4px 12px;
+  font-size: 12px;
   font-weight: 500;
   color: var(--fgColor-onEmphasis, #fff);
   background: var(
@@ -271,6 +271,7 @@
 .draftpilot-draft-actions {
   display: flex;
   flex: 0 0 auto;
+  justify-content: center;
   gap: 6px;
   margin-top: 6px;
 }
@@ -319,7 +320,7 @@
 }
 
 .draftpilot-draft-actions button {
-  flex: 1;
+  flex: 0 0 auto;
   padding: 3px 8px;
   font-size: 12px;
   line-height: 18px;
@@ -421,8 +422,8 @@
 /* Button row */
 .draftpilot-btn-row {
   display: flex;
-  gap: 8px;
-  margin-top: 12px;
+  gap: 6px;
+  margin-top: 8px;
 }
 
 .draftpilot-btn-row .draftpilot-generate-btn {
@@ -431,7 +432,7 @@
 }
 
 .draftpilot-history-btn {
-  padding: 6px 10px;
+  padding: 4px 8px;
   border: 1px solid
     var(
       --borderColor-default,

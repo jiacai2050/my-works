@@ -25,7 +25,7 @@ const DraftPilotUI = {
     popover.innerHTML = `
       <div class="draftpilot-popover-title">
         <span class="draftpilot-title-text">${_m('popoverTitle')}</span>
-        <span class="draftpilot-drag-hint">drag to move</span>
+        <span class="draftpilot-drag-hint">${_m('dragHint')}</span>
       </div>
       <div class="draftpilot-intents">
         ${this.INTENTS.map((i) => `<button class="draftpilot-intent-btn" data-intent="${i.value}">${i.emoji} ${_m(i.labelKey)}</button>`).join('')}
@@ -323,7 +323,7 @@ const DraftPilotUI = {
     const draftEl = popover.querySelector('.draftpilot-draft');
     const draftSection = popover.querySelector('.draftpilot-draft-section');
 
-    // Show a simple list overlay
+    // Show a simple inline list below the history button row
     let listEl = popover.querySelector('.draftpilot-history-list');
     if (listEl) {
       listEl.remove();
@@ -346,7 +346,7 @@ const DraftPilotUI = {
         return `<div class="draftpilot-history-item" data-idx="${i}"><span class="hist-date">${date}</span><span class="hist-text">${preview}</span></div>`;
       })
       .join('');
-    popover.appendChild(listEl);
+    popover.querySelector('.draftpilot-btn-row').after(listEl);
     this.refreshPopoverBounds(popover);
 
     listEl.addEventListener('click', (e) => {

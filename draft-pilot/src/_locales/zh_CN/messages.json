@@ -10,6 +10,7 @@
   "intentInfo": { "message": "补充信息" },
   "intentHelp": { "message": "求助" },
   "popoverTitle": { "message": "你想表达什么？" },
+  "dragHint": { "message": "拖动移动" },
   "inputPlaceholder": { "message": "补充说明（任何语言均可）" },
   "generateBtn": { "message": "生成草稿" },
   "historyBtn": { "message": "历史记录" },
