@@ -15,15 +15,14 @@ A Chrome extension that helps non-native English speakers write professional Eng
 ## Screenshots
 
 <div align="center">
-<img src="./right-click.png" width="320"/>
-<img src="./draft-panel.png" width="320"/>
+<img src="./right-click.webp" width="320"/>
+<img src="./draft-panel.webp" width="320"/>
 </div>
 
 ## Installation
 
-### Chrome Web Store
-
-[Install Draft Pilot from the Chrome Web Store](https://chromewebstore.google.com/detail/draft-pilot/dfopgklchlakdkacmilipchcolbialck)
+- [Chrome Web Store](https://chromewebstore.google.com/detail/draft-pilot/dfopgklchlakdkacmilipchcolbialck)
+- [Firefox Addons](https://addons.mozilla.org/firefox/addon/draft-pilot/)
 
 ### Local development
 
