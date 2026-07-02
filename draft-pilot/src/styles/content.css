@@ -175,7 +175,7 @@
     --bgColor-accent-muted,
     var(--color-accent-subtle, var(--draftpilot-bg-accent-muted))
   );
-  box-shadow: 0 0 0 2px var(--bgColor-accent-muted, rgba(9, 105, 218, 0.2));
+  box-shadow: 0 0 0 2px var(--bgColor-accent-muted, var(--color-accent-subtle, var(--draftpilot-bg-accent-muted, rgba(9, 105, 218, 0.2))));
 }
 
 /* Input area */
